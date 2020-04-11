@@ -502,7 +502,11 @@ initoptions()
 
 	if (flags.female)  {	/* should have been set in NETHACKOPTIONS */
 		roles[2] = "Cavewoman";
+#ifdef FIGHTER
+		roles[7] = "Priestess";
+#else
 		roles[6] = "Priestess";
+#endif
 	}
 }
 

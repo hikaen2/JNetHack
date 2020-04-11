@@ -919,7 +919,7 @@ dotakeoff()
 				"¥É¥é¥´¥ó¤ÎÎÚ" : "¥É¥é¥´¥ó¤ÎÎÚ³»");
 		else
 /*JP		    pline("Not wearing any armor.");*/
-		    pline("³»¤Î¼ï¤òÁõÈ÷¤·¤Æ¤¤¤Ê¤¤¡¥");
+		    pline("³»¤ÎÎà¤òÁõÈ÷¤·¤Æ¤¤¤Ê¤¤¡¥");
 		return 0;
 	}
 	if (armorpieces > 1)

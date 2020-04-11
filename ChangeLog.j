@@ -1,9 +1,12 @@
 
+Tue Dec 24 1996		Issei Numata  <issei@nna.so-net.or.jp>
+	* jnethack-1.0.5.4.1 release
+	* 性別女でKを選ぶとPになってしまうバグを本当に修正．
+
 Sat Nov 23 1996		Issei Numata  <issei@nna.so-net.or.jp>
 	* jnethack-1.0.5.4 release
 	* ドキュメントの修正(とてもここに名前は書き切れません)
 	* メッセージの修正(とてもここに名前は書き切れません)
-	* 性別女でKを選ぶとPになってしまうバグを修正
 
 Fri Sep  6 1996		Issei Numata  <issei@jaist.ac.jp>
 	* jnethack-1.0.5.2 release

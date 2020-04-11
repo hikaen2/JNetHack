@@ -922,7 +922,8 @@ int dieroll; /* needed for Magicbane and vorpal blades */
 			if (noncorporeal(mdef->data) || amorphous(mdef->data)) {
 /*JP				pline("%s slices through %s neck.",*/
 				pline("%sは%sの首を切り落した．",
-				      artilist[ART_VORPAL_BLADE].name,
+/*JP				      artilist[ART_VORPAL_BLADE].name,*/
+				      jtrns_obj('A', artilist[ART_VORPAL_BLADE].name),
 				      s_suffix(mon_nam(mdef)));
 				return ((boolean)(youattack || vis));
 			}
