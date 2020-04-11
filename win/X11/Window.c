@@ -7,6 +7,12 @@
  * drawing canvas with 16 colors and one font.
  */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994-1999
+**	changing point is marked `JP' (94/6/7) or XI18N (96/7/19)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #ifndef SYSV
 #define PRESERVE_NO_SYSV	/* X11 include files may define SYSV */
 #endif
@@ -73,9 +79,12 @@ static XtResource resources[] = {
 	  offset(bright_cyan), XtRString, "cyan" },
     { XtNwhite, XtCColor, XtRPixel, sizeof(Pixel),
 	  offset(white), XtRString, "white" },
-
     { XtNfont, XtCFont, XtRFontStruct, sizeof(XFontStruct *),
 	  offset(font), XtRString, XtDefaultFont },
+#ifdef XI18N
+    { XtNfontSet, XtCFontSet, XtRFontSet, sizeof(XFontSet *),
+	  offset(fontset), XtRString, XtDefaultFontSet },
+#endif
     { XtNexposeCallback, XtCCallback, XtRCallback, sizeof(XtCallbackList),
 	  offset(expose_callback), XtRCallback, (char *)0 },
     { XtNcallback, XtCCallback, XtRCallback, sizeof(XtCallbackList),
@@ -110,14 +119,14 @@ static void Redisplay(w, event, region)
     Region region;	/* unused */
 {
     /* This isn't correct - we need to call the callback with region. */
-    XtCallCallbacks(w, XtNexposeCallback, (caddr_t) event);
+    XtCallCallbacks(w, XtNexposeCallback, (XtPointer) event);
 }
 
 /* ARGSUSED */
 static void Resize(w)
     Widget w;
 {
-    XtCallCallbacks(w, XtNresizeCallback, (caddr_t) 0);
+    XtCallCallbacks(w, XtNresizeCallback, (XtPointer) 0);
 }
 
 
@@ -168,3 +177,8 @@ WindowFont(w) Widget w; { return ((WindowWidget)w)->window.font->fid; }
 
 XFontStruct *
 WindowFontStruct(w) Widget w; { return ((WindowWidget)w)->window.font; }
+
+#ifdef XI18N
+XFontSet
+WindowFontSet(w) Widget w; { return ((WindowWidget)w)->window.fontset; }
+#endif

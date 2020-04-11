@@ -4,7 +4,31 @@
 HACKDIR=/usr/games/lib/nethackdir
 export HACKDIR
 HACK=$HACKDIR/nethack
-MAXNROFPLAYERS=4
+MAXNROFPLAYERS=20
+
+# JP
+# set LC_CTYPE, NETHACKOPTIONS etc..
+#
+if [ "X$LC_CTYPE" = "X" -o "X$LC_CTYPE" = "XC" ] ; then
+	LC_CTYPE=ja_JP.EUC
+	export LC_CTYPE
+fi
+if [ "X$LANG" = "X" -o "X$LANG" = "XC" ] ; then
+	LANG=ja_JP.EUC
+	export LANG
+fi
+if [ "X$NETHACKOPTIONS" = "X" ] ; then
+	NEXTHACKOPTIONS=
+	export NETHACKOPTIONS
+fi
+if [ "X$USERFILESEARCHPATH" = "X" ] ; then
+	USERFILESEARCHPATH=$HACKDIR/%L/%N%C%S:$HACKDIR/%N%C%S:$HACKDIR/%N%S
+	export USERFILESEARCHPATH
+fi
+
+#if [ "X$DISPLAY" ] ; then
+#	xset fp+ $HACKDIR
+#fi
 
 # see if we can find the full path name of PAGER, so help files work properly
 # assume that if someone sets up a special variable (HACKPAGER) for NetHack,

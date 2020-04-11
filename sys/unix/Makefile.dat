@@ -1,7 +1,7 @@
 #	NetHack Makefile.
 #	SCCS Id: @(#)Makefile.dat	3.3	92/09/18
 
-VARDAT = data rumors quest.dat oracles options
+VARDAT = data jrumors quest.dat joracles options
 
 all:	$(VARDAT) spec_levs quest_levs dungeon
 
@@ -28,17 +28,19 @@ pet_mark.xbm: ../win/X11/pet_mark.xbm
 rip.xpm: ../win/X11/rip.xpm
 	cp ../win/X11/rip.xpm rip.xpm
 
-
 data:	data.base ../util/makedefs
 	../util/makedefs -d
 
-rumors:	rumors.tru rumors.fal ../util/makedefs
+#rumors:	rumors.tru rumors.fal ../util/makedefs
+jrumors:	jrumors.tru jrumors.fal ../util/makedefs
 	../util/makedefs -r
 
 quest.dat:	quest.txt ../util/makedefs
 	../util/makedefs -q
 
-oracles:	oracles.txt ../util/makedefs
+# by issei 1994/2/5
+#oracles:	oracles.txt ../util/makedefs
+joracles:	joracles.txt ../util/makedefs
 	../util/makedefs -h
 
 # note: 'options' should have already been made when include/date.h was created
@@ -65,7 +67,7 @@ spec_levs: ../util/lev_comp \
 quest_levs: ../util/lev_comp \
 	Arch.des Barb.des Caveman.des Healer.des Knight.des Monk.des \
 	Priest.des Ranger.des Rogue.des Samurai.des Tourist.des Valkyrie.des \
-	Wizard.des
+	Wizard.des Fighter.des
 	../util/lev_comp Arch.des
 	../util/lev_comp Barb.des
 	../util/lev_comp Caveman.des
@@ -79,6 +81,7 @@ quest_levs: ../util/lev_comp \
 	../util/lev_comp Tourist.des
 	../util/lev_comp Valkyrie.des
 	../util/lev_comp Wizard.des
+	../util/lev_comp Fighter.des
 	touch quest_levs
 
 dungeon: dungeon.def ../util/makedefs ../util/dgn_comp
@@ -88,3 +91,4 @@ dungeon: dungeon.def ../util/makedefs ../util/dgn_comp
 spotless:
 	-rm -f spec_levs quest_levs *.lev $(VARDAT) dungeon dungeon.pdf
 	-rm -f nhdat x11tiles pet_mark.xbm rip.xpm
+	-rm -f ../include/jdata.h

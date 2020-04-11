@@ -2,6 +2,13 @@
 /*	Copyright (c) M. Stephenson 1988			  */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 static NEARDATA schar delay;		/* moves left for this spell */
@@ -86,7 +93,7 @@ static int FDECL(isqrt, (int));
 #define uarmfbon 2 /* All metal interferes to some degree */
 
 /* since the spellbook itself doesn't blow up, don't say just "explodes" */
-static const char explodes[] = "radiates explosive energy";
+/*JPstatic const char explodes[] = "radiates explosive energy";*/
 
 /* convert a letter into a number in the range 0..51, or -1 if not a letter */
 static int
@@ -108,11 +115,13 @@ cursed_book(lev)
 {
 	switch(rn2(lev)) {
 	case 0:
-		You_feel("a wrenching sensation.");
+/*JP		You_feel("a wrenching sensation.");*/
+		You("ねじられたような感覚を感じた．");
 		tele();		/* teleport him */
 		break;
 	case 1:
-		You_feel("threatened.");
+/*JP		You_feel("threatened.");*/
+		You("おどされているような気がした．");
 		aggravate();
 		break;
 	case 2:
@@ -122,36 +131,51 @@ cursed_book(lev)
 		take_gold();
 		break;
 	case 4:
-		pline("These runes were just too much to comprehend.");
+/*JP		pline("These runes were just too much to comprehend.");*/
+		pline("このルーン文字を理解するのは困難だ．");
 		make_confused(HConfusion + rn1(7,16),FALSE);
 		break;
 	case 5:
-		pline_The("book was coated with contact poison!");
+/*JP		pline_The("book was coated with contact poison!");*/
+		pline("この本は接触型の毒で覆われている！");
 		if (uarmg) {
 		    if (uarmg->oerodeproof || !is_corrodeable(uarmg)) {
-			Your("gloves seem unaffected.");
+/*JP			Your("gloves seem unaffected.");*/
+			pline("小手は影響を受けない．");
 		    } else if (uarmg->oeroded2 < MAX_ERODE) {
-			Your("gloves corrode%s!",
+/*JP			Your("gloves corrode%s!",
 			     uarmg->oeroded2+1 == MAX_ERODE ? " completely" :
 			     uarmg->oeroded2 ? " further" : "");
+*/
+			pline("小手は%s腐食した！",
+			     uarmg->oeroded+1 == MAX_ERODE ? "完全に" :
+			     uarmg->oeroded ? "さらに" : "");
 			uarmg->oeroded2++;
 		    } else
-			Your("gloves %s completely corroded.",
-			     Blind ? "feel" : "look");
+/*JP			Your("gloves %s completely corroded.",
+			     Blind ? "feel" : "look");*/
+			pline("小手は完全に腐食した%s．",
+			     Blind ? "ようだ" : "ように見える");
 		    break;
 		}
 		losestr(Poison_resistance ? rn1(2,1) : rn1(4,3));
 		losehp(rnd(Poison_resistance ? 6 : 10),
-		       "contact-poisoned spellbook", KILLED_BY_AN);
+/*JP		       "contact-poisoned spellbook", KILLED_BY_AN);*/
+		       "接触毒の魔法書で", KILLED_BY_AN);
 		break;
 	case 6:
 		if(Antimagic) {
 		    shieldeff(u.ux, u.uy);
-		    pline_The("book %s, but you are unharmed!", explodes);
+/*JP		    pline_The("book %s, but you are unharmed!", explodes);*/
+		    pline("本は強力なエネルギーを放出した，しかしあなたは傷つかない！");
 		} else {
-		    pline("As you read the book, it %s in your %s!",
+/*JP		    pline("As you read the book, it %s in your %s!",
 			  explodes, body_part(FACE));
-		    losehp (2*rnd(10)+5, "exploding rune", KILLED_BY_AN);
+*/
+		    pline("本は強力なエネルギーをあなたの%sに放出した",
+			  body_part(FACE));
+/*JP		    losehp (2*rnd(10)+5, "exploding rune", KILLED_BY_AN);*/
+		    losehp (2*rnd(10)+5, "強力なルーン文字のエネルギーで", KILLED_BY_AN);
 		}
 		break;
 	default:
@@ -169,7 +193,8 @@ struct obj *book2;
     struct monst *mtmp, *mtmp2;
     coord mm;
 
-    You("turn the pages of the Book of the Dead...");
+/*JP    You("turn the pages of the Book of the Dead...");*/
+    You("死者の本のページをめくった．．．");
     makeknown(SPE_BOOK_OF_THE_DEAD);
     /* KMH -- Need ->known to avoid "_a_ Book of the Dead" */
     book2->known = 1;
@@ -179,16 +204,20 @@ struct obj *book2;
 			 arti_cursed = FALSE;
 
 	if(book2->cursed) {
-	    pline_The("runes appear scrambled.  You can't read them!");
+/*JP	    pline_The("runes appear scrambled.  You can't read them!");*/
+	    pline("ルーン文字はごちゃまぜになっており，読むことができなかった！");
 	    return;
 	}
 
 	if(!u.uhave.bell || !u.uhave.menorah) {
-	    pline("A chill runs down your %s.", body_part(SPINE));
-	    if(!u.uhave.bell) You_hear("a faint chime...");
-	    if(!u.uhave.menorah) pline("Vlad's doppelganger is amused.");
+/*JP	    pline("A chill runs down your %s.", body_part(SPINE));*/
+	    pline("寒けがあなたの%sを走った．", body_part(SPINE));
+/*JP	    if(!u.uhave.bell) You_hear("a faint chime...");*/
+	    if(!u.uhave.bell) You("かすかなベルの音を聞いた．．．");
+/*JP	    if(!u.uhave.menorah) pline("Vlad's doppelganger is amused.");*/
+	    if(!u.uhave.menorah) pline("ヴラドの生霊は笑った．");
 	    return;
-	}
+ 	}
 
 	for(otmp = invent; otmp; otmp = otmp->nobj) {
 	    if(otmp->otyp == CANDELABRUM_OF_INVOCATION &&
@@ -204,13 +233,16 @@ struct obj *book2;
 	}
 
 	if(arti_cursed) {
-	    pline_The("invocation fails!");
-	    pline("At least one of your artifacts is cursed...");
+/*JP	    pline_The("invocation fails!");
+	    pline("At least one of your artifacts is cursed...");*/
+	    pline("特殊能力は発揮されなかった！");
+	    pline("少くともあなたの聖器のひとつが呪われている．．．");
 	} else if(arti1_primed && arti2_primed) {
 	    mkinvokearea();
 	    u.uevent.invoked = 1;
 	} else {	/* at least one artifact not prepared properly */
-	    You("have a feeling that %s is amiss...", something);
+/*JP	    You("have a feeling that %s is amiss...", something);*/
+	    You("何かが間違っているような気がした．．．");
 	    goto raise_dead;
 	}
 	return;
@@ -220,7 +252,8 @@ struct obj *book2;
     if (book2->cursed) {
 raise_dead:
 
-	You("raised the dead!");
+/*JP	You("raised the dead!");*/
+	You("死者を蘇らせた！");
 	/* first maybe place a dangerous adversary */
 	if (!rn2(3) && ((mtmp = makemon(&mons[PM_MASTER_LICH],
 					u.ux, u.uy, NO_MINVENT)) != 0 ||
@@ -253,13 +286,16 @@ raise_dead:
     } else {
 	switch(rn2(3)) {
 	case 0:
-	    Your("ancestors are annoyed with you!");
+/*JP	    Your("ancestors are annoyed with you!");*/
+	    Your("先祖はあなたが嫌いなようだ！");
 	    break;
 	case 1:
-	    pline_The("headstones in the cemetery begin to move!");
+/*JP	    pline_The("headstones in the cemetery begin to move!");*/
+	    pline("墓地の墓石が動きはじめた！");
 	    break;
 	default:
-	    pline("Oh my!  Your name appears in the book!");
+/*JP	    pline("Oh my!  Your name appears in the book!");*/
+	    pline("なんてこったい！あなたの名前が本に書いてある！");
 	}
     }
     return;
@@ -284,21 +320,28 @@ learn()
 	    return(0);
 	}
 
-	Sprintf(splname, objects[booktype].oc_name_known ?
+/*JP	Sprintf(splname, objects[booktype].oc_name_known ?
 			"\"%s\"" : "the \"%s\" spell",
 		OBJ_NAME(objects[booktype]));
+*/
+	Sprintf(splname, objects[booktype].oc_name_known ?
+			"\"%s\"" : "\"%s\"",
+		jtrns_obj('+', OBJ_NAME(objects[booktype])));
 	for (i = 0; i < MAXSPELL; i++)  {
 		if (spellid(i) == booktype)  {
 			if (book->spestudied > MAX_SPELL_STUDY) {
-			    pline("This spellbook is too faint to be read any more.");
+/*JP			    pline("This spellbook is too faint to be read any more.");*/
+			    pline("この魔法書の文字は薄すぎてこれ以上読めない．");
 			    book->otyp = booktype = SPE_BLANK_PAPER;
 			} else if (spellknow(i) <= 1000) {
-			    Your("knowledge of %s is keener.", splname);
+/*JP			    Your("knowledge of %s is keener.", splname);*/
+			    Your("%sに対する知識は研ぎすまされた．", splname);
 			    incrnknow(i);
 			    book->spestudied++;
 			    exercise(A_WIS,TRUE);       /* extra study */
 			} else { /* 1000 < spellknow(i) <= MAX_SPELL_STUDY */
-			    You("know %s quite well already.", splname);
+/*JP			    You("know %s quite well already.", splname);*/
+			    You("%sを熟知している．", splname);
 			    costly = FALSE;
 			}
 			/* make book become known even when spell is already
@@ -310,8 +353,10 @@ learn()
 			spl_book[i].sp_lev = objects[booktype].oc_level;
 			incrnknow(i);
 			book->spestudied++;
-			You(i > 0 ? "add %s to your repertoire." : "learn %s.",
+/*JP			You(i > 0 ? "add %s to your repertoire." : "learn %s.",
 			    splname);
+*/
+			You(i > 0 ? "%sをレパートリーに加えた．" : "%sを習得した．", splname);
 			makeknown((int)booktype);
 			break;
 		}
@@ -338,11 +383,13 @@ register struct obj *spellbook;
 		    /* handle the sequence: start reading, get interrupted,
 		       have book become erased somehow, resume reading it */
 		    booktype != SPE_BLANK_PAPER) {
-		You("continue your efforts to memorize the spell.");
+/*JP		You("continue your efforts to memorize the spell.");*/
+		You("魔法の学習を再開した．");
 	} else {
 		/* KMH -- Simplified this code */
 		if (booktype == SPE_BLANK_PAPER) {
-			pline("This spellbook is all blank.");
+/*JP			pline("This spellbook is all blank.");*/
+			pline("この魔法書は真っ白だ．");
 			makeknown(booktype);
 			return(1);
 		}
@@ -383,8 +430,12 @@ register struct obj *spellbook;
 			    if (Role_if(PM_WIZARD) && read_ability < 20) {
 				char qbuf[QBUFSZ];
 				Sprintf(qbuf,
+/*JP
 		      "This spellbook is %sdifficult to comprehend. Continue?",
 					(read_ability < 12 ? "very " : ""));
+*/
+		      "この魔法書を理解するのは%s困難だ．続けますか？",
+					(read_ability < 12 ? "とても" : ""));
 				if (ynq(qbuf) != 'y') return(1);
 			    }
 			    /* its up to random luck now */
@@ -399,7 +450,8 @@ register struct obj *spellbook;
 		    nomul(delay);			/* study time */
 		    delay = 0;
 		    if(!rn2(3)) {
-			pline_The("spellbook crumbles to dust!");
+/*JP			pline_The("spellbook crumbles to dust!");*/
+			pline("魔法書は塵となった！");
 			if (!objects[spellbook->otyp].oc_name_known &&
 				!objects[spellbook->otyp].oc_uname)
 			    docall(spellbook);
@@ -411,16 +463,19 @@ register struct obj *spellbook;
 			if (!rn2(3) &&
 				spellbook->otyp != SPE_BOOK_OF_THE_DEAD) {
 			    pline(
-	  "Being confused you have difficulties in controlling your actions.");
+/*JP	  "Being confused you have difficulties in controlling your actions.");*/
+	  "混乱しているので，そういうことをするのは難しい．");
 			    display_nhwindow(WIN_MESSAGE, FALSE);
-			    You("accidentally tear the spellbook to pieces.");
+/*JP			    You("accidentally tear the spellbook to pieces.");*/
+			    You("うっかり，魔法書を引きさいてしまった．");
 			    if (!objects[spellbook->otyp].oc_name_known &&
 				   !objects[spellbook->otyp].oc_uname)
 				docall(spellbook);
 			    useup(spellbook);
 			} else {
 			    You(
-		  "find yourself reading the first line over and over again.");
+/*JP		  "find yourself reading the first line over and over again.");*/
+				"最初の行を何度も繰り返して読んでいた．");
 			    spellbook->in_use = FALSE;
 			}
 			nomul(delay);
@@ -429,13 +484,17 @@ register struct obj *spellbook;
 		}
 		spellbook->in_use = FALSE;
 
-		You("begin to %s the runes.",
+/*JP		You("begin to %s the runes.",
 		    spellbook->otyp == SPE_BOOK_OF_THE_DEAD ? "recite" :
-		    "memorize");
+		    "memorize");*/
+		You("ルーン文字を%sしはじめた．",
+		    spellbook->otyp == SPE_BOOK_OF_THE_DEAD ? "暗唱" :
+		    "記憶");
 	}
 
 	book = spellbook;
-	set_occupation(learn, "studying", 0);
+/*JP	set_occupation(learn, "studying", 0);*/
+	set_occupation(learn, "学ぶ", 0);
 	return(1);
 }
 
@@ -478,7 +537,8 @@ getspell(spell_no)
 	char ilet, lets[BUFSZ], qbuf[QBUFSZ];
 
 	if (spellid(0) == NO_SPELL)  {
-	    You("don't know any spells right now.");
+/*JP	    You("don't know any spells right now.");*/
+	    You("魔法を知らない．");
 	    return FALSE;
 	}
 	if (flags.menu_style == MENU_TRADITIONAL) {
@@ -493,7 +553,8 @@ getspell(spell_no)
 	    else Sprintf(lets, "a-zA-%c", 'A' + nspells - 27);
 
 	    for(;;)  {
-		Sprintf(qbuf, "Cast which spell? [%s ?]", lets);
+/*JP		Sprintf(qbuf, "Cast which spell? [%s ?]", lets);*/
+		Sprintf(qbuf, "どの魔法を唱える？[%s ?]", lets);
 		if ((ilet = yn_function(qbuf, (char *)0, '\0')) == '?')
 		    break;
 
@@ -505,10 +566,13 @@ getspell(spell_no)
 		    *spell_no = idx;
 		    return TRUE;
 		} else
-		    You("don't know that spell.");
+/*JP		    You("don't know that spell.");*/
+		    You("そんな魔法は知らない．");
 	    }
 	}
-	return dospellmenu("Choose which spell to cast",
+/*JP	return dospellmenu("Choose which spell to cast",
+			   SPELLMENU_CAST, spell_no);*/
+	return dospellmenu("どの魔法を唱える？",
 			   SPELLMENU_CAST, spell_no);
 }
 
@@ -529,19 +593,26 @@ int skill;
 {
 	switch (skill) {
 	    case P_ATTACK_SPELL:
-		return "attack";
+/*JP		return "attack";*/
+		return "攻撃";
 	    case P_HEALING_SPELL:
-		return "healing";
+/*JP		return "healing";*/
+		return "治癒";
 	    case P_DIVINATION_SPELL:
-		return "divination";
+/*JP		return "divination";*/
+		return "予知";
 	    case P_ENCHANTMENT_SPELL:
-		return "enchantment";
+/*JP		return "enchantment";*/
+		return "補助";
 	    case P_CLERIC_SPELL:
-		return "clerical";
+/*JP		return "clerical";*/
+		return "僧侶";
 	    case P_ESCAPE_SPELL:
-		return "escape";
+/*JP		return "escape";*/
+		return "脱出";
 	    case P_MATTER_SPELL:
-		return "matter";
+/*JP		return "matter";*/
+		return "物質";
 	    default:
 		impossible("Unknown spell skill, %d;", skill);
 		return "";
@@ -597,12 +668,20 @@ cast_protection()
 		const char *hgolden = hcolor(golden);
 
 		if (u.uspellprot)
-		    pline_The("%s haze around you becomes more dense.",
+/*JP		    pline_The("%s haze around you becomes more dense.",*/
+		    pline("あなたのまわりの%s霞が濃くなった",
 			      hgolden);
 		else
+#if 0 /*JP*/
 		    pline_The("%s around you begins to shimmer with %s haze.",
 			/*[ what about being inside solid rock while polyd? ]*/
 			(Underwater || Is_waterlevel(&u.uz)) ? "water" : "air",
+			      an(hgolden));
+#endif
+		    pline("あなたのまわりの%sの%s霧がチカチカした．",
+			/*[ what about being inside solid rock while polyd? ]*/
+/*JP			(Underwater || Is_waterlevel(&u.uz)) ? "water" : "air",*/
+			(Underwater || Is_waterlevel(&u.uz)) ? "水中の" : "空中の",
 			      an(hgolden));
 	    }
 	    u.uspellprot += gain;
@@ -612,7 +691,8 @@ cast_protection()
 		u.usptime = u.uspmtime;
 	    find_ac();
 	} else {
-	    Your("skin feels warm for a moment.");
+/*JP	    Your("skin feels warm for a moment.");*/
+	    Your("一瞬ポカポカした．");
 	}
 }
 
@@ -632,37 +712,47 @@ boolean atme;
 	 * decrement of spell knowledge is done every turn.
 	 */
 	if (spellknow(spell) <= 0) {
-	    Your("knowledge of this spell is twisted.");
-	    pline("It invokes nightmarish images in your mind...");
+/*JP	    Your("knowledge of this spell is twisted.");*/
+	    Your("この魔法に関する知識はよじれた．");
+/*JP	    pline("It invokes nightmarish images in your mind...");*/
+	    pline("それは悪夢を心に浮ばせた．．．");
 	    make_confused((long)spellev(spell) * 3, FALSE);
 	    return(0);
 	} else if (spellknow(spell) <= 100) {
-	    You("strain to recall the spell.");
+/*JP	    You("strain to recall the spell.");*/
+	    You("魔法を思いだそうとした．");
 	} else if (spellknow(spell) <= 1000) {
-	    Your("knowledge of this spell is growing faint.");
+/*JP	    Your("knowledge of this spell is growing faint.");*/
+	    Your("この魔法に関する知識が消えてゆく．");
 	}
 	energy = (spellev(spell) * 5);    /* 5 <= energy <= 35 */
 
 	if (u.uhunger <= 10 && spellid(spell) != SPE_DETECT_FOOD) {
-		You("are too hungry to cast that spell.");
+/*JP		You("are too hungry to cast that spell.");*/
+	        pline("腹が減りすぎて魔法を唱えられない．");
 		return(0);
 	} else if (ACURR(A_STR) < 4)  {
-		You("lack the strength to cast spells.");
+/*JP		You("lack the strength to cast spells.");*/
+ 		pline("強さが少なすぎて魔法を唱えられない．");
 		return(0);
 	} else if(check_capacity(
-		"Your concentration falters while carrying so much stuff.")) {
+/*JP		"Your concentration falters while carrying so much stuff.")) {*/
+		"たくさんものを持ちすぎて集中できない．")){
 	    return (1);
 	} else if (!freehand()) {
-		Your("arms are not free to cast!");
+/*JP		Your("arms are not free to cast!");*/
+		pline("魔法を唱えようにも腕の自由が効かない！");
 		return (0);
 	}
 
 	if (u.uhave.amulet) {
-		You_feel("the amulet draining your energy away.");
+/*JP		You_feel("the amulet draining your energy away.");*/
+		pline("魔除けがあなたのエネルギーを吸いとっているような気がした．");
 		energy += rnd(2*energy);
 	}
 	if(energy > u.uen)  {
-		You("don't have enough energy to cast that spell.");
+/*JP		You("don't have enough energy to cast that spell.");*/
+		pline("魔法を唱えるだけの十分なエネルギーを持っていない．");
 		return(0);
 	} else {
 		if (spellid(spell) != SPE_DETECT_FOOD) {
@@ -702,7 +792,8 @@ boolean atme;
 
 	chance = percent_success(spell);
 	if (confused || (rnd(100) > chance)) {
-		You("fail to cast the spell correctly.");
+/*JP		You("fail to cast the spell correctly.");*/
+		You("魔法を正しく唱えることができなかった．");
 		u.uen -= energy / 2;
 		flags.botl = 1;
 		return(1);
@@ -742,10 +833,13 @@ boolean atme;
 		    while(n--) {
 			if(!u.dx && !u.dy && !u.dz) {
 			    if ((damage = zapyourself(pseudo, TRUE)) != 0)
-				losehp(damage,
+/*JP				losehp(damage,
 				     self_pronoun("zapped %sself with a spell",
 						"him"),
 				       NO_KILLER_PREFIX);
+*/
+				losehp(damage, "自分自身の魔法を浴びて",
+				       KILLED_BY);
 			} else {
 			    explode(u.dx, u.dy,
 				    pseudo->otyp - SPE_MAGIC_MISSILE + 10,
@@ -787,9 +881,11 @@ boolean atme;
 			if(!u.dx && !u.dy && !u.dz) {
 			    if ((damage = zapyourself(pseudo, TRUE)) != 0)
 				losehp(damage,
-				     self_pronoun("zapped %sself with a spell",
-						  "him"),
-				     NO_KILLER_PREFIX);
+/*JP				     self_pronoun("zapped %sself with a spell",
+						  "him"),*/
+				     "自分自身の魔法を浴びて",
+/*JP				     NO_KILLER_PREFIX);*/
+				     KILLED_BY);
 			} else weffects(pseudo);
 		} else weffects(pseudo);
 		break;
@@ -827,9 +923,11 @@ boolean atme;
 		healup(0, 0, FALSE, TRUE);
 		break;
 	case SPE_CURE_SICKNESS:
-		if (Sick) You("are no longer ill.");
+/*JP		if (Sick) You("are no longer ill.");*/
+		if (Sick) Your("病気は直った．");
 		if (Slimed) {
-		    pline("The slime disappears!");
+/*JP		    pline("The slime disappears!");*/
+		    pline("べとべとは消えた！");
 		    Slimed = 0;
 		}
 		healup(0, 0, TRUE, FALSE);
@@ -842,7 +940,8 @@ boolean atme;
 		    do_vicinity_map();
 		/* at present, only one thing blocks clairvoyance */
 		else if (uarmh && uarmh->otyp == CORNUTHAUM)
-		    You("sense a pointy hat on top of your %s.",
+/*JP		    You("sense a pointy hat on top of your %s.",*/
+		    You("とがった帽子を%sの上に発見した．",
 			body_part(HEAD));
 		break;
 	case SPE_PROTECTION:
@@ -850,7 +949,8 @@ boolean atme;
 		break;
 	case SPE_JUMPING:
 		if (!jump(role_skill))
-			pline("Nothing happens.");
+/*JP			pline("Nothing happens.");*/
+			pline("何も起きない．");
 		break;
 	default:
 		impossible("Unknown spell %d attempted.", spell);
@@ -873,28 +973,35 @@ throwspell()
 	coord cc;
 
 	if (u.uinwater) {
-	    pline("You're joking! In this weather?"); return 0;
+/*JP	    pline("You're joking! In this weather?"); return 0;*/
+	    pline("水中で何をしようっていうんだい？"); return 0;
 	} else if (Is_waterlevel(&u.uz)) {
-	    You("had better wait for the sun to come out."); return 0;
+/*JP	    You("had better wait for the sun to come out."); return 0;*/
+	    You("太陽が見えるまで待ったほうがよいだろう．"); return 0;
 	}
 
-	pline("Where do you want to cast the spell?");
+/*JP	pline("Where do you want to cast the spell?");*/
+	pline("どこに向かって魔法を唱える？");
 	cc.x = u.ux;
 	cc.y = u.uy;
-	if (getpos(&cc, TRUE, "the desired position") < 0)
+/*JP	if (getpos(&cc, TRUE, "the desired position") < 0)*/
+	if (getpos(&cc, TRUE, "望みの場所") < 0)
 	    return 0;	/* user pressed ESC */
 	/* The number of moves from hero to where the spell drops.*/
 	if (distmin(u.ux, u.uy, cc.x, cc.y) > 10) {
-	    pline("The spell dissipates over the distance!");
+/*JP	    pline("The spell dissipates over the distance!");*/
+	    pline("遠すぎる！");
 	    return 0;
 	} else if (u.uswallow) {
-	    pline("The spell is cut short!");
+/*JP	    pline("The spell is cut short!");*/
+	    pline("だめだ！近すぎる！");
 	    exercise(A_WIS, FALSE); /* What were you THINKING! */
 	    u.dx = 0;
 	    u.dy = 0;
 	    return 1;
 	} else if (!cansee(cc.x, cc.y) || IS_STWALL(levl[cc.x][cc.y].typ)) {
-	    Your("mind fails to lock onto that location!");
+/*JP	    Your("mind fails to lock onto that location!");*/
+	    You("そこに向かって集中したが失敗した！");
 	    return 0;
 	} else {
 	    u.dx=cc.x;
@@ -931,11 +1038,19 @@ dovspell()
 	struct spell spl_tmp;
 
 	if (spellid(0) == NO_SPELL)
-	    You("don't know any spells right now.");
+/*JP	    You("don't know any spells right now.");*/
+	    You("魔法を知らない．");
 	else {
-	    while (dospellmenu("Currently known spells",
+/*JP	    while (dospellmenu("Currently known spells",
 			       SPELLMENU_VIEW, &splnum)) {
 		Sprintf(qbuf, "Reordering spells; swap '%c' with",
+*/
+	    while (dospellmenu("現在知っている魔法一覧",
+			       SPELLMENU_VIEW, &splnum)) {
+/*JP		Sprintf(qbuf, "Reordering spells; swap '%c' with",
+			spellet(splnum));
+*/
+		Sprintf(qbuf, "'%c'と並び変える魔法は？",
 			spellet(splnum));
 		if (!dospellmenu(qbuf, splnum, &othnum)) break;
 
@@ -972,14 +1087,20 @@ int *spell_no;
 	 * To do it right would require that we implement columns
 	 * in the window-ports (say via a tab character).
 	 */
-	Sprintf(buf, "%-20s     Level  %-12s Fail", "    Name", "Category");
+/*JP	Sprintf(buf, "%-20s     Level  %-12s Fail", "    Name", "Category");*/
+	Sprintf(buf, "%-20s     Level  %-12s 成功率", "    Name", "分類");
 	add_menu(tmpwin, NO_GLYPH, &any, 0, 0, ATR_NONE, buf, MENU_UNSELECTED);
 	for (i = 0; i < MAXSPELL && spellid(i) != NO_SPELL; i++) {
-	        Sprintf(buf, "%-20s  %2d%s   %-12s %3d%%",
+/*JP	        Sprintf(buf, "%-20s  %2d%s   %-12s %3d%%",
 			spellname(i), spellev(i),
 			spellknow(i) ? " " : "*",
 			spelltypemnemonic(spell_skilltype(spellid(i))),
-			100 - percent_success(i));
+			100 - percent_success(i));*/
+	        Sprintf(buf, "%-20s  %2d%s   %-12s %3d%%",
+			jtrns_obj('+', spellname(i)), spellev(i),
+			spellknow(i) ? " " : "*",
+			spelltypemnemonic(spell_skilltype(spellid(i))),
+			percent_success(i));
 
 		any.a_int = i+1;	/* must be non-zero */
 		add_menu(tmpwin, NO_GLYPH, &any,
@@ -989,6 +1110,8 @@ int *spell_no;
 	end_menu(tmpwin, prompt);
 
 	how = PICK_ONE;
+
+
 	if (splaction == SPELLMENU_VIEW && spellid(1) == NO_SPELL)
 	    how = PICK_NONE;	/* only one spell => nothing to swap with */
 	n = select_menu(tmpwin, how, &selected);

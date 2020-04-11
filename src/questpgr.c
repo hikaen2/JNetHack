@@ -2,6 +2,13 @@
 /*	Copyright 1991, M. Stephenson		  */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**    Japanese version Copyright
+**    (c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**    changing point is marked `JP' (94/6/7)
+**    JNetHack may be freely redistributed.  See license for details.
+*/
+
 #include "hack.h"
 #include "dlb.h"
 
@@ -29,7 +36,9 @@ static char	in_line[80], cvt_buf[64], out_line[128];
 static struct	qtlists	qt_list;
 static dlb	*msg_file;
 /* used by ldrname() and neminame(), then copied into cvt_buf */
+/*JP
 static char	nambuf[sizeof cvt_buf];
+*/
 
 #ifdef DEBUG
 static void NDECL(dump_qtlist);
@@ -165,10 +174,13 @@ ldrname()	/* return your role leader's name */
 {
 	int i = urole.ldrnum;
 
+/*JP
 	Sprintf(nambuf, "%s%s",
 		type_is_pname(&mons[i]) ? "" : "the ",
 		mons[i].mname);
 	return nambuf;
+*/
+	return(jtrns_mon(mons[i].mname, -1));
 }
 
 STATIC_OVL const char *
@@ -189,10 +201,13 @@ neminame()	/* return your role nemesis' name */
 {
 	int i = urole.neminum;
 
+/*JP
 	Sprintf(nambuf, "%s%s",
 		type_is_pname(&mons[i]) ? "" : "the ",
 		mons[i].mname);
 	return nambuf;
+*/
+	return(jtrns_mon(mons[i].mname, -1));
 }
 
 STATIC_OVL const char *
@@ -200,7 +215,10 @@ guardname()	/* return your role leader's guard monster name */
 {
 	int i = urole.guardnum;
 
+/*JP
 	return(mons[i].mname);
+*/
+	return(jtrns_mon(mons[i].mname, -1));
 }
 
 STATIC_OVL const char *
@@ -249,15 +267,17 @@ char c;
 	    case 'R':	str = rank_of(MIN_QUEST_LEVEL, Role_switch,
 	    			flags.female);
 			break;
-	    case 's':	str = (flags.female) ? "sister" : "brother";
+/*JP	    case 's':	str = (flags.female) ? "sister" : "brother";*/
+	    case 's':	str = (flags.female) ? "Ëå" : "Äï";
 			break;
-	    case 'S':	str = (flags.female) ? "daughter" : "son";
-			break;
+/*JP	    case 'S':	str = (flags.female) ? "daughter" : "son";*/
+	    case 'S':	str = (flags.female) ? "Ì¼" : "Â©»Ò";
 	    case 'l':	str = ldrname();
 			break;
 	    case 'i':	str = intermed();
 			break;
-	    case 'o':	str = the(artiname(urole.questarti));
+/*JP	    case 'o':	str = the(artiname(urole.questarti));*/
+	    case 'o':	str = jtrns_obj('A', (artiname(urole.questarti)));
 			break;
 	    case 'n':	str = neminame();
 			break;
@@ -271,17 +291,23 @@ char c;
 			break;
 	    case 'A':	str = align_str(u.ualign.type);
 			break;
-	    case 'd':	str = align_gname(u.ualignbase[1]);
+/*JP	    case 'd':	str = align_gname(u.ualignbase[1]);*/
+	    case 'd':	str = jtrns_mon(align_gname(u.ualignbase[1]), -1);
 			break;
-	    case 'D':	str = align_gname(A_LAWFUL);
+/*JP	    case 'D':	str = align_gname(A_LAWFUL);*/
+	    case 'D':	str = jtrns_mon(align_gname(A_LAWFUL), -1);
 			break;
-	    case 'C':	str = "chaotic";
+/*JP	    case 'C':	str = "chaotic";*/
+	    case 'C':	str = "º®ÆÙ";	        
 			break;
-	    case 'N':	str = "neutral";
+/*JP	    case 'N':	str = "neutral";*/
+	    case 'N':	str = "ÃæÎ©";	        
 			break;
-	    case 'L':	str = "lawful";
+/*JP	    case 'L':	str = "lawful";*/
+	    case 'L':	str = "Ãá½ø";	        
 			break;
-	    case 'x':	str = Blind ? "sense" : "see";
+/*JP	    case 'x':	str = Blind ? "sense" : "see";*/
+	    case 'x':	str = Blind ? "´¶¤¸" : "¸«";
 			break;
 	    case 'Z':	str = dungeons[0].dname;
 			break;
@@ -391,6 +417,7 @@ int how;
 	    convert_line();
 	    putstr(datawin, 0, out_line);
 	}
+
 	display_nhwindow(datawin, TRUE);
 	destroy_nhwindow(datawin);
 }

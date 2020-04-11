@@ -1,0 +1,15 @@
+				   
+			     GTK-NetHack
+				   
+		       Copyright 1999  I.Numata
+
+			   COPYRIGHT NOTICE
+
+GTK NetHack is one of the Nethack using GTK+ library. You must read
+original license (dat/license) and obey it to redistribute and modify
+this program.  GTK NetHack obey original license completely.  GTK
+part copyright belong to the author.
+
+To play in GTK+, add bellow line to your .nethackrc or .jnethackrc
+
+OPTIONS=windowtype:gtk

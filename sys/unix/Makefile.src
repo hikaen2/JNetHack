@@ -50,6 +50,14 @@ SYSOBJ = ioctl.o unixmain.o unixtty.o unixunix.o
 #SYSSRC = ../sys/be/bemain.c ../sys/share/unixtty.c ../sys/share/ioctl.c
 #SYSOBJ = bemain.o unixtty.o ioctl.o
 
+#JP by issei(93/11/10)
+JSRC = ../japanese/jconj.c ../japanese/jtrns.c ../japanese/jlib.c
+JOBJ = jconj.o jtrns.o jlib.o
+
+#NH extension by issei(99/11/10)
+EXTSRC = ../extension/nhbuf.c ../extension/nhinet.c \
+	../extension/extension.c
+EXTOBJ = nhbuf.o nhinet.o extension.o
 
 # if you are using gcc as your compiler:
 #	uncomment the CC definition below if it's not in your environment
@@ -64,7 +72,7 @@ SYSOBJ = ioctl.o unixmain.o unixtty.o unixunix.o
 # 
 #	If you are using GCC 2.2.2 or higher on a DPX/2, just use:
 #
-# CC = gcc -ansi
+CC = gcc
 #
 #	For HP/UX 10.20 with GCC:
 # CC = gcc -D_POSIX_SOURCE
@@ -132,7 +140,7 @@ SYSOBJ = ioctl.o unixmain.o unixtty.o unixunix.o
 # flags for debugging:
 # CFLAGS = -g -I../include
 
-CFLAGS = -O -I../include
+CFLAGS = -W -g -O -I../include
 LFLAGS = 
 
 # Only used for Qt interface (other interfaces are standard C)
@@ -140,6 +148,16 @@ CXXFLAGS = -g $(CFLAGS) -I. -I$(QTDIR)/include
 # Qt is C++, so define the compiler and linker thus required:
 #CXX=g++
 #LD=g++
+
+# flags for IPv6 support
+#   for Linux + glibc-2.1.x / Solaris users
+# CFLAGS += -DINET6
+#   for KAME users
+# CFLAGS += -DINET6
+# LFLAGS += -L/usr/local/v6/lib -linet6
+#   for Linux libinet users
+# CFLAGS  = -DINET6 -I/usr/inet6/include $(CFLAGS)
+# LFLAGS += -L/usr/inet6/lib -linet6
 
 # Set the WINSRC, WINOBJ, and WINLIB lines to correspond to your desired
 # combination of windowing systems.  Also set windowing systems in config.h.
@@ -223,10 +241,16 @@ WINLIB = $(WINTTYLIB)
 # IRIX 4.0.x needs -lsun if NIS (YP) is being used for passwd file lookup
 # LIBS = -lsun
 #
+# FreeBSD-2.2 needs -lxpg4 to use locale
+#
+# LIBS = -lxpg4
+#
 LIBS =
 
 # make NetHack
-GAME     = nethack
+#JP by issei(96/5/27)
+#GAME     = nethack
+GAME     = jnethack
 
 # if you defined RANDOM in unixconf.h/tosconf.h since your system did not come
 # with a reasonable random number generator
@@ -279,10 +303,10 @@ WINCSRC = $(WINTTYSRC) $(WINX11SRC)
 WINCXXSRC = $(WINQTSRC)
 
 # .c files for this version (for date.h)
-VERSOURCES = $(HACKCSRC) $(SYSSRC) $(WINSRC) monstr.c vis_tab.c
+VERSOURCES = $(HACKCSRC) $(JSRC) $(EXTSRC) $(SYSSRC) $(WINSRC) monstr.c vis_tab.c
 
 # .c files for all UNIX versions (for lint and tags)
-CSOURCES = $(HACKCSRC) $(SYSSRC) $(WINCSRC) monstr.c vis_tab.c
+CSOURCES = $(HACKCSRC) $(JSRC) $$(EXTSRC) (SYSSRC) $(WINCSRC) monstr.c vis_tab.c
 
 
 # all .h files except date.h, onames.h, pm.h, and vis_tab.h which would
@@ -319,7 +343,7 @@ HOBJ = $(FIRSTOBJ) allmain.o alloc.o apply.o artifact.o attrib.o ball.o \
 	steal.o steed.o teleport.o timeout.o topten.o track.o trap.o u_init.o \
 	uhitm.o vault.o vision.o vis_tab.o weapon.o were.o wield.o windows.o \
 	wizard.o worm.o worn.o write.o zap.o \
-	$(RANDOBJ) $(SYSOBJ) $(WINOBJ) version.o
+	$(RANDOBJ) $(EXTOBJ) $(JOBJ) $(SYSOBJ) $(WINOBJ) version.o
 # the .o files from the HACKCSRC, SYSSRC, and WINSRC lists
 
 $(GAME):	$(SYSTEM)
@@ -327,7 +351,7 @@ $(GAME):	$(SYSTEM)
 
 Sysunix:	$(HOBJ) Makefile
 	@echo "Loading ..."
-	@$(CC) $(LFLAGS) -o $(GAME) $(HOBJ) $(WINLIB) $(LIBS)
+	$(CC) $(LFLAGS) -o $(GAME) $(HOBJ) $(WINLIB) $(LIBS)
 	@touch Sysunix
 
 Sys3B2:	$(HOBJ) Makefile
@@ -418,6 +442,9 @@ vis_tab.c: $(MAKEDEFS)
 	@( cd ../util ; $(MAKE) ../src/vis_tab.c )
 tile.c: ../win/share/tilemap.c $(HACK_H)
 	@( cd ../util ; $(MAKE) ../src/tile.c )
+#JP by issei(94/07/13)
+../include/jdata.h: $(MAKEDEFS) ../dat/jtrnsobj.dat ../dat/jtrnsmon.dat
+	@( cd ../util ; $(MAKE) ../include/jdata.h )
 
 #	date.h should be remade any time any of the source or include code
 #	is modified.  Unfortunately, this would make the contents of this
@@ -553,6 +580,38 @@ wintext.o: ../win/X11/wintext.c $(HACK_H) ../include/winX.h ../include/xwindow.h
 winval.o: ../win/X11/winval.c $(HACK_H) ../include/winX.h
 	$(CC) $(CFLAGS) -c ../win/X11/winval.c
 tile.o: tile.c $(HACK_H)
+jconj.o: ../japanese/jconj.c  ../include/hack.h
+	$(CC) $(CFLAGS) -c ../japanese/jconj.c
+jtrns.o: ../japanese/jtrns.c  ../include/hack.h ../include/jdata.h
+	$(CC) $(CFLAGS) -c ../japanese/jtrns.c
+jlib.o: ../japanese/jlib.c  ../include/hack.h
+	$(CC) $(CFLAGS) -c ../japanese/jlib.c
+nhbuf.o: ../extension/nhbuf.c  ../include/hack.h
+	$(CC) $(CFLAGS) -c ../extension/nhbuf.c
+nhinet.o: ../extension/nhinet.c  ../include/hack.h
+	$(CC) $(CFLAGS) -c ../extension/nhinet.c
+extension.o: ../extension/extension.c  ../include/hack.h
+	$(CC) $(CFLAGS) -c ../extension/extension.c
+gtk.o: ../win/gtk/gtk.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtk.c
+gtkgetlin.o: ../win/gtk/gtkgetlin.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkgetlin.c
+gtkstatus.o: ../win/gtk/gtkstatus.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkstatus.c
+gtkmenu.o: ../win/gtk/gtkmenu.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkmenu.c
+gtkyn.o: ../win/gtk/gtkyn.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkyn.c
+gtkmap.o: ../win/gtk/gtkmap.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkmap.c
+gtkmessage.o: ../win/gtk/gtkmessage.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkmessage.c
+gtkmisc.o: ../win/gtk/gtkmisc.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkmisc.c
+xshmmap.o: ../win/gtk/xshmmap.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/xshmmap.c
+xshm.o: ../win/gtk/xshm.c ../include/hack.h ../include/xshm.h
+	$(CC) $(CFLAGS) -c ../win/gtk/xshm.c
 qt_win.o: ../win/Qt/qt_win.cpp $(HACK_H) ../include/func_tab.h \
 		../include/dlb.h ../include/patchlevel.h ../include/qt_win.h \
 		../include/qt_clust.h ../include/qt_kde0.h \

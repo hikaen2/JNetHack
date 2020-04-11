@@ -5,7 +5,6 @@
 #ifndef CONFIG_H /* make sure the compiler does not see the typedefs twice */
 #define CONFIG_H
 
-
 /*
  * Section 1:	Operating and window systems selection.
  *		Select the version of the OS you are using.
@@ -14,6 +13,7 @@
  *		provide it (no need to change sec#1, vmsconf.h handles it).
  */
 
+#define JNETHACK
 #define UNIX		/* delete if no fork(), exec() available */
 
 /* #define MSDOS */	/* in case it's not auto-detected */
@@ -43,7 +43,8 @@
  * Some combinations make no sense.  See the installation document.
  */
 #define TTY_GRAPHICS	/* good old tty based graphics */
-/* #define X11_GRAPHICS */ /* X11 interface */
+#define X11_GRAPHICS    /* X11 interface */
+#define GTK_GRAPHICS	/* GTK interface */
 /* #define QT_GRAPHICS */	/* Qt interface */
 
 /*
@@ -80,10 +81,22 @@
 #endif
 
 #ifndef DEFAULT_WINDOW_SYS
-# define DEFAULT_WINDOW_SYS "tty"
+# ifdef GTK_GRAPHICS
+#  define DEFAULT_WINDOW_SYS "gtk"
+# endif
 #endif
 
-#ifdef X11_GRAPHICS
+#ifndef DEFAULT_WINDOW_SYS
+# ifdef X11_GRAPHICS
+#  define DEFAULT_WINDOW_SYS "x11"
+# endif
+#endif
+
+#ifndef DEFAULT_WINDOW_SYS
+#  define DEFAULT_WINDOW_SYS "tty"
+#endif
+
+#if defined(X11_GRAPHICS) || defined(GTK_GRAPHICS)
 /*
  * There are two ways that X11 tiles may be defined.  (1) using a custom
  * format loaded by NetHack code, or (2) using the XPM format loaded by
@@ -92,7 +105,7 @@
  * would allow:
  *  xpmtoppm <x11tiles.xpm | pnmscale 1.25 | ppmquant 90 >x11tiles_big.xpm
  */
-/* # define USE_XPM */		/* Disable if you do not have the XPM library */
+# define USE_XPM		/* Disable if you do not have the XPM library */
 # ifdef USE_XPM
 #  define GRAPHIC_TOMBSTONE	/* Use graphical tombstone (rip.xpm) */
 # endif
@@ -105,6 +118,44 @@
  *		from the game; otherwise set the appropriate wizard name.
  *		LOGFILE and NEWS refer to files in the playground.
  */
+
+#ifdef JNETHACK
+#define	NEWBIE		/* more verbose for newbie */
+#define FIGHTER		/* Sailor Fighter with sailor blouse */
+#define NH_EXTENSION	/* Some extension for game */
+#define XI18N
+#define INSTALLCOLORMAP
+#define BIGTILE
+#define BIG3DTILE
+#define RADAR
+#endif
+
+#if (defined(UNIX) || defined(WIN32)) && defined(NH_EXTENSION)
+
+#define NH_EXTENSION_REPORT
+
+#define REPORTSCORE_VER	1030
+#define SCORE_SERVER	"score.jnethack.org"
+#define SCORE_PATH	"http://www.jnethack.org/cgi-bin/report33"
+#define SCORE_PORT	80
+
+#define BONES_SERVER	"bones.jnethack.org"
+#define BONES_PATH	"http://www.jnethack.org/cgi-bin/bones"
+#define BONES_PORT	80
+
+#define HTTP_PROXY	""		/* default proxy if you need */
+#define HTTP_PROXY_PORT	3128		/* default proxy port if you need */
+/*
+  Example:
+
+#define HTTP_PROXY	"proxy.hoehoe.com"
+#define HTTP_PROXY_PORT	3128
+
+ */
+
+#define HTTP_TIMEOUT	2000
+
+#endif
 
 #ifndef WIZARD		/* allow for compile-time or Makefile changes */
 # ifndef KR1ED
@@ -168,7 +219,7 @@
  * otherwise it will be the current directory.
  */
 # ifndef HACKDIR
-#  define HACKDIR "/usr/games/lib/nethackdir"	/* nethack directory */
+#  define HACKDIR "/usr/games/lib/jnethackdir"	/* nethack directory */
 # endif
 
 /*

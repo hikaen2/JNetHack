@@ -51,7 +51,8 @@
  * in end.c and topten.c will need to be changed.  Some parts of the
  * code assume that PANIC separates the deaths from the non-deaths.
  */
-#define DIED		 0
+
+#define KILLED		 0
 #define CHOKING		 1
 #define POISONING	 2
 #define STARVING	 3
@@ -60,6 +61,9 @@
 #define DISSOLVED	 6
 #define CRUSHING	 7
 #define STONING		 8
+/*JP*/
+#define DIED		 9
+/*
 #define TURNED_SLIME	 9
 #define GENOCIDED	10
 #define PANICKED	11
@@ -67,6 +71,14 @@
 #define QUIT		13
 #define ESCAPED		14
 #define ASCENDED	15
+*/
+#define TURNED_SLIME	10
+#define GENOCIDED	11
+#define PANICKED	12
+#define TRICKED		13
+#define QUIT		14
+#define ESCAPED		15
+#define ASCENDED	16
 
 #include "align.h"
 #include "dungeon.h"
@@ -111,6 +123,10 @@ NEARDATA extern coord bhitpos;	/* place where throw or zap hits or stops */
 #undef EXTERN_H
 #include "extern.h"
 #endif /* USE_TRAMPOLI */
+
+#ifdef NEWBIE
+#include "newbie.h"
+#endif
 
 #define NO_SPELL	0
 

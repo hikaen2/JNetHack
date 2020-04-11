@@ -8,24 +8,36 @@
 #include <stdio.h>
 
 
-/* #define BETA		/* if a beta-test copy	[MRS] */
+/* #define BETA */	/* if a beta-test copy	[MRS] */
 
 /*
  * Files expected to exist in the playground directory.
  */
 
 #define RECORD	      "record"	/* file containing list of topscorers */
+#if 0
 #define HELP	      "help"	/* file containing command descriptions */
 #define SHELP	      "hh"	/* abbreviated form of the same */
 #define DEBUGHELP     "wizhelp" /* file containing debug mode cmds */
 #define RUMORFILE     "rumors"	/* file with fortune cookies */
 #define ORACLEFILE    "oracles" /* file with oracular information */
-#define DATAFILE      "data"	/* file giving the meaning of symbols used */
 #define CMDHELPFILE   "cmdhelp" /* file telling what commands do */
 #define HISTORY       "history" /* file giving nethack's history */
-#define LICENSE       "license" /* file with license information */
 #define OPTIONFILE    "opthelp" /* file explaining runtime options */
+#endif
+#define DATAFILE      "data"	/* file giving the meaning of symbols used */
+#define LICENSE       "license" /* file with license information */
 #define OPTIONS_USED  "options" /* compile-time options, for #version */
+
+#define HELP		"jhelp"	  /* a file containing command descriptions */
+#define RUMORFILE	"jrumors"	/* Japanese version */
+#define ORACLEFILE	"joracles"	/* Japanese version */
+#define SHELP		"jhh"		/* Japanese version */
+#define DEBUGHELP	"jwizhelp"	/* Japanese version */
+#define CMDHELPFILE	"jcmdhelp"	/* file telling what commands do */
+#define HISTORY		"jhistory"	/* a file giving nethack's history */
+#define JJJ		"jjj"		/* notice for jnethack */
+#define OPTIONFILE	"jopthelp"	/* a file explaining runtime options */
 
 #define LEV_EXT ".lev"		/* extension for special level files */
 
@@ -192,7 +204,7 @@ typedef xchar	boolean;		/* 0 or 1 */
 #  else
 #  define PORT_ID	"PC"
 #  endif
-#  ifdef DJGPP
+#  ifdef __DJGPP__
 #  define PORT_SUB_ID	"djgpp"
 #  else
 #   ifdef OVERLAY

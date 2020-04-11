@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifdef MAIL
@@ -255,9 +262,12 @@ md_stop(stopp, startp)
 
 /* Let the mail daemon have a larger vocabulary. */
 static NEARDATA const char *mail_text[] = {
-    "Gangway!",
+/*JP    "Gangway!",
     "Look out!",
-    "Pardon me!"
+    "Pardon me!"*/
+    "どいたどいた！",
+    "気をつけろ！",
+    "じゃまするよ！"
 };
 #define md_exclamations()	(mail_text[rn2(3)])
 
@@ -317,7 +327,8 @@ md_rush(md,tx,ty)
 	if ((mon = m_at(fx,fy)) != 0)	/* save monster at this position */
 	    verbalize(md_exclamations());
 	else if (fx == u.ux && fy == u.uy)
-	    verbalize("Excuse me.");
+/*JP	    verbalize("Excuse me.");*/
+	    verbalize("ちょっとしつれい．");
 
 	place_monster(md,fx,fy);	/* put md down */
 	newsym(fx,fy);			/* see it */
@@ -342,7 +353,8 @@ md_rush(md,tx,ty)
     if ((mon = m_at(fx, fy)) != 0) {
 	place_monster(md, fx, fy);	/* display md with text below */
 	newsym(fx, fy);
-	verbalize("This place's too crowded.  I'm outta here.");
+/*JP	verbalize("This place's too crowded.  I'm outta here.");*/
+	verbalize("ここは混みすぎ．ここで待ってるよ．");
 
 	if ((mon->mx != fx) || (mon->my != fy))	/* put mon back */
 	    place_worm_seg(mon, fx, fy);
@@ -380,12 +392,14 @@ struct mail_info *info;
     if (!md_rush(md, stop.x, stop.y)) goto go_back;
 
     message_seen = TRUE;
-    verbalize("%s, %s!  %s.", Hello(), plname, info->display_txt);
+/*JP    verbalize("%s, %s!  %s.", Hello(), plname, info->display_txt);*/
+    verbalize("%s，%s．", Hello(TRUE), info->display_txt);
 
     if (info->message_typ) {
 	struct obj *obj = mksobj(SCR_MAIL, FALSE, FALSE);
 	if (distu(md->mx,md->my) > 2)
-	    verbalize("Catch!");
+/*JP	    verbalize("Catch!");*/
+	    verbalize("ほらよ！");
 	display_nhwindow(WIN_MESSAGE, FALSE);
 	if (info->object_nam) {
 	    obj = oname(obj, info->object_nam);
@@ -398,7 +412,8 @@ struct mail_info *info;
 		/* Note: renaming object will discard the hidden command. */
 	    }
 	}
-	obj = hold_another_object(obj, "Oops!",
+/*JP	obj = hold_another_object(obj, "Oops!",*/
+	obj = hold_another_object(obj, "おっと！",
 				  (const char *)0, (const char *)0);
     }
 
@@ -409,7 +424,8 @@ go_back:
     /* deliver some classes of messages even if no daemon ever shows up */
 give_up:
     if (!message_seen && info->message_typ == MSG_OTHER)
-	pline("Hark!  \"%s.\"", info->display_txt);
+/*JP	pline("Hark!  \"%s.\"", info->display_txt);*/
+	pline("「%s．」と言うことだ！", info->display_txt);
 }
 
 # if !defined(UNIX) && !defined(VMS) && !defined(LAN_MAIL)
@@ -426,7 +442,8 @@ ckmailstatus()
 	}
 	if (--mustgetmail <= 0) {
 		static struct mail_info
-			deliver = {MSG_MAIL,"I have some mail for you",0,0};
+/*JP			deliver = {MSG_MAIL,"I have some mail for you",0,0};*/
+			deliver = {MSG_MAIL,"メイルを持ってきたよ",0,0};
 		newmail(&deliver);
 		mustgetmail = -1;
 	}
@@ -438,19 +455,28 @@ readmail(otmp)
 struct obj *otmp;
 {
     static char *junk[] = {
+/*JP
     "Please disregard previous letter.",
     "Welcome to NetHack.",
+*/
+    "前のメールは忘れてください．",
+    "NetHack 3.3.0へようこそ！",
 #ifdef AMIGA
     "Only Amiga makes it possible.",
     "CATS have all the answers.",
 #endif
+/*JP
     "Report bugs to <devteam@nethack.org>."
+*/
+    "バグレポートは jnethack-bugs@jnethack.org へ"
     };
 
     if (Blind) {
-	pline("Unfortunately you cannot see what it says.");
+/*JP	pline("Unfortunately you cannot see what it says.");*/
+	pline("不幸にも何と書いてあるのか見ることができない．");
     } else
-	pline("It reads:  \"%s\"", junk[rn2(SIZE(junk))]);
+/*JP	pline("It reads:  \"%s\"", junk[rn2(SIZE(junk))]);*/
+	pline("それを読んだ：\"%s\"", junk[rn2(SIZE(junk))]);
 
 }
 
@@ -480,10 +506,12 @@ ckmailstatus()
 		if (nmstat.st_size) {
 		    static struct mail_info deliver = {
 #  ifndef NO_MAILREADER
-			MSG_MAIL, "I have some mail for you",
+/*JP			MSG_MAIL, "I have some mail for you",*/
+			MSG_MAIL, "メイルを持ってきたよ",
 #  else
 			/* suppress creation and delivery of scroll of mail */
-			MSG_OTHER, "You have some mail in the outside world",
+/*JP			MSG_OTHER, "You have some mail in the outside world",*/
+			MSG_OTHER, "外の世界からのメールだ",
 #  endif
 			0, 0
 		    };

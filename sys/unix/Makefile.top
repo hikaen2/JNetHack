@@ -15,16 +15,16 @@
 
 # make NetHack
 PREFIX	 = /usr
-GAME     = nethack
+GAME     = jnethack
 GAMEUID  = games
-GAMEGRP  = bin
+GAMEGRP  = games
 
 # Permissions - some places use setgid instead of setuid, for instance
 # See also the option "SECURE" in include/config.h
-GAMEPERM = 04755
-FILEPERM = 0644
-EXEPERM  = 0755
-DIRPERM  = 0755
+GAMEPERM = 02755
+FILEPERM = 0664
+EXEPERM  = 0775
+DIRPERM  = 0775
 
 # GAMEDIR also appears in config.h as "HACKDIR".
 #
@@ -37,11 +37,11 @@ GAMEDIR  = $(PREFIX)/games/lib/$(GAME)dir
 SHELLDIR = $(PREFIX)/games
 
 # per discussion in Install.X11 and Install.Qt
-VARDATND = 
+# VARDATND = 
 # VARDATND = x11tiles pet_mark.xbm
-# VARDATND = x11tiles pet_mark.xbm rip.xpm
+VARDATND = x11tiles pet_mark.xbm rip.xpm
 
-VARDATD = data oracles options quest.dat rumors
+VARDATD = data joracles options quest.dat jrumors
 VARDAT = $(VARDATD) $(VARDATND)
 
 # Some versions of make use the SHELL environment variable as the shell
@@ -60,7 +60,9 @@ CHGRP = chgrp
 # end of configuration
 #
 
-DATHELP = help hh cmdhelp history opthelp wizhelp
+# by issei 1994/2/5, 1994/6/25
+#DATHELP = help hh cmdhelp history opthelp wizhelp
+DATHELP = jhelp jhh jcmdhelp jhistory jopthelp jwizhelp jjj
 
 SPEC_LEVS = asmodeus.lev baalz.lev bigrm-?.lev castle.lev fakewiz?.lev \
 	juiblex.lev knox.lev medusa-?.lev minend-?.lev minefill.lev \
@@ -69,9 +71,9 @@ SPEC_LEVS = asmodeus.lev baalz.lev bigrm-?.lev castle.lev fakewiz?.lev \
 	astral.lev air.lev earth.lev fire.lev water.lev
 QUEST_LEVS = ???-goal.lev ???-fil?.lev ???-loca.lev ???-strt.lev
 
-DATNODLB = $(VARDATND) license
+DATNODLB = $(VARDATND) license t32-1024.xpm credit.xpm floor.xpm
 DATDLB = $(DATHELP) dungeon $(SPEC_LEVS) $(QUEST_LEVS) $(VARDATD)
-DAT = $(DATNODLB) $(DATDLB)
+DAT = $(DATNODLB) $(DATDLB) 
 
 $(GAME):
 	( cd src ; $(MAKE) )
@@ -88,11 +90,13 @@ manpages:
 data:
 	( cd dat ; $(MAKE) data )
 
-rumors:
-	( cd dat ; $(MAKE) rumors )
+#JP
+jrumors:
+	( cd dat ; $(MAKE) jrumors )
 
-oracles:
-	( cd dat ; $(MAKE) oracles )
+#JP
+joracles:
+	( cd dat ; $(MAKE) joracles )
 
 #	Note: options should have already been made with make, but...
 options:
@@ -153,6 +157,9 @@ dofiles:
 
 dofiles-dlb: check-dlb
 	( cd dat ; cp nhdat $(DATNODLB) $(GAMEDIR) )
+	( cd win/X11 ; cp JNetHack.ad $(GAMEDIR)/JNetHack )
+	( cd win/gtk ; cp GTKRC $(GAMEDIR)/gtkrc )
+	( bdftopcf win/X11/nh10.bdf > $(GAMEDIR)/nh10.pcf ; mkfontdir $(GAMEDIR))
 # set up their permissions
 	-( cd $(GAMEDIR) ; $(CHOWN) $(GAMEUID) nhdat $(DATNODLB) ; \
 			$(CHGRP) $(GAMEGRP) nhdat $(DATNODLB) ; \
@@ -161,6 +168,9 @@ dofiles-dlb: check-dlb
 dofiles-nodlb:
 # copy over the game files
 	( cd dat ; cp $(DAT) $(GAMEDIR) )
+	( cd win/X11 ; cp JNetHack.ad $(GAMEDIR)/JNetHack )
+	( cd win/gtk ; cp GTKRC $(GAMEDIR)/gtkrc )
+	( bdftopcf win/X11/nh10.bdf > $(GAMEDIR)/nh10.pcf ; mkfontdir $(GAMEDIR))
 # set up their permissions
 	-( cd $(GAMEDIR) ; $(CHOWN) $(GAMEUID) $(DAT) ; \
 			$(CHGRP) $(GAMEGRP) $(DAT) ; \
@@ -186,7 +196,7 @@ install: $(GAME) $(VARDAT) dungeon spec_levs
 # set up the directories
 	-mkdir $(SHELLDIR)
 	-rm -rf $(GAMEDIR)
-	-mkdir $(GAMEDIR) $(GAMEDIR)/save
+	-mkdir $(SHELLDIR)/lib $(GAMEDIR) $(GAMEDIR)/save
 	-$(CHOWN) $(GAMEUID) $(GAMEDIR) $(GAMEDIR)/save
 	$(CHGRP) $(GAMEGRP) $(GAMEDIR) $(GAMEDIR)/save
 	chmod $(DIRPERM) $(GAMEDIR) $(GAMEDIR)/save

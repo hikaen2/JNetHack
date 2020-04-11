@@ -8,6 +8,12 @@
  *	+ Global functions: player_selection() and get_ext_cmd().
  */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994-1999
+**	changing point is marked `JP' (94/6/7) or XI18N (96/7/19)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #ifndef SYSV
 #define PRESERVE_NO_SYSV	/* X11 include files may define SYSV */
 #endif
@@ -165,6 +171,11 @@ X11_player_selection()
 {
     int num_roles, num_races, i;
     Widget popup, player_form;
+#ifdef XI18N
+    char **jroles;
+    char jtmp[256];
+#endif
+
     const char **role_names = 0, **race_names = 0;
 
     if (flags.initrole < 0) {
@@ -174,6 +185,7 @@ X11_player_selection()
 	role_names = (const char **)alloc(sizeof(char *) * num_roles);
 	for (i = 0; i < num_roles; i++)
 	    role_names[i] = roles[i].name.m;	/* ??? chose female name? */
+
 	popup = make_menu("player_selection", "Choose a Role",
 		    player_select_translations,
 		    "quit", ps_quit,
@@ -524,6 +536,9 @@ make_menu(popup_name, popup_label, popup_translations,
      * Create the label.
      */
     num_args = 0;
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     XtSetArg(args[num_args], XtNborderWidth, 0);	num_args++;
     label = XtCreateManagedWidget(popup_label,
 				labelWidgetClass,
@@ -539,6 +554,9 @@ make_menu(popup_name, popup_label, popup_translations,
     XtSetArg(args[num_args], XtNshapeStyle,
 				XmuShapeRoundedRectangle);	num_args++;
 */
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     left = XtCreateManagedWidget(left_name,
 		    commandWidgetClass,
 		    form,
@@ -557,6 +575,9 @@ make_menu(popup_name, popup_label, popup_translations,
     XtSetArg(args[num_args], XtNshapeStyle,
 				XmuShapeRoundedRectangle);	num_args++;
 */
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     right = XtCreateManagedWidget(right_name,
 		    commandWidgetClass,
 		    form,
@@ -578,6 +599,9 @@ make_menu(popup_name, popup_label, popup_translations,
 	    XtSetArg(args[num_args], XtNvertDistance, skip);	num_args++;
 	}
 
+#if defined(X11R6) && defined(XI18N)
+	    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 	*curr = XtCreateManagedWidget(widget_names[i],
 		    commandWidgetClass,
 		    form,

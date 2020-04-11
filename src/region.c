@@ -872,12 +872,17 @@ genericptr_t p2;
 	if (!Blind)
 	    make_blinded(1L, FALSE);
 	if (!Poison_resistance) {
-	    pline("Something is burning your lungs!");
+/*JP	    pline("Something is burning your lungs!");
 	    You("cough and spit blood!");
 	    losehp(rnd(dam) + 5, "gas cloud", KILLED_BY_AN);
+*/
+	    pline("何か妙なものを吸いこんだ！");
+	    You("咳きこみ，血を吐いた！");
+	    losehp(rnd(dam) + 5, "ガス雲で", KILLED_BY_AN);
 	    return FALSE;
 	} else {
-	    You("cough!");
+/*J	    You("cough!");*/
+	    You("咳きこんだ！");
 	    return FALSE;
 	}
     } else {			/* A monster is inside the cloud */
@@ -886,7 +891,8 @@ genericptr_t p2;
 	/* Non living and non breathing monsters are not concerned */
 	if (!nonliving(mtmp->data) && !breathless(mtmp->data)) {
 	    if (cansee(mtmp->mx, mtmp->my))
-		pline("%s coughs!", Monnam(mtmp));
+/*JP		pline("%s coughs!", Monnam(mtmp));*/
+		pline("%sは咳きこんだ！", Monnam(mtmp));
 	    if (resists_poison(mtmp))
 		return FALSE;
 	    mtmp->mhp -= rnd(dam) + 5;
@@ -894,7 +900,8 @@ genericptr_t p2;
 		int xx = mtmp->mx;
 		int yy = mtmp->my;
 
-		monkilled(mtmp, "gas", AD_PHYS);
+/*JP		monkilled(mtmp, "gas", AD_PHYS);*/
+		monkilled(mtmp, "ガス", AD_PHYS);
 		if (mtmp->mhp <= 0) {
 		    newsym(xx, yy);
 		    return TRUE;	/* The monster died, signal it! */

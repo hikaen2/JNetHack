@@ -25,7 +25,7 @@
 /* #define ULTRIX */	/* define for Ultrix v3.0 or higher (but not lower) */
 			/* Use BSD for < v3.0 */
 			/* "ULTRIX" not to be confused with "ultrix" */
-#define SYSV		/* define for System V, Solaris 2.x, newer versions */
+/* #define SYSV	*/	/* define for System V, Solaris 2.x, newer versions */
 			/* of Linux */
 /* #define HPUX */	/* Hewlett-Packard's Unix, version 6.5 or higher */
 			/* use SYSV for < v6.5 */
@@ -34,7 +34,7 @@
 /* define any of the following that are appropriate */
 #define SVR4		/* use in addition to SYSV for System V Release 4 */
 			/* including Solaris 2+ */
-#define NETWORK		/* if running on a networked system */
+#define NETWORK 	/* if running on a networked system */
 			/* e.g. Suns sharing a playground through NFS */
 /* #define SUNOS4 */	/* SunOS 4.x */
 /* #define LINUX */	/* Another Unix clone */
@@ -45,7 +45,7 @@
 /* #define AIX_31 */	/* In AIX 3.1 (IBM RS/6000) use BSD ioctl's to gain
 			 * job control (note that AIX is SYSV otherwise)
 			 * Also define this for AIX 3.2 */
-#define TERMINFO	/* uses terminfo rather than termcap */
+/* #define TERMINFO */	/* uses terminfo rather than termcap */
 			/* Should be defined for most SYSV, SVR4 (including
 			 * Solaris 2+), HPUX, and Linux systems.  In
 			 * particular, it should NOT be defined for the UNIXPC

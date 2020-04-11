@@ -53,6 +53,15 @@ static struct trobj Cave_man[] = {
 	{ LEATHER_ARMOR, 0, ARMOR_CLASS, 1, UNDEF_BLESS },
 	{ 0, 0, 0, 0, 0 }
 };
+#ifdef FIGHTER
+static struct trobj Fighter[] = {
+	{ SHORT_SWORD, 2, WEAPON_CLASS, 1, 1 },
+	{ SAILOR_BLOUSE, 1, ARMOR_CLASS, 1, UNDEF_BLESS },
+	{ WAN_POLYMORPH, UNDEF_SPE, WAND_CLASS, 1, UNDEF_BLESS },
+	{ UNDEF_TYP, UNDEF_SPE, SCROLL_CLASS, 3, UNDEF_BLESS },
+	{ 0, 0, 0, 0, 0 }
+};
+#endif /* FIGHTER */
 static struct trobj Healer[] = {
 	{ SCALPEL, 0, WEAPON_CLASS, 1, UNDEF_BLESS },
 	{ LEATHER_GLOVES, 1, ARMOR_CLASS, 1, UNDEF_BLESS },
@@ -294,6 +303,21 @@ static struct def_skill Skill_C[] = {
     { P_BARE_HANDED_COMBAT, P_GRAND_MASTER },
     { P_NONE, 0 }
 };
+
+#ifdef FIGHTER
+static struct def_skill Skill_F[] = {
+    { P_DAGGER, P_EXPERT },		{ P_KNIFE, P_SKILLED },
+    { P_SHORT_SWORD, P_EXPERT },	{ P_BROAD_SWORD, P_EXPERT },
+    { P_LONG_SWORD, P_SKILLED },	{ P_TWO_HANDED_SWORD, P_BASIC },
+    { P_SCIMITAR, P_SKILLED },		{ P_SABER, P_SKILLED },
+    { P_SPEAR, P_EXPERT },		{ P_JAVELIN, P_BASIC },
+    { P_BOW, P_EXPERT },		{ P_SLING, P_BASIC },
+    { P_CROSSBOW, P_BASIC },		{ P_SHURIKEN, P_BASIC },
+    { P_TWO_WEAPON_COMBAT, P_EXPERT },	{ P_MARTIAL_ARTS, 3 },
+    { P_ENCHANTMENT_SPELL, P_SKILLED },
+    { P_NONE, 0 }
+};
+#endif /* FIGHTER */
 
 static struct def_skill Skill_H[] = {
     { P_DAGGER, P_SKILLED },		{ P_KNIFE, P_EXPERT },
@@ -622,6 +646,13 @@ u_init()
 		Cave_man[C_AMMO].trquan = rn1(11, 10);	/* 10..20 */
 		ini_inv(Cave_man);
 		skill_init(Skill_C);
+		break;
+	case PM_FIGHTER:
+		u.uen = u.uenmax += rn1(4, 1);
+		ini_inv(Fighter);
+		skill_init(Skill_F);
+		knows_class(WEAPON_CLASS);
+		knows_class(ARMOR_CLASS);
 		break;
 	case PM_HEALER:
 		u.ugold = u.ugold0 = rn1(1000, 1001);

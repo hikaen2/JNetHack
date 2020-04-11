@@ -54,6 +54,9 @@ struct flag {
 	boolean  move;
 	boolean  mv;
 	boolean  nap;		/* `timed_delay' option for display effects */
+#ifdef NEWBIE
+	boolean	 newbie;	/* newbie mode */
+#endif
 	boolean  nopick;	/* do not pickup objects (as when running) */
 	boolean  null;		/* OK to send nulls to the terminal */
 #ifdef MAC
@@ -63,6 +66,9 @@ struct flag {
 	boolean  pickup;	/* whether you pickup or move and look */
 
 	boolean  pushweapon;	/* When wielding, push old weapon into second slot */
+#ifdef RADAR
+	boolean	radar;
+#endif
 	boolean  rest_on_space; /* space means rest */
 	boolean  safe_dog;	/* give complete protection to the dog */
 #ifdef EXP_ON_BOTL
@@ -99,6 +105,9 @@ struct flag {
 	int numcols;
 	unsigned short amii_dripens[ 20 ]; /* DrawInfo Pens currently there are 13 in v39 */
 	AMII_COLOR_TYPE amii_curmap[ AMII_MAXCOLORS ]; /* colormap */
+#endif
+#ifdef NH_EXTENSION_REPORT
+	boolean	reportscore;
 #endif
 
 	/* KMH, role patch -- Variables used during startup.

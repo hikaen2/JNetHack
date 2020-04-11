@@ -218,7 +218,10 @@ getlock()
 		(void) close(fd);
 
 		if(iflags.window_inited) {
+		    c = yn("あなたの名前で不正終了したゲームが残っています．破棄しますか？");
+/*JP
 		    c = yn("There is already a game in progress under your name.  Destroy old game?");
+*/
 		} else {
 		    (void) printf("\nThere is already a game in progress under your name.");
 		    (void) printf("  Destroy old game? [yn] ");

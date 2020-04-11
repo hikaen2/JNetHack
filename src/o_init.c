@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "lev.h"	/* save & restore info */
 
@@ -377,7 +384,8 @@ dodiscovered()				/* free after Robert Viduya */
 	char buf[BUFSZ];
 
     tmpwin = create_nhwindow(NHW_MENU);
-    putstr(tmpwin, 0, "Discoveries");
+/*JP    putstr(tmpwin, 0, "Discoveries");*/
+    putstr(tmpwin, 0, "発見物一覧");
     putstr(tmpwin, 0, "");
 
     /* gather "unique objects" into a pseudo-class; note that they'll
@@ -385,8 +393,9 @@ dodiscovered()				/* free after Robert Viduya */
     for (i = dis = 0; i < SIZE(uniq_objs); i++)
 	if (objects[uniq_objs[i]].oc_name_known) {
 	    if (!dis++)
-		putstr(tmpwin, ATR_INVERSE, "Unique Items");
-		Sprintf(buf, "  %s", OBJ_NAME(objects[uniq_objs[i]]));
+/*JP		putstr(tmpwin, ATR_INVERSE, "Unique Items");*/
+		putstr(tmpwin, ATR_INVERSE, "特殊アイテム");
+		Sprintf(buf, "  %s", jtrns_obj(' ', OBJ_NAME(objects[uniq_objs[i]])));
 	    putstr(tmpwin, 0, buf);
 	    ++ct;
 	}
@@ -413,13 +422,15 @@ dodiscovered()				/* free after Robert Viduya */
 		    prev_class = oclass;
 		}
 		Sprintf(buf, "%s %s",(objects[dis].oc_pre_discovered ? "*" : " "),
-				obj_typename(dis));
+/*JP				obj_typename(dis));*/
+				obj_jtypename(dis));
 		putstr(tmpwin, 0, buf);
 	    }
 	}
     }
     if (ct == 0) {
-	You("haven't discovered anything yet...");
+/*JP	You("haven't discovered anything yet...");*/
+	You("まだ何も発見していない．．．");
     } else
 	display_nhwindow(tmpwin, TRUE);
     destroy_nhwindow(tmpwin);

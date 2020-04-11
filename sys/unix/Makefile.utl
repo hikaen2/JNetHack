@@ -15,7 +15,7 @@
 
 # if you are using gcc as your compiler,
 #	uncomment the CC definition below if it's not in your environment
-# CC = gcc
+CC = gcc
 #
 #	For Bull DPX/2 systems at B.O.S. 2.0 or higher use the following:
 #
@@ -90,11 +90,11 @@ LFLAGS =
 
 # yacc/lex programs to use to generate *_comp.h, *_lex.c, and *_yacc.c.
 # if, instead of yacc/lex you have bison/flex, comment/uncomment the following.
-YACC     = yacc
-LEX      = lex
-# YACC     = bison -y
+# YACC     = yacc
+# LEX      = lex
+YACC     = bison -y
 # YACC     = byacc
-# LEX      = flex
+LEX      = flex -8
  
 # these are the names of the output files from YACC/LEX. Under MS-DOS
 # and similar systems, they may differ
@@ -182,6 +182,8 @@ makedefs.o: makedefs.c $(CONFIG_H) ../include/permonst.h \
 	./makedefs -z
 ../src/vis_tab.c: makedefs
 	./makedefs -z
+../include/jdata.h: makedefs ../dat/jtrnsmon.dat ../dat/jtrnsobj.dat
+	./makedefs -j
 
 lintdefs:
 	@lint -axbh -I../include -DLINT $(MAKESRC) $(CMONOBJ) | sed '/_flsbuf/d'

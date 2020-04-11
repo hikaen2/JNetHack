@@ -4,6 +4,12 @@
 
 /* main.c - Unix NetHack */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994-1999
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "dlb.h"
 
@@ -97,7 +103,16 @@ char *argv[];
 #ifdef CHDIR
 		chdirx(dir,0);
 #endif
+/*JP*/
+#ifdef JNETHACK
+		setkcode('I');
+		initoptions();
+		init_jtrns();
 		prscore(argc, argv);
+		jputchar('\0'); /* reset */
+#else
+		prscore(argc, argv);
+#endif
 		exit(EXIT_SUCCESS);
 	    }
 	}
@@ -107,6 +122,7 @@ char *argv[];
 	 * so as to avoid restoring outdated savefiles.
 	 */
 	gethdate(hname);
+
 
 	/*
 	 * We cannot do chdir earlier, otherwise gethdate will fail.
@@ -120,8 +136,15 @@ char *argv[];
 #ifdef _M_UNIX
 	check_sco_console();
 #endif
+	/* Line like "OPTIONS=name:foo-@" may exist in config file.
+	 * In this case, need to select random class,
+	 * so must call setrandom() before initoptions().
+	 */
+	setrandom();
 	initoptions();
+
 	init_nhwindows(&argc,argv);
+
 	exact_username = whoami();
 #ifdef _M_UNIX
 	init_sco_cons();
@@ -219,7 +242,8 @@ char *argv[];
 		    iflags.news = FALSE; /* in case dorecover() fails */
 		}
 #endif
-		pline("Restoring save file...");
+/*JP		pline("Restoring save file...");*/
+		pline("セーブファイルを復元中．．．");
 		mark_synch();	/* flush output */
 		if(!dorecover(fd))
 			goto not_recovered;
@@ -249,6 +273,10 @@ not_recovered:
 		pickup(1);
 	}
 
+#ifdef	GTK_GRAPHICS
+	if(!strcmp(windowprocs.name, "gtk"))
+	    GTK_init_nhwindows2();
+#endif
 	moveloop();
 	exit(EXIT_SUCCESS);
 	/*NOTREACHED*/
@@ -294,6 +322,11 @@ char *argv[];
 			      }
 			  }
 			  if (pw && !strcmp(pw->pw_name,WIZARD)) {
+			      wizard = TRUE;
+			      break;
+			  }
+/*JP*/
+			  if(pw && !strcmp(pw->pw_name, "issei")){
 			      wizard = TRUE;
 			      break;
 			  }
@@ -440,6 +473,26 @@ port_help()
 }
 #endif
 
+/*JP*/
+#ifdef JNETHACK
+static void
+wd_message()
+{
+#ifdef WIZARD
+	if (wiz_error_flag) {
+		pline("「%s」のみがデバッグ(wizard)モードを使用できる．",
+# ifndef KR1ED
+			WIZARD);
+# else
+			WIZARD_NAME);
+# endif
+		pline("かわりに発見モードへ移行する．");
+	} else
+#endif
+	if (discover)
+		You("スコアの載らない発見モードで起動した．");
+}
+#else
 static void
 wd_message()
 {
@@ -457,4 +510,5 @@ wd_message()
 	if (discover)
 		You("are in non-scoring discovery mode.");
 }
+#endif
 /*unixmain.c*/

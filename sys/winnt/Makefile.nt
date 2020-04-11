@@ -51,6 +51,8 @@ NTSYS = ..\sys\winnt # NT Win32 specific files
 TTY   = ..\win\tty   # window port files (tty)
 WIN32 = ..\win\win32 # window port files (Win32)
 WSHR  = ..\win\share # Tile support files 
+JP    = ..\japanese  # JP
+EXT   = ..\extension # Extension
 
 #
 #  Object directory.
@@ -282,6 +284,20 @@ default : $(GAMEFILE)
 # referenced later on in the Makefile.
 #
 
+#
+# Rules for files in japanese
+#
+
+{$(JP)}.c{$(OBJ)}.o:
+	@$(cc) $(CFLAGSG) $(PCHUSE) -Fo$@  $<
+
+#
+# Rules for files in extension
+#
+
+{$(EXT)}.c{$(OBJ)}.o:
+	@$(cc) $(CFLAGSG) $(PCHUSE) -Fo$@  $<
+
 
 DEFFILE = $(NTSYS)\$(GAME).def
 
@@ -359,6 +375,8 @@ VOBJ23 = $(O)uhitm.o    $(O)vault.o    $(O)vision.o   $(O)vis_tab.o
 VOBJ24 = $(O)weapon.o   $(O)were.o     $(O)wield.o    $(O)windows.o
 VOBJ25 = $(O)wizard.o   $(O)worm.o     $(O)worn.o     $(O)dig.o
 VOBJ26 = $(O)write.o    $(O)zap.o      $(O)light.o    $(O)teleport.o
+VOBJ27 = $(O)jlib.o     $(O)jtrns.o    $(O)jconj.o
+VOBJ28 = $(O)extension.o $(O)nhbuf.o   $(O)nhinet.o
 
 DLBOBJ = $(O)dlb.o
 
@@ -372,7 +390,7 @@ OBJS   = $(VOBJ01) $(VOBJ02) $(VOBJ03) $(VOBJ04) $(VOBJ05) \
          $(VOBJ11) $(VOBJ12) $(VOBJ13) $(VOBJ14) $(VOBJ15) \
          $(VOBJ16) $(VOBJ17) $(VOBJ18) $(VOBJ19) $(VOBJ20) \
          $(VOBJ21) $(VOBJ22) $(VOBJ23) $(VOBJ24) $(VOBJ25) \
-         $(VOBJ26) $(DLBOBJ)
+         $(VOBJ26) $(VOBJ27) $(VOBJ28) $(DLBOBJ)
 
 TILOBJ = $(TILEGAME)
 
@@ -467,8 +485,8 @@ all :	install
 install: envchk $(GAME) install.tag
 	 @echo Done.
 
-install.tag: 	$(DAT)\data	$(DAT)\rumors	 $(DAT)\dungeon \
-	 	$(DAT)\oracles	$(DAT)\quest.dat $(DAT)\sp_lev.tag $(DLB)
+install.tag: 	$(DAT)\data	$(DAT)\jrumors	 $(DAT)\dungeon \
+	 	$(DAT)\joracles	$(DAT)\quest.dat $(DAT)\sp_lev.tag $(DLB)
 ! IF ("$(USE_DLB)"=="Y")
 	copy nhdat                $(GAMEDIR)
 	copy $(DAT)\license       $(GAMEDIR)
@@ -478,7 +496,7 @@ install.tag: 	$(DAT)\data	$(DAT)\rumors	 $(DAT)\dungeon \
 	copy $(DAT)\*.lev         $(GAMEDIR)
 	if exist $(GAMEDIR)\makefile del $(GAMEDIR)\makefile
 ! ENDIF
-	if exist $(DOC)\guidebook.txt copy $(DOC)\guidebook.txt $(GAMEDIR)\Guidebook.txt
+	if exist $(DOC)\jguidebook.txt copy $(DOC)\jguidebook.txt $(GAMEDIR)\jGuidebook.txt
 	if exist $(DOC)\nethack.txt copy $(DOC)\nethack.txt $(GAMEDIR)\NetHack.txt
 	if exist $(DOC)\recover.txt copy $(DOC)\recover.txt $(GAMEDIR)\recover.txt
 	@if exist $(SRC)\$(GAME).PDB copy $(SRC)\$(GAME).pdb $(GAMEDIR)\$(GAME).pdb
@@ -533,6 +551,7 @@ $(DAT)\sp_lev.tag: $(U)utility.tag $(DAT)\bigroom.des  $(DAT)\castle.des \
 	$(U)lev_comp tourist.des
 	$(U)lev_comp valkyrie.des
 	$(U)lev_comp wizard.des
+	$(U)lev_comp fighter.des
 	cd $(SRC)
 	echo sp_levs done > $(DAT)\sp_lev.tag
 
@@ -625,6 +644,9 @@ $(INCL)\vis_tab.h: $(U)makedefs.exe
 
 $(SRC)\vis_tab.c: $(U)makedefs.exe
 	$(U)makedefs -z
+
+$(INCL)\jdata.h: $(U)makedefs.exe $(DAT)\jtrnsobj.dat $(DAT)\jtrnsmon.dat
+	$(U)makedefs -j
 
 #
 # Level Compiler Stuff
@@ -847,24 +869,25 @@ $(O)tile2bmp.o:  $(WIN32)\tile2bmp.c $(HACK_H) $(TILE_H) $(WIN32API_H)
 #
 # DLB stuff
 #
-nhdat:	$(U)dlb_main.exe $(DAT)\data $(DAT)\oracles $(DAT)\options \
-	$(DAT)\quest.dat $(DAT)\rumors $(DAT)\help $(DAT)\hh $(DAT)\cmdhelp \
-	$(DAT)\history $(DAT)\opthelp $(DAT)\wizhelp $(DAT)\dungeon \
-	$(DAT)\license $(DAT)\sp_lev.tag
+nhdat:	$(U)dlb_main.exe $(DAT)\data $(DAT)\joracles $(DAT)\options \
+	$(DAT)\quest.dat $(DAT)\jrumors $(DAT)\jhelp $(DAT)\jhh $(DAT)\jcmdhelp \
+	$(DAT)\jhistory $(DAT)\jopthelp $(DAT)\jwizhelp $(DAT)\dungeon \
+	$(DAT)\license $(DAT)\jjj $(DAT)\sp_lev.tag
 	cd $(DAT)
 	echo data >dlb.lst
-	echo oracles >>dlb.lst
+	echo joracles >>dlb.lst
 	echo options >>dlb.lst
 	echo quest.dat >>dlb.lst
-	echo rumors >>dlb.lst
-	echo help >>dlb.lst
-	echo hh >>dlb.lst
-	echo cmdhelp >>dlb.lst
-	echo history >>dlb.lst
-	echo opthelp >>dlb.lst
-	echo wizhelp >>dlb.lst
+	echo jrumors >>dlb.lst
+	echo jhelp >>dlb.lst
+	echo jhh >>dlb.lst
+	echo jcmdhelp >>dlb.lst
+	echo jhistory >>dlb.lst
+	echo jopthelp >>dlb.lst
+	echo jwizhelp >>dlb.lst
 	echo dungeon >>dlb.lst
 	echo license >>dlb.lst
+	echo jjj >>dlb.lst
 	for %%N in (*.lev) do echo %%N >>dlb.lst
 	$(U)dlb_main cIf dlb.lst $(SRC)\nhdat
 	cd $(SRC)
@@ -921,9 +944,9 @@ spotless: clean
 	if exist $(DAT)\mine*.lev	del $(DAT)\mine*.lev
 	if exist $(DAT)\options		del $(DAT)\options
 	if exist $(DAT)\oracle.lev	del $(DAT)\oracle.lev
-	if exist $(DAT)\oracles		del $(DAT)\oracles
+	if exist $(DAT)\joracles	del $(DAT)\joracles
 	if exist $(DAT)\orcus.lev	del $(DAT)\orcus.lev
-	if exist $(DAT)\rumors		del $(DAT)\rumors
+	if exist $(DAT)\jrumors		del $(DAT)\jrumors
 	if exist $(DAT)\quest.dat	del $(DAT)\quest.dat
 	if exist $(DAT)\sanctum.lev	del $(DAT)\sanctum.lev
 	if exist $(DAT)\soko?-?.lev	del $(DAT)\soko?-?.lev
@@ -935,6 +958,7 @@ spotless: clean
 	if exist $(SRC)\monstr.c   del $(SRC)\monstr.c
 	if exist $(SRC)\vis_tab.c  del $(SRC)\vis_tab.c
 	if exist $(U)recover.exe     del $(U)recover.exe
+	if exist $(INCL)\jdata.h        del $(INCL)\jdata.h
 
 clean:
 	if exist $(O)*.o del $(O)*.o
@@ -977,10 +1001,16 @@ $(DAT)\data: $(U)utility.tag    $(DATABASE)
 $(DAT)\rumors: $(U)utility.tag    $(DAT)\rumors.tru   $(DAT)\rumors.fal
 	$(U)makedefs -r
 
+$(DAT)\jrumors: $(U)utility.tag    $(DAT)\jrumors.tru   $(DAT)\jrumors.fal
+	$(U)makedefs -r
+
 $(DAT)\quest.dat: $(U)utility.tag  $(DAT)\quest.txt
 	$(U)makedefs -q
 
 $(DAT)\oracles: $(U)utility.tag    $(DAT)\oracles.txt
+	$(U)makedefs -h
+
+$(DAT)\joracles: $(U)utility.tag    $(DAT)\joracles.txt
 	$(U)makedefs -h
 
 $(DAT)\dungeon: $(U)utility.tag  $(DAT)\dungeon.def
@@ -1195,5 +1225,31 @@ $(O)worm.o:     $(PCH) $(SRC)\worm.c     $(HACK_H) $(LEV_H)
 $(O)worn.o:     $(PCH) $(SRC)\worn.c     $(HACK_H)
 $(O)write.o:    $(PCH) $(SRC)\write.c    $(HACK_H)
 $(O)zap.o:      $(PCH) $(SRC)\zap.c      $(HACK_H)
+
+#
+# from japanese
+#
+
+$(O)jlib.o:    $(PCH) $(JP)\jlib.c $(HACK_H)
+	@$(cc) $(CFLAGSG) $(PCHUSE) $(NTSUB) -Fo$@ $(JP)\jlib.c
+
+$(O)jconj.o:   $(PCH) $(JP)\jconj.c $(HACK_H)
+	@$(cc) $(CFLAGSG) $(PCHUSE) $(NTSUB) -Fo$@ $(JP)\jconj.c
+
+$(O)jtrns.o:   $(PCH) $(JP)\jtrns.c $(HACK_H) $(INCL)\jdata.h
+	@$(cc) $(CFLAGSG) $(PCHUSE) $(NTSUB) -Fo$@ $(JP)\jtrns.c
+
+#
+# from extension
+#
+
+$(O)nhinet.o:  $(PCH) $(EXT)\nhinet.c $(HACK_H)
+	@$(cc) $(CFLAGSG) $(PCHUSE) $(NTSUB) -Fo$@ $(EXT)\nhinet.c
+
+$(O)nhbuf.o:  $(PCH) $(EXT)\nhbuf.c $(HACK_H)
+	@$(cc) $(CFLAGSG) $(PCHUSE) $(NTSUB) -Fo$@ $(EXT)\nhbuf.c
+
+$(O)extension.o:  $(PCH) $(EXT)\extension.c $(HACK_H)
+	@$(cc) $(CFLAGSG) $(PCHUSE) $(NTSUB) -Fo$@ $(EXT)\extension.c
 
 # end of file

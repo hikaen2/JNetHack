@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 STATIC_DCL int NDECL(moverock);
@@ -71,7 +78,8 @@ moverock()
 	nomul(0);
 	if (Levitation || Is_airlevel(&u.uz)) {
 	    if (Blind) feel_location(sx, sy);
-	    You("don't have enough leverage to push %s.", the(xname(otmp)));
+/*JP	    You("don't have enough leverage to push %s.", the(xname(otmp)));*/
+	    You("体が浮いているので%sを押せない．", the(xname(otmp)));
 	    /* Give them a chance to climb over it? */
 	    return -1;
 	}
@@ -81,7 +89,8 @@ moverock()
 #endif
 				    ) {
 	    if (Blind) feel_location(sx, sy);
-	    pline("You're too small to push that %s.", xname(otmp));
+/*JP	    pline("You're too small to push that %s.", xname(otmp));*/
+	    You("小さすぎて%sを押せない．",xname(otmp));
 	    goto cannot_push;
 	}
 	if (isok(rx,ry) && !IS_ROCK(levl[rx][ry].typ) &&
@@ -97,31 +106,45 @@ moverock()
 		/* KMH -- Sokoban doesn't let you push boulders diagonally */
 	    if (In_sokoban(&u.uz) && u.dx && u.dy) {
 	    	if (Blind) feel_location(sx,sy);
-	    	pline("%s won't roll diagonally on this %s.",
+/*JP	    	pline("%s won't roll diagonally on this %s.",
 	        		The(xname(otmp)), surface(sx, sy));
+*/
+	    	pline("%sの上では%sは斜めに押せない．",
+		      surface(sx, sy), The(xname(otmp))); 
 	    	goto cannot_push;
 	    }
 
-	    if (revive_nasty(rx, ry, "You sense movement on the other side."))
+/*JP	    if (revive_nasty(rx, ry, "You sense movement on the other side."))
 		return (-1);
+*/
+	    {
+		char jbuf[BUFSIZ];
+		Sprintf(jbuf,"%sの反対側に動きを感じた．",xname(otmp));
+		if (revive_nasty(rx, ry, jbuf))
+		    return (-1);
+	    }
 
 	    if (mtmp && !noncorporeal(mtmp->data) &&
 		    (!mtmp->mtrapped ||
 			 !(ttmp && ((ttmp->ttyp == PIT) ||
 				    (ttmp->ttyp == SPIKED_PIT))))) {
 		if (canspotmon(mtmp))
-		    pline("There's %s on the other side.", mon_nam(mtmp));
+/*JP		    pline("There's %s on the other side.", mon_nam(mtmp));*/
+		    pline("反対側に%sがいる．", mon_nam(mtmp));
 		else {
 		    if (Blind) feel_location(sx, sy);
-		    You_hear("a monster behind %s.", the(xname(otmp)));
+/*JP		    You_hear("a monster behind %s.", the(xname(otmp)));*/
+		    pline("%sの背後に怪物の気配がする．", the(xname(otmp)));
 		    map_invisible(rx, ry);
 		}
 		if (flags.verbose)
-		    pline("Perhaps that's why %s cannot move it.",
+/*JP		    pline("Perhaps that's why %s cannot move it.",*/
+		    pline("たぶんこれが，%sが動かせない理由だ．",
 #ifdef STEED
 				u.usteed ? mon_nam(u.usteed) :
 #endif
-				"you");
+/*JP				"you");*/
+				"");
 		goto cannot_push;
 	    }
 
@@ -129,9 +152,12 @@ moverock()
 		switch(ttmp->ttyp) {
 		case LANDMINE:
 		    if (rn2(10)) {
-			pline("KAABLAMM!!!  %s triggers %s land mine.",
+/*JP			pline("KAABLAMM!!!  %s triggers %s land mine.",
 				The(xname(otmp)),
-				ttmp->madeby_u ? "your" : "a");
+				ttmp->madeby_u ? "your" : "a");*/
+			pline("ちゅどーん！！%sで%s地雷の起爆スイッチが入った．",
+				The(xname(otmp)),
+				ttmp->madeby_u ? "あなたの仕掛けた" : "");
 			obj_extract_self(otmp);
 			place_object(otmp, rx, ry);
 			deltrap(ttmp);
@@ -150,18 +176,28 @@ moverock()
 		       the pit will temporarily be seen even
 		       if this is one among multiple boulders */
 		    if (!Blind) viz_array[ry][rx] |= IN_SIGHT;
+/*JP
 		    if (!flooreffects(otmp, rx, ry, "fall")) {
+*/
+		    if (!flooreffects(otmp, rx, ry, "落ちた")) {
 			place_object(otmp, rx, ry);
 		    }
 		    if (mtmp && !Blind) newsym(rx, ry);
 		    continue;
 		case HOLE:
 		case TRAPDOOR:
+/*JP
 		    pline("%s %s and plugs a %s in the %s!",
 			  The(xname(otmp)),
 			  (ttmp->ttyp == TRAPDOOR) ? "triggers" : "falls into",
 			  (ttmp->ttyp == TRAPDOOR) ? "trap door" : "hole",
 			  surface(rx, ry));
+*/
+		    pline("%sは%s%sの%sを埋めた！",
+			  The(xname(otmp)),
+			  "落ちて",
+			  surface(rx, ry),
+			  (ttmp->ttyp == TRAPDOOR) ? "落し扉" : "穴");
 		    deltrap(ttmp);
 		    delobj(otmp);
 		    bury_objs(rx, ry);
@@ -171,11 +207,15 @@ moverock()
 		case TELEP_TRAP:
 #ifdef STEED
 		    if (u.usteed)
-			pline("%s pushes %s and suddenly it disappears!",
+/*JP			pline("%s pushes %s and suddenly it disappears!",
+				Monnam(u.usteed), the(xname(otmp)));
+*/
+			pline("%sが%sを押すと，突然それは消滅した！",
 				Monnam(u.usteed), the(xname(otmp)));
 		    else
 #endif
-		    You("push %s and suddenly it disappears!",
+/*JP		    You("push %s and suddenly it disappears!",*/
+		    You("%sを押すと，突然それは消滅した！",
 			the(xname(otmp)));
 		    if (ttmp->ttyp == TELEP_TRAP)
 			rloco(otmp);
@@ -221,13 +261,17 @@ moverock()
 		if (!u.usteed) {
 #endif
 		  if (moves > lastmovetime+2 || moves < lastmovetime)
-		    pline("With %s effort you move %s.",
+/*JP		    pline("With %s effort you move %s.",
 			  throws_rocks(youmonst.data) ? "little" : "great",
+			  the(xname(otmp)));*/
+		    pline("%s力をこめて%sを押した．",
+			  throws_rocks(youmonst.data) ? "ちょいと" : "",
 			  the(xname(otmp)));
 		  exercise(A_STR, TRUE);
 #ifdef STEED
 		} else 
-		    pline("%s moves %s.", Monnam(u.usteed), the(xname(otmp)));
+/*JP		    pline("%s moves %s.", Monnam(u.usteed), the(xname(otmp)));*/
+		    pline("%sは%sを動かした．", Monnam(u.usteed), the(xname(otmp)));
 #endif
 		lastmovetime = moves;
 	    }
@@ -246,23 +290,35 @@ moverock()
 	nopushmsg:
 #ifdef STEED
 	  if (u.usteed)
-	    pline("%s tries to move %s, but cannot.",
+/*JP	    pline("%s tries to move %s, but cannot.",
+		  	Monnam(u.usteed), the(xname(otmp)));
+*/
+	    pline("%sは%sを動かそうとしたが出来なかった．",
 		  	Monnam(u.usteed), the(xname(otmp)));
 	  else
 #endif
-	    You("try to move %s, but in vain.", the(xname(otmp)));
+/*JP	    You("try to move %s, but in vain.", the(xname(otmp)));*/
+	    You("%sを動かそうとしたが，だめだった．", the(xname(otmp)));
 	    if (Blind) feel_location(sx, sy);
 	cannot_push:
 	    if (throws_rocks(youmonst.data)) {
 #ifdef STEED
 		if (u.usteed && P_SKILL(P_RIDING) < P_BASIC)
-			You("aren't skilled enough to %s %s from %s.",
+/*JP			You("aren't skilled enough to %s %s from %s.",
 				flags.pickup ? "pick up" : "push aside",
 				the(xname(otmp)), mon_nam(u.usteed));
+*/
+			You("%sに%sを%sさせるほど技量がない．",
+				mon_nam(u.usteed),
+				the(xname(otmp)), 
+				flags.pickup ? "拾わ" : "押");
 		else
 #endif
-		  pline("However, you can easily %s.",
+/*JP		  pline("However, you can easily %s.",
 			flags.pickup ? "pick it up" : "push it aside");
+*/
+	          pline("しかし，あなたは簡単にそれを%s．",
+			flags.pickup ? "拾えた" : "別の方に押せた");
 		break;
 	    }
 
@@ -274,7 +330,8 @@ moverock()
 		 (!u.dx || !u.dy || (IS_ROCK(levl[u.ux][sy].typ)
 				     && IS_ROCK(levl[sx][u.uy].typ))))
 		|| verysmall(youmonst.data))) {
-		pline("However, you can squeeze yourself into a small opening.");
+/*JP		pline("However, you can squeeze yourself into a small opening.");*/
+		pline("しかし，あなたは小さい隙間にこじ入った．");
 		break;
 	    } else
 		return (-1);
@@ -301,7 +358,8 @@ still_chewing(x,y)
 	(void) memset((genericptr_t)&digging, 0, sizeof digging);
 
     if (!boulder && IS_ROCK(lev->typ) && !may_dig(x,y)) {
-	You("hurt your teeth on the hard stone.");
+/*JP	You("hurt your teeth on the hard stone.");*/
+        You("固い岩で歯を痛めた．");
 	nomul(0);
 	return 1;
     } else if (digging.pos.x != x || digging.pos.y != y ||
@@ -313,22 +371,29 @@ still_chewing(x,y)
 	assign_level(&digging.level, &u.uz);
 	/* solid rock takes more work & time to dig through */
 	digging.effort = (IS_ROCK(lev->typ) ? 30 : 60) + u.udaminc;
-	You("start chewing %s %s.",
+/*JP	You("start chewing %s %s.",
 	    boulder ? "on a" : "a hole in the",
-	    boulder ? "boulder" : IS_ROCK(lev->typ) ? "rock" : "door");
+	    boulder ? "boulder" : IS_ROCK(lev->typ) ? "rock" : "door");*/
+	You("%s%s．",
+	    boulder ? "岩" : IS_ROCK(lev->typ) ? "石" : "扉",
+	    boulder ? "を噛みはじめた" : "に穴をあけはじめた");
 	return 1;
     } else if ((digging.effort += (30 + u.udaminc)) <= 100)  {
 	if (flags.verbose)
-	    You("%s chewing on the %s.",
+/*JP	    You("%s chewing on the %s.",
 		digging.chew ? "continue" : "begin",
-		boulder ? "boulder" : IS_ROCK(lev->typ) ? "rock" : "door");
+		boulder ? "boulder" : IS_ROCK(lev->typ) ? "rock" : "door");*/
+	    You("%sを噛み%s．",
+		boulder ? "岩" : IS_ROCK(lev->typ) ? "石" : "扉",
+		digging.chew ? "続けた" : "はじめた");
 	digging.chew = TRUE;
 	return 1;
     }
 
     if (boulder) {
 	delobj(boulder);		/* boulder goes bye-bye */
-	You("eat the boulder.");	/* yum */
+/*JP	You("eat the boulder.");*/	/* yum */
+	You("岩を食べた．");	/* yum */
 
 	/*
 	 *  The location could still block because of
@@ -347,9 +412,11 @@ still_chewing(x,y)
     } else if (IS_WALL(lev->typ)) {
 	if (*in_rooms(x, y, SHOPBASE)) {
 	    add_damage(x, y, 10L * ACURRSTR);
-	    dmgtxt = "damage";
+/*JP	    dmgtxt = "damage";*/
+	    dmgtxt = "傷つける";
 	}
-	digtxt = "chew a hole in the wall.";
+/*JP	digtxt = "chew a hole in the wall.";*/
+	digtxt = "壁に穴を開けた．";
 	if (level.flags.is_maze_lev) {
 	    lev->typ = ROOM;
 	} else if (level.flags.is_cavernous_lev) {
@@ -361,9 +428,11 @@ still_chewing(x,y)
     } else if (lev->typ == SDOOR) {
 	if (lev->doormask & D_TRAPPED) {
 	    lev->doormask = D_NODOOR;
-	    b_trapped("secret door", 0);
+/*JP	    b_trapped("secret door", 0);*/
+	    b_trapped("秘密の扉", 0);
 	} else {
-	    digtxt = "chew through the secret door.";
+/*JP	    digtxt = "chew through the secret door.";*/
+	    digtxt = "秘密の扉を噛み砕いた．";
 	    lev->doormask = D_BROKEN;
 	}
 	lev->typ = DOOR;
@@ -371,18 +440,22 @@ still_chewing(x,y)
     } else if (IS_DOOR(lev->typ)) {
 	if (*in_rooms(x, y, SHOPBASE)) {
 	    add_damage(x, y, 400L);
-	    dmgtxt = "break";
+/*JP	    dmgtxt = "break";*/
+	    dmgtxt = "壊す";
 	}
 	if (lev->doormask & D_TRAPPED) {
 	    lev->doormask = D_NODOOR;
-	    b_trapped("door", 0);
+/*JP	    b_trapped("door", 0);*/
+	    b_trapped("扉", 0);
 	} else {
-	    digtxt = "chew through the door.";
+/*JP	    digtxt = "chew through the door.";*/
+	    digtxt = "扉を砕いた．";
 	    lev->doormask = D_BROKEN;
 	}
 
     } else { /* STONE or SCORR */
-	digtxt = "chew a passage through the rock.";
+/*JP	digtxt = "chew a passage through the rock.";*/
+	digtxt = "岩を噛み砕いて通り抜けた．";
 	lev->typ = CORR;
     }
 
@@ -410,7 +483,8 @@ register xchar ox, oy;
 }
 
 #ifdef SINKS
-static NEARDATA const char fell_on_sink[] = "fell onto a sink";
+/*JPstatic NEARDATA const char fell_on_sink[] = "fell onto a sink";*/
+static NEARDATA const char fell_on_sink[] = "流し台に落ちて";
 
 STATIC_OVL void
 dosinkfall()
@@ -418,15 +492,18 @@ dosinkfall()
 	register struct obj *obj;
 
 	if (is_floater(youmonst.data) || (HLevitation & FROMOUTSIDE)) {
-		You("wobble unsteadily for a moment.");
+/*JP		You("wobble unsteadily for a moment.");*/
+		You("ちょっとふらついた．");
 	} else {
-		You("crash to the floor!");
+/*JP		You("crash to the floor!");*/
+		You("床に叩きつけられた！");
 		losehp((rn1(10, 20 - (int)ACURR(A_CON))),
 			fell_on_sink, NO_KILLER_PREFIX);
 		exercise(A_DEX, FALSE);
 		for(obj = level.objects[u.ux][u.uy]; obj; obj = obj->nexthere)
 		    if(obj->oclass == WEAPON_CLASS) {
-			You("fell on %s.",doname(obj));
+/*JP			You("fell on %s.",doname(obj));*/
+			You("%sの上に落ちた．",doname(obj));
 			losehp(rnd(3), fell_on_sink, NO_KILLER_PREFIX);
 			exercise(A_CON, FALSE);
 		    }
@@ -516,10 +593,12 @@ domove()
 			: (u.uhp < 10 && u.uhp != u.uhpmax))))
 	   && !Is_airlevel(&u.uz)) {
 	    if(wtcap < OVERLOADED) {
-		You("don't have enough stamina to move.");
+/*JP		You("don't have enough stamina to move.");*/
+		You("へとへとで動けない．");
 		exercise(A_CON, FALSE);
 	    } else
-		You("collapse under your load.");
+/*JP		You("collapse under your load.");*/
+		pline("物を持ちすぎて倒れた．");
 	    nomul(0);
 	    return;
 	}
@@ -533,13 +612,16 @@ domove()
 			!Levitation && !Flying) {
 		    switch(rn2(3)) {
 		    case 0:
-			You("tumble in place.");
+/*JP			You("tumble in place.");*/
+			You("その場で倒れた．");
 			exercise(A_DEX, FALSE);
 			break;
 		    case 1:
-			You_cant("control your movements very well."); break;
+/*JP			You_cant("control your movements very well."); break;*/
+			You("うまく歩けない．"); break;
 		    case 2:
-			pline("It's hard to walk in thin air.");
+/*JP			pline("It's hard to walk in thin air.");*/
+			pline("空中を歩くのは難しい．");
 			exercise(A_DEX, TRUE);
 			break;
 		    }
@@ -611,7 +693,8 @@ domove()
 			/* When polymorphed into a sticking monster,
 			 * u.ustuck means it's stuck to you, not you to it.
 			 */
-			You("release %s.", mon_nam(u.ustuck));
+/*JP			You("release %s.", mon_nam(u.ustuck));*/
+			You("%sを放した．", mon_nam(u.ustuck));
 			u.ustuck = 0;
 		    } else {
 			/* If holder is asleep or paralyzed:
@@ -623,7 +706,8 @@ domove()
 			 */
 			switch (rn2(!u.ustuck->mcanmove ? 8 : 40)) {
 			case 0: case 1: case 2:
-			    You("pull free from %s.", mon_nam(u.ustuck));
+/*JP			    You("pull free from %s.", mon_nam(u.ustuck));*/
+			    You("%sをひきはなした．", mon_nam(u.ustuck));
 			    u.ustuck = 0;
 			    break;
 			case 3:
@@ -634,7 +718,8 @@ domove()
 			    }
 			    /*FALLTHRU*/
 			default:
-			    You("cannot escape from %s!", mon_nam(u.ustuck));
+/*JP			    You("cannot escape from %s!", mon_nam(u.ustuck));*/
+			    You("%sから逃げられない！", mon_nam(u.ustuck));
 			    nomul(0);
 			    return;
 			}
@@ -687,7 +772,8 @@ domove()
 						    && !sensemon(mtmp))
 		    stumble_onto_mimic(mtmp);
 		else
-		    You("move right into %s.", mon_nam(mtmp));
+/*JP		    You("move right into %s.", mon_nam(mtmp));*/
+		    You("%sのそばに移動した．", mon_nam(mtmp));
 		return;
 	    }
 	    if(flags.forcefight || !mtmp->mundetected || sensemon(mtmp) ||
@@ -700,7 +786,10 @@ domove()
 		    } else if (!Upolyd && u.uhp > 1) {
 			u.uhp--;
 		    } else {
+/*JP
 			You("pass out from exertion!");
+*/
+			You("気絶した．");
 			exercise(A_CON, FALSE);
 			fall_asleep(-10, FALSE);
 		    }
@@ -717,7 +806,8 @@ domove()
 	if (flags.forcefight ||
 	    /* remembered an 'I' && didn't use a move command */
 	    (glyph_is_invisible(levl[x][y].glyph) && !flags.nopick)) {
-		You("attack %s.", Underwater ? "empty water" : "thin air");
+/*JP		You("attack %s.", Underwater ? "empty water" : "thin air");*/
+		You("%sを攻撃した", Underwater ? "何もない水中" : "何もない空間");
 		unmap_object(x, y); /* known empty -- remove 'I' if present */
 		newsym(x, y);
 		nomul(0);
@@ -731,40 +821,53 @@ domove()
 	/* not attacking an animal, so we try to move */
 #ifdef STEED
 	if (u.usteed && !u.usteed->mcanmove && (u.dx || u.dy)) {
-		pline("%s won't move!", Monnam(u.usteed));
+/*JP		pline("%s won't move!", Monnam(u.usteed));*/
+		pline("%sは動かない！", Monnam(u.usteed));
 		nomul(0);
 		return;
 	} else
 #endif
 	if(!youmonst.data->mmove) {
-		You("are rooted %s.",
+/*JP		You("are rooted %s.",
 		    Levitation || Is_airlevel(&u.uz) || Is_waterlevel(&u.uz) ?
 		    "in place" : "to the ground");
+*/
+		You("%sに立ちすくんだ．",
+		    Levitation || Is_airlevel(&u.uz) || Is_waterlevel(&u.uz) ?
+		    "その場" : "その場");
 		nomul(0);
 		return;
 	}
 	if(u.utrap) {
 		if(u.utraptype == TT_PIT) {
 		    if (!rn2(2) && sobj_at(BOULDER, u.ux, u.uy)) {
-			Your("%s gets stuck in a crevice.", body_part(LEG));
+/*JP			Your("%s gets stuck in a crevice.", body_part(LEG));*/
+			Your("%sは割れ目にはまった．", body_part(LEG));
 			display_nhwindow(WIN_MESSAGE, FALSE);
 			clear_nhwindow(WIN_MESSAGE);
-			You("free your %s.", body_part(LEG));
+/*JP			You("free your %s.", body_part(LEG));*/
+			You("%sは自由になった．", body_part(LEG));
 		    } else if (!(--u.utrap)) {
-			You("crawl to the edge of the pit.");
+/*JP			You("crawl to the edge of the pit.");*/
+			You("落し穴のはじまで這ってった．");
 			fill_pit(u.ux, u.uy);
 			vision_full_recalc = 1;	/* vision limits change */
 		    } else if (flags.verbose)
-			Norep( (Hallucination && !rn2(5)) ?
+/*JP			Norep( (Hallucination && !rn2(5)) ?
 				"You've fallen, and you can't get up." :
-				"You are still in a pit." );
+				"You are still in a pit." );*/
+			Norep( (Hallucination && !rn2(5)) ?
+				"あなたは落ちた，起きあがれないよう．":
+			        "まだ落し穴にいる．");
 		} else if (u.utraptype == TT_LAVA) {
 		    if(flags.verbose)
-			Norep("You are stuck in the lava.");
+/*JP		    	Norep("You are stuck in the lava.");*/
+		    	Norep("あなたは溶岩にはまった．");
 		    if(!is_lava(x,y)) {
 			u.utrap--;
 			if((u.utrap & 0xff) == 0) {
-			    You("pull yourself to the edge of the lava.");
+/*JP			    You("pull yourself to the edge of the lava.");*/
+			    You("溶岩の端までかろうじて，たどりついた．");
 			    u.utrap = 0;
 			}
 		    }
@@ -772,21 +875,27 @@ domove()
 		} else if (u.utraptype == TT_WEB) {
 		    if(uwep && uwep->oartifact == ART_STING) {
 			u.utrap = 0;
-			pline("Sting cuts through the web!");
+/*JP			pline("Sting cuts through the web!");*/
+			pline("スティングは蜘蛛の巣を切りさいた！");
 			return;
 		    }
 		    if(--u.utrap) {
 			if(flags.verbose)
-			    Norep("You are stuck to the web.");
-		    } else You("disentangle yourself.");
+/*JP			    Norep("You are stuck to the web.");*/
+			    Norep("蜘蛛の巣にひっかかった．");
+/*JP		    } else You("disentangle yourself.");*/
+		    } else You("自分でほどいた．");
 		} else if (u.utraptype == TT_INFLOOR) {
 		    if(--u.utrap) {
 			if(flags.verbose)
-			    Norep("You are stuck in the floor.");
-		    } else You("finally wiggle free.");
+/*JP			    Norep("You are stuck in the floor.");*/
+			    Norep("床にはまった．");
+/*JP		    } else You("finally wiggle free.");*/
+		    } else You("体をくねらせてぬけた．");
 		} else {
 		    if(flags.verbose)
-			Norep("You are caught in a bear trap.");
+/*JP			Norep("You are caught in a bear trap.");*/
+			Norep("熊の罠につかまった．");
 		    if((u.dx && u.dy) || !rn2(5)) u.utrap--;
 		}
 		return;
@@ -805,7 +914,8 @@ domove()
 		if (still_chewing(x,y)) return;
 	    } else {
 		if (Is_stronghold(&u.uz) && is_db_wall(x,y))
-		    pline_The("drawbridge is up!");
+/*JP		    pline_The("drawbridge is up!");*/
+		    pline("跳ね橋は上っている！");
 		flags.move = 0;
 		nomul(0);
 		return;
@@ -816,19 +926,23 @@ domove()
 		if (Passes_walls)
 		    ;	/* do nothing */
 		else if (can_ooze(&youmonst))
-		    You("ooze under the door.");
+/*JP		    You("ooze under the door.");*/
+		    You("ドアの下からにじみ出た．");
 		else if (tunnels(youmonst.data) && !needspick(youmonst.data)) {
 		    /* Eat the door. */
 		    if (still_chewing(x,y)) return;
 		} else {
 		    flags.move = 0;
 		    if (amorphous(youmonst.data))
-			You("try to ooze under the door, but can't squeeze your possessions through.");
+/*JP			You("try to ooze under the door, but can't squeeze your possessions through.");*/
+			You("ドアの下からにじみ出た，しかし持ち物はそうはいかない．");
 		    else if (x == u.ux || y == u.uy) {
 			if (Blind || Stunned || ACURR(A_DEX) < 10 || Fumbling) {
-			    pline("Ouch!  You bump into a door.");
+/*JP			    pline("Ouch!  You bump into a door.");*/
+			    pline("いてっ！頭を扉にぶつけた．");
 			    exercise(A_DEX, FALSE);
-			} else pline("That door is closed.");
+/*JP			} else pline("That door is closed.");*/
+			} else pline("扉は閉まっている．");
 		    }
 		    nomul(0);
 		    return;
@@ -850,17 +964,20 @@ domove()
 		&& bad_rock(youmonst.data,u.ux,y) && bad_rock(youmonst.data,x,u.uy)) {
 	    /* Move at a diagonal. */
 	    if (In_sokoban(&u.uz)) {
-	    	You("cannot pass that way.");
+/*JP	    	You("cannot pass that way.");*/
+	    	You("通りぬけできない．");
 	    	nomul(0);
 	    	return;
 	    }
 	    if (bigmonst(youmonst.data)) {
-		Your("body is too large to fit through.");
+/*JP		Your("body is too large to fit through.");*/
+		Your("体が大きすぎて通りぬけられない．");
 		nomul(0);
 		return;
 	    }
 	    if (invent && (inv_weight() + weight_cap() > 600)) {
-		You("are carrying too much to get through.");
+/*JP		You("are carrying too much to get through.");*/
+		pline("物を持ちすぎて通りぬけられない．");
 		nomul(0);
 		return;
 	    }
@@ -961,8 +1078,12 @@ domove()
 		/* check for displacing it into pools and traps */
 		switch (minwater(mtmp) ? 2 : mintrap(mtmp)) {
 		case 0:
-		    You("%s %s.", mtmp->mtame ? "displaced" : "frightened",
+/*JP		    You("%s %s.", mtmp->mtame ? "displaced" : "frightened",
 			y_monnam(mtmp));
+*/
+		    You("%s%sた．",
+			mtmp->mnamelth ? NAME(mtmp) : mon_nam(mtmp),
+			mtmp->mtame ? "と入れ換わっ" : "を怖がらせ");
 		    break;
 		case 1:		/* trapped */
 		case 3:		/* changed levels */
@@ -975,7 +1096,8 @@ domove()
 		     * treat a pet!  your god gets angry.
 		     */
 		    if (rn2(4)) {
-			You_feel("guilty about losing your pet like this.");
+/*JP			You_feel("guilty about losing your pet like this.");*/
+			pline("このような形でペットを失うとは罪深いことだと思った．");
 			u.ugangr++;
 			adjalign(-15);
 		    }
@@ -1041,11 +1163,15 @@ invocation_message()
 	if(invocation_pos(u.ux, u.uy) && !On_stairs(u.ux, u.uy)) {
 	    struct obj *otmp = carrying(CANDELABRUM_OF_INVOCATION);
 
-	    You_feel("a strange vibration under your %s.",
+/*JP	    You_feel("a strange vibration under your %s.",*/
+	    You("%s下に奇妙な振動を感じた．",
 		    makeplural(body_part(FOOT)));
 	    if (otmp && otmp->spe == 7 && otmp->lamplit)
-		pline("%s %s!", The(xname(otmp)),
-		    Blind ? "throbs palpably" : "glows with a strange light");
+/*JP		pline("%s %s!", The(xname(otmp)),
+		    Blind ? "throbs palpably" : "glows with a strange light");*/
+	        pline("%s",
+		    Blind ? "かすかに振動した！" : "奇妙な光を発した！");
+
 	}
 }
 
@@ -1063,21 +1189,29 @@ spoteffects()
 
 		if (!is_pool(u.ux,u.uy)) {
 			if (Is_waterlevel(&u.uz))
-				You("pop into an air bubble.");
+/*JP				You("pop into an air bubble.");*/
+				You("ひょいと空気の泡に入った．");
 			else if (is_lava(u.ux, u.uy))
-				You("leave the water...");	/* oops! */
+/*JP				You("leave the water...");*/	/* oops! */
+				You("水から抜けだした．．．");	/* oops! */
 			else
-				You("are on solid %s again.",
+/*JP				You("are on solid %s again.",
 				    is_ice(u.ux, u.uy) ? "ice" : "land");
+*/
+				You("固い%sの上にまた戻った．",
+				    is_ice(u.ux, u.uy) ? "氷" : "地面");
 		}
 		else if (Is_waterlevel(&u.uz))
 			goto stillinwater;
 		else if (Levitation)
-			You("pop out of the water like a cork!");
+/*JP			You("pop out of the water like a cork!");*/
+			You("コルクのように飛びだした！");
 		else if (Flying)
-			You("fly out of the water.");
+/*JP			You("fly out of the water.");*/
+			You("水から飛びだした．");
 		else if (Wwalking)
-			You("slowly rise above the surface.");
+/*JP			You("slowly rise above the surface.");*/
+			You("ゆっくり水面まで上がった．");
 		else
 			goto stillinwater;
 		was_underwater = Underwater && !Is_waterlevel(&u.uz);
@@ -1108,19 +1242,26 @@ stillinwater:;
 		mtmp->mundetected = mtmp->msleeping = 0;
 		switch(mtmp->data->mlet) {
 		    case S_PIERCER:
-			pline("%s suddenly drops from the %s!",
-			      Amonnam(mtmp), ceiling(u.ux,u.uy));
+/*JP			pline("%s suddenly drops from the %s!",
+			      Amonnam(mtmp), ceiling(u.ux,u.uy));*/
+			pline("%sが突然%sから落ちてきた！",
+  			      Amonnam(mtmp), ceiling(u.ux,u.uy));
 			if(mtmp->mtame) /* jumps to greet you, not attack */
 			    ;
 			else if(uarmh)
-			    pline("Its blow glances off your helmet.");
+/*JP			    pline("Its blow glances off your helmet.");*/
+			    pline("攻撃はあなたの兜をかすめただけだった．");
 			else if (u.uac + 3 <= rnd(20))
-			    You("are almost hit by %s!",
-				x_monnam(mtmp, 2, "falling", 1));
+/*JP			    You("are almost hit by %s!",
+				x_monnam(mtmp, 2, "falling", 1));*/
+			    You("落ちてきた%sにもう少しで当たるところだった．",
+				Monnam(mtmp));
 			else {
 			    int dmg;
-			    You("are hit by %s!",
-				x_monnam(mtmp, 2, "falling", 1));
+/*JP			    You("are hit by %s!",
+				x_monnam(mtmp, 2, "falling", 1));*/
+			    You("落ちてきた%sに当たった！",
+				Monnam(mtmp));
 			    dmg = d(4,6);
 			    if(Half_physical_damage) dmg = (dmg+1) / 2;
 			    mdamageu(mtmp, dmg);
@@ -1128,15 +1269,21 @@ stillinwater:;
 			break;
 		    default:	/* monster surprises you. */
 			if(mtmp->mtame)
-			    pline("%s jumps near you from the %s.",
+/*JP			    pline("%s jumps near you from the %s.",
+  					Amonnam(mtmp));*/
+			    pline("%sが%sからあなたの近くに飛んできた．",
 					Amonnam(mtmp), ceiling(u.ux,u.uy));
 			else if(mtmp->mpeaceful) {
-				You("surprise %s!",
+/*JP				You("surprise %s!",
+				    Blind && !sensemon(mtmp) ?
+				    something : a_monnam(mtmp));*/
+				You("%sを驚かした！",
 				    Blind && !sensemon(mtmp) ?
 				    something : a_monnam(mtmp));
 				mtmp->mpeaceful = 0;
 			} else
-			    pline("%s attacks you by surprise!",
+/*JP			    pline("%s attacks you by surprise!",*/
+			    pline("%sは驚いてあなたを攻撃した！",
 					Amonnam(mtmp));
 			break;
 		}
@@ -1296,47 +1443,64 @@ register boolean newlev;
 	     * but everything else gives a message only the first time */
 	    switch (rt) {
 		case ZOO:
-		    pline("Welcome to David's treasure zoo!");
+/*JP		    pline("Welcome to David's treasure zoo!");*/
+		    pline("デビット宝箱動物園にようこそ！");
 		    break;
 		case SWAMP:
-		    pline("It %s rather %s down here.",
+/*JP		    pline("It %s rather %s down here.",
 			  Blind ? "feels" : "looks",
 			  Blind ? "humid" : "muddy");
+*/
+		    pline("かなり%s%s．",
+			  Blind ? "湿気がある" : "どろどろしている",
+			  Blind ? "場所のようだ" : "場所だ");
 		    break;
 		case COURT:
-		    You("enter an opulent throne room!");
+/*JP		    You("enter an opulent throne room!");*/
+		    You("華やかな玉座の間に入った！");
 		    break;
 		case LEPREHALL:
-		    You("enter a leprechaun hall!");
+/*JP		    You("enter a leprechaun hall!");*/
+		    You("レプラコーンホールに入った！");
 		    break;
 		case MORGUE:
 		    if(midnight()) {
-			const char *run = locomotion(youmonst.data, "Run");
-			pline("%s away!  %s away!", run, run);
+/*JP			const char *run = locomotion(youmonst.data, "Run");*/
+			const char *run = locomotion2(youmonst.data, "逃げろ");
+/*JP			pline("%s away!  %s away!", run, run);*/
+			pline("%s！%s！逃げろ！", run, run);
 		    } else
-			You("have an uncanny feeling...");
+/*JP			You("have an uncanny feeling...");*/
+			You("不気味な感じがした．．．");
 		    break;
 		case BEEHIVE:
-		    You("enter a giant beehive!");
+/*JP		    You("enter a giant beehive!");*/
+		    You("巨大な蜂の巣に入った！");
 		    break;
 		case COCKNEST:
-		    You("enter a disgusting nest!");
+/*JP		    You("enter a disgusting nest!");*/
+		    You("むっとする臭いのする鳥の巣に入った！");
 		    break;
 		case ANTHOLE:
-		    You("enter an anthole!");
+/*JP		    You("enter an anthole!");*/
+		    You("アリの巣に入った！");
 		    break;
 		case BARRACKS:
 		    if(monstinroom(&mons[PM_SOLDIER], roomno) ||
 			monstinroom(&mons[PM_SERGEANT], roomno) ||
 			monstinroom(&mons[PM_LIEUTENANT], roomno) ||
 			monstinroom(&mons[PM_CAPTAIN], roomno))
-			You("enter a military barracks!");
+/*JP			You("enter a military barracks!");*/
+			You("軍人の兵舍に入った！");
 		    else
-			You("enter an abandoned barracks.");
+/*JP			You("enter an abandoned barracks.");*/
+			You("放置したままの兵舍に入った．");
 		    break;
 		case DELPHI:
 		    if(monstinroom(&mons[PM_ORACLE], roomno))
-			verbalize("%s, %s, welcome to Delphi!", Hello(), plname);
+/*JP			verbalize("%s, %s, welcome to Delphi!", Hello(), plname);*/
+			verbalize("おお%s, デルファイの神託所によくぞまいられた！", plname);
+
 		    break;
 		case TEMPLE:
 		    intemple(roomno + ROOMOFFSET);
@@ -1395,36 +1559,50 @@ dopickup()
 	/* uswallow case added by GAN 01/29/87 */
 	if(u.uswallow) {
 		if (is_animal(u.ustuck->data)) {
-		    You("pick up %s tongue.", s_suffix(mon_nam(u.ustuck)));
+/*JP		    You("pick up %s tongue.", s_suffix(mon_nam(u.ustuck)));
 		    pline("But it's kind of slimy, so you drop it.");
+*/
+		    You("%sの舌を拾った．", s_suffix(mon_nam(u.ustuck)));
+		    pline("しかし，それはぬるぬるして不快だったので捨ててしまった．");
 		} else
-		    You("don't %s anything in here to pick up.",
+/*JP		    You("don't %s anything in here to pick up.",
 			  Blind ? "feel" : "see");
+*/
+		    pline("ここには拾えるものがない%s．",
+			  Blind ? "ようだ" : "");
 		return(1);
 	}
 	if(is_pool(u.ux, u.uy)) {
 	    if (Wwalking || is_floater(youmonst.data) || is_clinger(youmonst.data)
 			|| (Flying && !Breathless)) {
-		You("cannot dive into the water to pick things up.");
+/*JP		You("cannot dive into the water to pick things up.");*/
+		You("物を拾いあげるために水に飛びこめない．");
 		return(1);
 	    } else if (!Underwater) {
-		You_cant("even see the bottom, let alone pick up %s.",
+/*JP		You_cant("even see the bottom, let alone pick up %s.",
 				something);
+*/
+		pline("底さえ見えない, 拾うのはやめよう．");
 		return(1);
 	    }
 	}
 	if(!OBJ_AT(u.ux, u.uy)) {
-		pline("There is nothing here to pick up.");
+/*JP		pline("There is nothing here to pick up.");*/
+		pline("ここには拾えるものはない．");
 		return(0);
 	}
 	if (!can_reach_floor()) {
 #ifdef STEED
 		if (u.usteed && P_SKILL(P_RIDING) < P_BASIC)
-			You("aren't skilled enough to reach from %s.",
+/*JP			You("aren't skilled enough to reach from %s.",
+					mon_nam(u.usteed));
+*/
+			You("まだ十分に技量を積んでいないので，%sから届かない．",
 					mon_nam(u.usteed));
 		else
 #endif
-		You("cannot reach the %s.", surface(u.ux,u.uy));
+/*JP		You("cannot reach the %s.", surface(u.ux,u.uy));*/
+		You("%sにたどりつくことができない．", surface(u.ux,u.uy));
 		return(1);
 	}
 	pickup(-count);
@@ -1631,15 +1809,18 @@ boolean k_format;
 	if(u.uhp < 1) {
 		killer_format = k_format;
 		killer = knam;		/* the thing that killed you */
-		You("die...");
+/*JP		You("die...");*/
+		pline("あなたは死にました．．．");
 		done(DIED);
 	} else if (u.uhp*10 < u.uhpmax && moves-wailmsg > 50 && n > 0) {
 		wailmsg = moves;
 		if (Role_if(PM_WIZARD) || Race_if(PM_ELF) || Role_if(PM_VALKYRIE)) {
 			if (u.uhp == 1)
-				pline("%s is about to die.",
-			    		(Role_if(PM_WIZARD) || Role_if(PM_VALKYRIE)) ?
-			    		urole.name.m : "Elf");
+/*JP				pline("%s is about to die.",*/
+				pline("%sは死にかけている．",
+				      jtrns_mon(
+					  (Role_if(PM_WIZARD) || Role_if(PM_VALKYRIE)) ?
+					  urole.name.m : "Elf", flags.female));
 			else if (4 <= (!!(HTeleportation & INTRINSIC)) +
 				    (!!(HSee_invisible & INTRINSIC)) +
 				    (!!(HPoison_resistance & INTRINSIC)) +
@@ -1652,18 +1833,28 @@ boolean k_format;
 				    (!!(HStealth & INTRINSIC)) +
 				    (!!(HFast & INTRINSIC)) +
 				    (!!(HInvis & INTRINSIC)))
-				pline("%s, all your powers will be lost...",
+/*JP				pline("%s, all your powers will be lost...",
 			    		(Role_if(PM_WIZARD) || Role_if(PM_VALKYRIE)) ?
 			    		urole.name.m : "Elf");
+*/
+				pline("%s，あなたの全ての能力は失われた．．．",
+				      jtrns_mon(
+					  (Role_if(PM_WIZARD) || Role_if(PM_VALKYRIE)) ?
+					  urole.name.m : "Elf", flags.female));
+
 			else
-				pline("%s, your life force is running out.",
-			    		(Role_if(PM_WIZARD) || Role_if(PM_VALKYRIE)) ?
-			    		urole.name.m : "Elf");
+/*JP				pline("%s, your life force is running out.",*/
+				pline("%s，あなたの意識が遠のいていく．．．",
+				      jtrns_mon(
+					  (Role_if(PM_WIZARD) || Role_if(PM_VALKYRIE)) ?
+					  urole.name.m : "Elf", -1));
 		} else {
 			if(u.uhp == 1)
-				You_hear("the wailing of the Banshee...");
+/*JP				You_hear("the wailing of the Banshee...");*/
+				pline("バンシーのすすり泣きが聞こえる．．．");
 			else
-				You_hear("the howling of the CwnAnnwn...");
+/*JP				You_hear("the howling of the CwnAnnwn...");*/
+				pline("遠吠が聞こえる．．．");
 		}
 	}
 }
@@ -1766,7 +1957,8 @@ const char *str;
 	if(str)
 	    pline(str);
 	else
-	    You_cant("do that while carrying so much stuff.");
+/*JP	    You_cant("do that while carrying so much stuff.");*/
+	    You("沢山ものを持ちすぎているので，そんなことはできない．");
 	return 1;
     }
     return 0;

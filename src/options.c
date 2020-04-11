@@ -135,10 +135,17 @@ static struct Bool_Opt
 	{"preload_tiles", (boolean *)0, FALSE},
 #endif
 	{"pushweapon", &flags.pushweapon, FALSE},
+#ifdef RADAR
+	{ "radar", &flags.radar, FALSE},
+#endif
 #if defined(MICRO) && !defined(AMIGA)
 	{"rawio", &iflags.rawio, FALSE},
 #else
 	{"rawio", (boolean *)0, FALSE},
+#endif
+/* by ISSEI */
+#ifdef NH_EXTENSION_REPORT
+	{"report", &flags.reportscore, TRUE},
 #endif
 	{"rest_on_space", &flags.rest_on_space, FALSE},
 	{"safe_pet", &flags.safe_dog, TRUE},
@@ -255,6 +262,13 @@ static struct Comp_Opt
 	{ "videoshades", "gray shades to map to black/gray/white", 32 },
 #endif
 	{ "windowtype", "windowing system to use", WINTYPELEN },
+/*JP*/
+/*JP*/
+	{ "kcode", "端末の漢字コード,", 4 },
+#ifdef	NH_EXTENSION_REPORT
+	{ "homeurl", "あなたのホームページURL,", 128 },
+	{ "proxy", "HTTPプロキシ,", 128 },
+#endif
 	{ (char *)0, (char *)0, 0 }
 };
 
@@ -368,7 +382,7 @@ boolean val_allowed;
 		       *q = index(user_string, '=');
 
 	    if (!p || (q && q < p)) p = q;
-	    while(p && p > user_string && isspace(*(p-1))) p--;
+	    while(p && p > user_string && isspace_8(*(p-1))) p--;
 	    if (p) len = (int)(p - user_string);
 	}
 
@@ -769,9 +783,9 @@ boolean tinitial, tfrom_file;
 	}
 
 	/* strip leading and trailing white space */
-	while (isspace(*opts)) opts++;
+	while (isspace_8(*opts)) opts++;
 	op = eos(opts);
-	while (--op >= opts && isspace(*op)) *op = '\0';
+	while (--op >= opts && isspace_8(*op)) *op = '\0';
 
 	if (!*opts) return;
 	negated = FALSE;
@@ -1120,11 +1134,12 @@ goodfruit:
 	if (match_optname(opts, fullname, 4, TRUE) ||
 	    match_optname(opts, (fullname = "character"), 4, TRUE)) {
 		if (negated) bad_negation(fullname, FALSE);
-		else if ((op = string_for_env_opt(fullname, opts, FALSE)) != 0)
+		else if ((op = string_for_env_opt(fullname, opts, FALSE)) != 0){
 			if ((flags.initrole = str2role(op)) < 0)
 				badoption(opts);
 			else  /* Backwards compatibility */
 				nmcpy(pl_character, op, PL_NSIZ);
+		}
 		return;
 	}
 
@@ -1132,11 +1147,12 @@ goodfruit:
 	fullname = "race";
 	if (match_optname(opts, fullname, 4, TRUE)) {
 		if (negated) bad_negation(fullname, FALSE);
-		else if ((op = string_for_env_opt(fullname, opts, FALSE)) != 0)
+		else if ((op = string_for_env_opt(fullname, opts, FALSE)) != 0){
 			if ((flags.initrace = str2race(op)) < 0)
 				badoption(opts);
 			else /* Backwards compatibility */
 				pl_race = *op;
+		}
 		return;
 	}
 
@@ -1144,11 +1160,12 @@ goodfruit:
 	fullname = "gender";
 	if (match_optname(opts, fullname, 4, TRUE)) {
 		if (negated) bad_negation(fullname, FALSE);
-		else if ((op = string_for_env_opt(fullname, opts, FALSE)) != 0)
+		else if ((op = string_for_env_opt(fullname, opts, FALSE)) != 0){
 			if ((flags.initgend = str2gend(op)) < 0)
 				badoption(opts);
 			else
 				flags.female = flags.initgend;
+		}
 		return;
 	}
 
@@ -1306,6 +1323,32 @@ goodfruit:
 		}
 		return;
 	}
+/*JP*/
+        if (!strncmpi(opts, "kcode", 3)){
+	    if ((op = string_for_env_opt("kcode", opts, FALSE)) != 0){
+		setkcode(*op);
+	    }
+	    return;
+        }
+#ifdef NH_EXTENSION_REPORT
+        fullname = "homeurl";
+        if (match_optname(opts, fullname, 5, TRUE)) {
+            if (negated) 
+                bad_negation(fullname, FALSE);
+            else if ((op = string_for_env_opt(fullname, opts, FALSE)) != 0)
+                set_homeurl(op);
+            return;
+        }
+
+        fullname = "proxy";
+        if (match_optname(opts, fullname, 5, TRUE)) {
+            if (negated) 
+                bad_negation(fullname, FALSE);
+            else if ((op = string_for_env_opt(fullname, opts, FALSE)) != 0)
+                set_proxy(op);
+            return;
+        }
+#endif
 
 	/* scores:5t[op] 5a[round] o[wn] */
 	if (match_optname(opts, "scores", 4, TRUE)) {
@@ -2069,7 +2112,7 @@ char *str;
 
 		    for(c = pl_fruit; *c >= '0' && *c <= '9'; c++)
 			;
-		    if (isspace(*c) || *c == 0) numeric = TRUE;
+		    if (isspace_8(*c) || *c == 0) numeric = TRUE;
 		}
 		if (found || numeric ||
 		    !strncmp(str, "cursed ", 7) ||

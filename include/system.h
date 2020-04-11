@@ -131,7 +131,7 @@ E void FDECL(qsort, (genericptr_t,size_t,size_t,
 		     int(*)(const genericptr,const genericptr)));
 #else
 # if defined(BSD) || defined(ULTRIX)
-E  int qsort();
+/*E  int qsort();*/
 # else
 #  if !defined(LATTICE) && !defined(AZTEC_50)
 E   void FDECL(qsort, (genericptr_t,size_t,size_t,
@@ -295,9 +295,11 @@ E long NDECL(fork);
 # if defined(NHSTDC) || (defined(VMS) && !defined(ANCIENT_VAXC))
 #  if !defined(_AIX32) && !(defined(SUNOS4) && defined(__STDC__))
 				/* Solaris unbundled cc (acc) */
+/*JP
 E int FDECL(memcmp, (const void *,const void *,size_t));
 E void *FDECL(memcpy, (void *, const void *, size_t));
 E void *FDECL(memset, (void *, int, size_t));
+*/
 #  endif
 # else
 #  ifndef memcmp	/* some systems seem to macro these back to b*() */
@@ -363,7 +365,7 @@ E uid_t NDECL(getuid);
 E gid_t NDECL(getgid);
 # else
 #  ifndef getpid		/* Borland C defines getpid() as a macro */
-E int NDECL(getpid);
+/*E int NDECL(getpid);*/
 #  endif
 #  ifdef VMS
 E int NDECL(getppid);

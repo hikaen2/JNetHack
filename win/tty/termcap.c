@@ -60,12 +60,14 @@ STATIC_DCL char PC;
 STATIC_VAR char tbuf[512];
 #endif
 
+#ifdef OVLB
 #ifdef TEXTCOLOR
 # ifdef TOS
 const char *hilites[CLR_MAX];	/* terminal escapes for the various colors */
 # else
 char NEARDATA *hilites[CLR_MAX]; /* terminal escapes for the various colors */
 # endif
+#endif
 #endif
 
 #ifdef OVLB
@@ -528,7 +530,7 @@ int c;
 char c;
 #endif
 {
-	(void) putchar(c);
+	(void) cputchar(c);
 }
 
 void
@@ -536,6 +538,7 @@ xputs(s)
 const char *s;
 {
 # ifndef TERMLIB
+	(void) jputchar('\0');
 	(void) fputs(s, stdout);
 # else
 #  if defined(NHSTDC) || defined(ULTRIX_PROTO)
@@ -653,7 +656,7 @@ void
 tty_nhbell()
 {
 	if (flags.silent) return;
-	(void) putchar('\007');		/* curx does not change */
+	(void) cputchar('\007');		/* curx does not change */
 	(void) fflush(stdout);
 }
 
@@ -704,9 +707,12 @@ tty_delay_output()
 #endif
 #if defined(MICRO)
 	/* simulate the delay with "cursor here" */
+	{
+	register int i;
 	for (i = 0; i < 3; i++) {
 		cmov(ttyDisplay->curx, ttyDisplay->cury);
 		(void) fflush(stdout);
+	}
 	}
 #else /* MICRO */
 	/* BUG: if the padding character is visible, as it is on the 5620

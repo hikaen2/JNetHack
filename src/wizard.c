@@ -7,6 +7,13 @@
 /*	       - dewimped and given some maledictions. -3. */
 /*	       - generalized for 3.1 (mike@bullns.on01.bull.ca) */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "qtext.h"
 
@@ -64,11 +71,14 @@ amulet()
 		if(ttmp->ttyp == MAGIC_PORTAL) {
 		    int du = distu(ttmp->tx, ttmp->ty);
 		    if (du <= 9)
-			pline("%s feels hot!", The(xname(amu)));
+/*JP			pline("%s feels hot!", The(xname(amu)));*/
+			pline("%sは熱く感じた！", The(xname(amu)));
 		    else if (du <= 64)
-			pline("%s feels very warm.", The(xname(amu)));
+/*JP			pline("%s feels very warm.", The(xname(amu)));*/
+			pline("%sはとても暖かく感じた．", The(xname(amu)));
 		    else if (du <= 144)
-			pline("%s feels warm.", The(xname(amu)));
+/*JP			pline("%s feels warm", The(xname(amu)));*/
+			pline("%sは暖かく感じた．", The(xname(amu)));
 		    /* else, the amulet feels normal */
 		    break;
 		}
@@ -83,7 +93,8 @@ amulet()
 		mtmp->msleeping = 0;
 		if (distu(mtmp->mx,mtmp->my) > 2)
 		    You(
-    "get the creepy feeling that somebody noticed your taking the Amulet."
+/*JP "get the creepy feeling that somebody noticed your taking the Amulet."*/
+ "あなたが魔除けを持っていることが誰かにわかったと感じてぞくぞくした．"
 		    );
 		return;
 	    }
@@ -341,7 +352,7 @@ tactics(mtmp)
 
 		    if ((otmp = on_ground(which_arti(targ))) != 0) {
 			if (cansee(mtmp->mx, mtmp->my))
-			    pline("%s picks up %s.",
+			    pline("%sは%sを拾った．",
 				  Monnam(mtmp),
 				  (distu(mtmp->my, mtmp->my) <= 5) ?
 				    doname(otmp) : distant_name(otmp, doname));
@@ -441,11 +452,13 @@ resurrect()
 
 	if (!flags.no_of_wizards) {
 	    /* make a new Wizard */
-	    verb = "kill";
+/*JP	    verb = "kill";*/
+	    verb = "を殺せし";
 	    mtmp = makemon(&mons[PM_WIZARD_OF_YENDOR], u.ux, u.uy, MM_NOWAIT);
 	} else {
 	    /* look for a migrating Wizard */
-	    verb = "elude";
+/*JP	    verb = "elude";*/
+	    verb = "から逃れん";
 	    mmtmp = &migrating_mons;
 	    while ((mtmp = *mmtmp) != 0) {
 		if (mtmp->iswiz &&
@@ -474,8 +487,10 @@ resurrect()
 	if (mtmp) {
 		mtmp->msleeping = mtmp->mtame = mtmp->mpeaceful = 0;
 		set_malign(mtmp);
-		pline("A voice booms out...");
-		verbalize("So thou thought thou couldst %s me, fool.", verb);
+/*JP		pline("A voice booms out...");*/
+		pline("声が高く鳴り響いた．．．");
+/*JP		verbalize("So thou thought thou couldst %s me, fool.", verb);*/
+		verbalize("余%sと思いしか，このうつけ者め．", verb);
 	}
 
 }
@@ -489,10 +504,12 @@ intervene()
 	/* cases 0 and 5 don't apply on the Astral level */
 	switch (which) {
 	    case 0:
-	    case 1:	You_feel("vaguely nervous.");
+/*JP	    case 1:	You_feel("vaguely nervous.");*/
+	    case 1:	You("何となく不安になった．");
 			break;
 	    case 2:	if (!Blind)
-			    You("notice a %s glow surrounding you.",
+/*JP			    You("notice a %s glow surrounding you.",*/
+			    pline("%s光があなたをとりまいているのに気がついた．",
 				  hcolor(Black));
 			rndcurse();
 			break;
@@ -516,48 +533,87 @@ wizdead()
 }
 
 const char *random_insult[] = {
-	"antic",
-	"blackguard",
-	"caitiff",
-	"chucklehead",
-	"coistrel",
-	"craven",
-	"cretin",
-	"cur",
-	"dastard",
-	"demon fodder",
-	"dimwit",
-	"dolt",
-	"fool",
-	"footpad",
-	"imbecile",
-	"knave",
-	"maledict",
-	"miscreant",
-	"niddering",
-	"poltroon",
-	"rattlepate",
-	"reprobate",
-	"scapegrace",
-	"varlet",
-	"villein",	/* (sic.) */
-	"wittol",
-	"worm",
-	"wretch",
+/*JP	"antic",*/
+	"ふざけた野郎",
+/*JP	"blackguard",*/
+	"悪党",
+/*JP	"caitiff",*/
+	"くそったれ",
+/*JP	"chucklehead",*/
+	"のろま",
+/*JP	"coistrel",*/
+	"あんぽんたん",
+/*JP	"craven",*/
+	"臆病者",
+/*JP	"cretin",*/
+	"白痴",
+/*JP	"cur",*/
+	"ろくでなし",
+/*JP	"dastard",*/
+	"うつけ",
+/*JP	"demon fodder",*/
+	"悪魔の餌食",
+/*JP	"dimwit",*/
+	"うすのろ",
+/*JP	"dolt",*/
+	"まぬけ",
+/*JP	"fool",*/
+	"馬鹿",
+/*JP	"footpad",*/
+	"おいはぎ",
+/*JP	"imbecile",*/
+	"愚か者",
+/*JP	"knave",*/
+	"ならず者",
+/*JP	"maledict",*/
+	"悪人",
+/*JP	"miscreant",*/
+	"極悪人",
+/*JP	"niddering",*/
+	"馬鹿たれ",
+/*JP	"poltroon",*/
+	"卑怯者",
+/*JP	"rattlepate",*/
+	"風船頭",
+/*JP	"reprobate",*/
+	"道楽者",
+/*JP	"scapegrace",*/
+	"厄介者",
+/*JP	"varlet",*/
+	"下郎",
+/*JP	"villein",	*//* (sic.) */
+	"奴隷",	/* (sic.) */
+/*JP	"wittol",*/
+	"ふなむし",
+/*JP	"worm",*/
+	"蛆虫",
+/*JP	"wretch",*/
+	"人でなし",
 };
 
 const char *random_malediction[] = {
-	"Hell shall soon claim thy remains,",
-	"I chortle at thee, thou pathetic",
-	"Prepare to die, thou",
-	"Resistance is useless,",
-	"Surrender or die, thou",
-	"There shall be no mercy, thou",
-	"Thou shalt repent of thy cunning,",
-	"Thou art as a flea to me,",
-	"Thou art doomed,",
-	"Thy fate is sealed,",
-	"Verily, thou shalt be one dead"
+/*JP	"Hell shall soon claim thy remains,",*/
+	"地獄はいづれ，汝の生き残ることを要求するであろう，",
+/*JP	"I chortle at thee, thou pathetic",*/
+	"哀れなやつよのう．余は満足じゃ",
+/*JP	"Prepare to die, thou",*/
+	"汝，死に備えよ",
+/*JP	"Resistance is useless,",*/
+	"抵抗しても無駄じゃ，",
+/*JP	"Surrender or die, thou",*/
+	"降参せよ．さもなくば死じゃ．",
+/*JP	"There shall be no mercy, thou",*/
+	"慈悲は無からん",
+/*JP	"Thou shalt repent of thy cunning,",*/
+	"汝，ずるを後悔すべし，",
+/*JP	"Thou art as a flea to me,",*/
+	"汝は余にとってノミのようなものじゃ，",
+/*JP	"Thou art doomed,",*/
+	"汝は呪われておる，",
+/*JP	"Thy fate is sealed,",*/
+	"汝の運命は封印されておる，",
+/*JP	"Verily, thou shalt be one dead"*/
+	"まことに汝は死にたる者なり"
 };
 
 /* Insult or intimidate the player */
@@ -567,22 +623,29 @@ register struct monst	*mtmp;
 {
 	if (mtmp->iswiz) {
 	    if (!rn2(5))  /* typical bad guy action */
-		pline("%s laughs fiendishly.", Monnam(mtmp));
+/*JP		pline("%s laughs fiendishly.", Monnam(mtmp));*/
+		pline("%sは悪魔のように笑った．", Monnam(mtmp));
 	    else
 		if (u.uhave.amulet && !rn2(SIZE(random_insult)))
-		    verbalize("Relinquish the amulet, %s!",
+/*JP		    verbalize("Relinquish the amulet, %s!",*/
+		    verbalize("魔よけを手放せ，%s！",
 			  random_insult[rn2(SIZE(random_insult))]);
 		else if (u.uhp < 5 && !rn2(2))	/* Panic */
 		    verbalize(rn2(2) ?
-			  "Even now thy life force ebbs, %s!" :
-			  "Savor thy breath, %s, it be thine last!",
+/*JP			  "Even now thy life force ebbs, %s!" :*/
+			  "今となってもなお汝の命はあえて衰えるのだ，%s！" :
+/*JP			  "Savor thy breath, %s, it be thine last!",*/
+			  "息を味わっておけ，%s，汝の最期の時だ！",
 			  random_insult[rn2(SIZE(random_insult))]);
 		else if (mtmp->mhp < 5 && !rn2(2))	/* Parthian shot */
 		    verbalize(rn2(2) ?
-			      "I shall return." :
-			      "I'll be back.");
+/*JP			      "I shall return." :*/
+			      "余は必ず帰ってくる．" :
+/*JP			      "I'll be back.");*/
+			      "余は戻ってくる．");
 		else
-		    verbalize("%s %s!",
+/*JP		    verbalize("%s %s!",*/
+		    verbalize("%s%s！",
 			  random_malediction[rn2(SIZE(random_malediction))],
 			  random_insult[rn2(SIZE(random_insult))]);
 	} else if(is_lminion(mtmp->data)) {
@@ -590,7 +653,8 @@ register struct monst	*mtmp;
 			      QT_ANGELIC);
 	} else {
 	    if (!rn2(5))
-		pline("%s casts aspersions on your ancestry.", Monnam(mtmp));
+/*JP		pline("%s casts aspersions on your ancestry.", Monnam(mtmp));*/
+		pline("%sはあなたの家柄を中傷した．", Monnam(mtmp));
 	    else
 	        com_pager(rn2(QTN_DEMONIC) + QT_DEMONIC);
 	}

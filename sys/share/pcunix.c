@@ -243,9 +243,21 @@ regularize(s)
  */
 register char *s;
 {
-	register char *lp;
+/*JP	register char *lp;*/
+	register unsigned char *lp;
 
-	for (lp = s; *lp; lp++)
+#ifdef MSDOS
+	lp = (unsigned char *)ic2str( s );
+	strcpy(s, lp);
+#endif
+
+	for (lp = s; *lp; lp++){
+/*JP*/
+		if (is_kanji(*lp)){
+/*		  lp += 2;*/
+		  lp++;
+		  continue;
+		}
 		if (*lp <= ' ' || *lp == '"' || (*lp >= '*' && *lp <= ',') ||
 		    *lp == '.' || *lp == '/' || (*lp >= ':' && *lp <= '?') ||
 # ifdef OS2
@@ -253,6 +265,7 @@ register char *s;
 # endif
 		    *lp == '|' || *lp >= 127 || (*lp >= '[' && *lp <= ']'))
                         *lp = '_';
+	 }
 }
 # endif /* WIN32 */
 #endif /* OVLB */

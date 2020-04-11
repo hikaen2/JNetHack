@@ -4,6 +4,13 @@
 
 /* shknam.c -- initialize a shop */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "eshk.h"
 
@@ -16,7 +23,9 @@ STATIC_DCL void FDECL(mkshobj_at, (const struct shclass *,int,int));
 STATIC_DCL void FDECL(nameshk, (struct monst *,const char **));
 STATIC_DCL int  FDECL(shkinit, (const struct shclass *,struct mkroom *));
 
+#undef JPDEBUG
 static const char *shkliquors[] = {
+#ifndef JPDEBUG
     /* Ukraine */
     "Njezjin", "Tsjernigof", "Gomel", "Ossipewsk", "Gorlowka",
     /* N. Russia */
@@ -28,10 +37,14 @@ static const char *shkliquors[] = {
     /* Schweiz */
     "Leuk", "Brig", "Brienz", "Thun", "Sarnen", "Burglen", "Elm",
     "Flims", "Vals", "Schuls", "Zum Loch",
+#endif
+/*JP*/
+    "ÉÍÅÄ", "_ÎÓ¸¶",
     0
 };
 
 static const char *shkbooks[] = {
+#ifndef JPDEBUG
     /* Eire */
     "Skibbereen", "Kanturk", "Rath Luirc", "Ennistymon", "Lahinch",
     "Kinnegad", "Lugnaquillia", "Enniscorthy", "Gweebarra",
@@ -39,10 +52,14 @@ static const char *shkbooks[] = {
     "Cahersiveen", "Glenbeigh", "Kilmihil", "Kiltamagh",
     "Droichead Atha", "Inniscrone", "Clonegal", "Lisnaskea",
     "Culdaff", "Dunfanaghy", "Inishbofin", "Kesh",
+#endif
+/*JP*/
+    "¾ÂÅÄ", "_ÃæÀî",
     0
 };
 
 static const char *shkarmors[] = {
+#ifndef JPDEBUG
     /* Turquie */
     "Demirci", "Kalecik", "Boyabai", "Yildizeli", "Gaziantep",
     "Siirt", "Akhalataki", "Tirebolu", "Aksaray", "Ermenak",
@@ -50,10 +67,14 @@ static const char *shkarmors[] = {
     "Bayburt", "Ayancik", "Zonguldak", "Balya", "Tefenni",
     "Artvin", "Kars", "Makharadze", "Malazgirt", "Midyat",
     "Birecik", "Kirikkale", "Alaca", "Polatli", "Nallihan",
+#endif
+/*JP*/
+    "Æ£»Þ", "_À¾¸¶",
     0
 };
 
 static const char *shkwands[] = {
+#ifndef JPDEBUG
     /* Wales */
     "Yr Wyddgrug", "Trallwng", "Mallwyd", "Pontarfynach",
     "Rhaeader", "Llandrindod", "Llanfair-ym-muallt",
@@ -64,10 +85,14 @@ static const char *shkwands[] = {
     "Kerloch", "Beinn a Ghlo", "Drumnadrochit", "Morven",
     "Uist", "Storr", "Sgurr na Ciche", "Cannich", "Gairloch",
     "Kyleakin", "Dunvegan",
+#endif
+/*JP*/
+    "µÜ²¼", "_·¬Åç",
     0
 };
 
 static const char *shkrings[] = {
+#ifndef JPDEBUG
     /* Hollandse familienamen */
     "Feyfer", "Flugi", "Gheel", "Havic", "Haynin", "Hoboken",
     "Imbyze", "Juyn", "Kinsky", "Massis", "Matray", "Moy",
@@ -77,10 +102,14 @@ static const char *shkrings[] = {
     "Rastegaisa", "Varjag Njarga", "Kautekeino", "Abisko",
     "Enontekis", "Rovaniemi", "Avasaksa", "Haparanda",
     "Lulea", "Gellivare", "Oeloe", "Kajaani", "Fauske",
+#endif
+/*JP*/
+    "¸Å¾ì", "_Ã°²¼",
     0
 };
 
 static const char *shkfoods[] = {
+#ifndef JPDEBUG
     /* Indonesia */
     "Djasinga", "Tjibarusa", "Tjiwidej", "Pengalengan",
     "Bandjar", "Parbalingga", "Bojolali", "Sarangan",
@@ -89,10 +118,14 @@ static const char *shkfoods[] = {
     "Trenggalek", "Karangkobar", "Njalindoeng", "Pasawahan",
     "Pameunpeuk", "Patjitan", "Kediri", "Pemboeang", "Tringanoe",
     "Makin", "Tipor", "Semai", "Berhala", "Tegal", "Samoe",
+#endif
+/*JP*/
+    "Á°ÅÄ", "_ÀîÀ¡",
     0
 };
 
 static const char *shkweapons[] = {
+#ifndef JPDEBUG
     /* Perigord */
     "Voulgezac", "Rouffiac", "Lerignac", "Touverac", "Guizengeard",
     "Melac", "Neuvicq", "Vanzac", "Picq", "Urignac", "Corignac",
@@ -100,10 +133,14 @@ static const char *shkweapons[] = {
     "Cazelon", "Eypau", "Carignan", "Monbazillac", "Jonzac",
     "Pons", "Jumilhac", "Fenouilledes", "Laguiolet", "Saujon",
     "Eymoutiers", "Eygurande", "Eauze", "Labouheyre",
+#endif
+/*JP*/
+    "³Þ¸¶", "_µ×Àî",
     0
 };
 
 static const char *shktools[] = {
+#ifndef JPDEBUG
     /* Spmi */
     "Ymla", "Eed-morra", "Cubask", "Nieb", "Bnowr Falr", "Telloc Cyaj",
     "Sperc", "Noskcirdneh", "Yawolloh", "Hyeghu", "Niskal", "Trahnil",
@@ -128,10 +165,14 @@ static const char *shktools[] = {
 #ifdef VMS
     "Lez-tneg", "Ytnu-haled", "Niknar",
 #endif
+#endif
+/*JP*/
+    "°ÀÄÅ", "_»°ÀÐ",
     0
 };
 
 static const char *shklight[] = {
+#ifndef JPDEBUG
     /* Romania */
     "Zarnesti", "Slanic", "Nehoiasu", "Ludus", "Sighisoara", "Nisipitu",
     "Razboieni", "Bicaz", "Dorohoi", "Vaslui", "Fetesti", "Tirgu Neamt",
@@ -140,10 +181,14 @@ static const char *shklight[] = {
     "Silistra", "Tulovo", "Panagyuritshte", "Smolyan", "Kirklareli",
     "Pernik", "Lom", "Haskovo", "Dobrinishte", "Varvara", "Oryahovo",
     "Troyan", "Lovech", "Sliven",
+#endif
+/*JP*/
+    "ÇòÀÐ", "_É¹¾å",
     0
 };
 
 static const char *shkgeneral[] = {
+#ifndef JPDEBUG
     /* Suriname */
     "Hebiwerie", "Possogroenoe", "Asidonhopo", "Manlobbi",
     "Adjama", "Pakka Pakka", "Kabalebo", "Wonotobo",
@@ -158,6 +203,9 @@ static const char *shkgeneral[] = {
     /* Iceland */
     "Akureyri", "Kopasker", "Budereyri", "Akranes", "Bordeyri",
     "Holmavik",
+#endif
+/*JP*/
+    "Kunedog", "_ÈÓÄÍ",
     0
 };
 
@@ -178,39 +226,50 @@ static const char *shkgeneral[] = {
  */
 
 const struct shclass shtypes[] = {
-	{"general store", RANDOM_CLASS, 44,
+/*JP	{"general store", RANDOM_CLASS, 44,*/
+	{"»¨²ß²°", RANDOM_CLASS, 44,
 	    D_SHOP, {{100, RANDOM_CLASS}, {0, 0}, {0, 0}}, shkgeneral},
-	{"used armor dealership", ARMOR_CLASS, 14,
+/*JP	{"used armor dealership", ARMOR_CLASS, 14,*/
+	{"Ãæ¸Å³»¾¦²ñ", ARMOR_CLASS, 14,
 	    D_SHOP, {{90, ARMOR_CLASS}, {10, WEAPON_CLASS}, {0, 0}},
 	     shkarmors},
-	{"second-hand bookstore", SCROLL_CLASS, 10, D_SHOP,
+/*JP	{"second-hand bookstore", SCROLL_CLASS, 10, D_SHOP,*/
+	{"¸Å½ñÅ¹", SCROLL_CLASS, 10, D_SHOP,
 	    {{90, SCROLL_CLASS}, {10, SPBOOK_CLASS}, {0, 0}}, shkbooks},
-	{"liquor emporium", POTION_CLASS, 10, D_SHOP,
+/*JP	{"liquor emporium", POTION_CLASS, 10, D_SHOP,*/
+	{"¤ª¼ò¤ÎÉ´²ßÅ¹", POTION_CLASS, 10, D_SHOP,
 	    {{100, POTION_CLASS}, {0, 0}, {0, 0}}, shkliquors},
-	{"antique weapons outlet", WEAPON_CLASS, 5, D_SHOP,
+/*JP	{"antique weapons outlet", WEAPON_CLASS, 5, D_SHOP,*/
+	{"¸ÅÉð´ïÀìÌç¾®ÇäÅ¹", WEAPON_CLASS, 5, D_SHOP,
 	    {{90, WEAPON_CLASS}, {10, ARMOR_CLASS}, {0, 0}}, shkweapons},
-	{"delicatessen", FOOD_CLASS, 5, D_SHOP,
+/*JP	{"delicatessen", FOOD_CLASS, 5, D_SHOP,*/
+	{"¿©ÉÊÅ¹", FOOD_CLASS, 5, D_SHOP,
 	    {{83, FOOD_CLASS}, {5, -POT_FRUIT_JUICE}, {4, -POT_BOOZE},
 	     {5, -POT_WATER}, {3, -ICE_BOX}}, shkfoods},
-	{"jewelers", RING_CLASS, 3, D_SHOP,
+/*JP	{"jewelers", RING_CLASS, 3, D_SHOP,*/
+	{"ÊõÀÐÅ¹", RING_CLASS, 3, D_SHOP,
 	    {{85, RING_CLASS}, {10, GEM_CLASS}, {5, AMULET_CLASS}, {0, 0}},
 	    shkrings},
-	{"quality apparel and accessories", WAND_CLASS, 3, D_SHOP,
+/*JP	{"quality apparel and accessories", WAND_CLASS, 3, D_SHOP,*/
+	{"¤ª¥·¥ã¥ì¤ÊÍÎÉÊÅ¹", WAND_CLASS, 3, D_SHOP,
 	    {{90, WAND_CLASS}, {5, -LEATHER_GLOVES}, {5, -ELVEN_CLOAK}, {0, 0}},
 	     shkwands},
-	{"hardware store", TOOL_CLASS, 3, D_SHOP,
+/*JP	{"hardware store", TOOL_CLASS, 3, D_SHOP,*/
+	{"Æ»¶ñ²°", TOOL_CLASS, 3, D_SHOP,
 	    {{100, TOOL_CLASS}, {0, 0}, {0, 0}}, shktools},
 	/* Actually shktools is ignored; the code specifically chooses a
 	 * random implementor name (along with candle shops having
 	 * random shopkeepers)
 	 */
-	{"rare books", SPBOOK_CLASS, 3, D_SHOP,
+/*JP	{"rare books", SPBOOK_CLASS, 3, D_SHOP,*/
+	{"¸¸¤ÎËÜ²°", SPBOOK_CLASS, 3, D_SHOP,
 	    {{90, SPBOOK_CLASS}, {10, SCROLL_CLASS}, {0, 0}}, shkbooks},
 	/* Shops below this point are "unique".  That is they must all have a
 	 * probability of zero.  They are only created via the special level
 	 * loader.
 	 */
-	{"lighting store", TOOL_CLASS, 0, D_SHOP,
+/*JP	{"lighting store", TOOL_CLASS, 0, D_SHOP,*/
+	{"¾ÈÌÀÅ¹", TOOL_CLASS, 0, D_SHOP,
 	    {{32, -WAX_CANDLE}, {50, -TALLOW_CANDLE},
 	     {5, -BRASS_LANTERN}, {10, -OIL_LAMP}, {3, -MAGIC_LAMP}}, shklight},
 	{(char *)0, 0, 0, 0, {{0, 0}, {0, 0}, {0, 0}}, 0}
@@ -266,7 +325,7 @@ nameshk(shk, nlp)
 struct monst *shk;
 const char *nlp[];
 {
-	int i, trycnt, names_avail;
+        int /*i, */trycnt, names_avail;
 	const char *shname = 0;
 	struct monst *mtmp;
 	int name_wanted;
@@ -278,6 +337,32 @@ const char *nlp[];
 	    shname = "Izchak";
 	    shk->female = FALSE;
 	} else {
+#if 1	/* JP */
+	     /* We decide to use simple way */
+	    for (names_avail = 0; nlp[names_avail]; names_avail++)
+		 ;
+
+	    for (trycnt = 0; trycnt < 50; trycnt++) {
+		 name_wanted = rn2(names_avail);
+		 shk->female = name_wanted & 1;
+		 shname = nlp[name_wanted];
+		 if(shname[0] & 0x80){
+		      shk->female = 0;
+		 }
+		 else if(shname[0] == '_'){
+		      ++shname;
+		      shk->female = 1;
+		 }
+		 for (mtmp = fmon; mtmp; mtmp = mtmp->nmon) {
+		      if (mtmp == shk) continue;
+		      if (!mtmp->isshk) continue;
+		      if (strcmp(ESHK(mtmp)->shknam, shname)) continue;
+		      break;
+		 }
+		 if(!mtmp)
+		      break;
+	    }
+#else
 	    /* We want variation from game to game, without needing the save
 	       and restore support which would be necessary for randomization;
 	       try not to make too many assumptions about time_t's internals;
@@ -286,6 +371,7 @@ const char *nlp[];
 
 	    name_wanted = ledger_no(&u.uz) + (nseed % 13) - (nseed % 5);
 	    if (name_wanted < 0) name_wanted += (13 + 5);
+
 	    shk->female = name_wanted & 1;
 
 	    for (names_avail = 0; nlp[names_avail]; names_avail++)
@@ -318,6 +404,7 @@ const char *nlp[];
 		}
 		if (!mtmp) break;	/* new name */
 	    }
+#endif
 	}
 	(void) strncpy(ESHK(shk)->shknam, shname, PL_NSIZ);
 	ESHK(shk)->shknam[PL_NSIZ-1] = 0;
@@ -450,7 +537,8 @@ register struct mkroom *sroom;
 	    else if(inside_shop(sx-1,sy)) m++;
 	    if(inside_shop(sx,sy+1)) n--;
 	    else if(inside_shop(sx,sy-1)) n++;
-	    Sprintf(buf, "Closed for inventory");
+/*JP	    Sprintf(buf, "Closed for inventory");*/
+	    Sprintf(buf, "Ãª²·¤·¤Î¤¿¤áÊÄÅ¹");
 	    make_engr_at(m, n, buf, 0L, DUST);
     }
 

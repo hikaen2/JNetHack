@@ -88,6 +88,13 @@ struct conditionals {
 #ifndef MAIL
 	{ OBJ_GLYPH, SCR_CHARGING+6, "stamped / mail" },
 #endif
+#ifndef FIGHTER
+	{ MON_GLYPH, PM_ELF, "fighter"},
+	{ MON_GLYPH, PM_ELWING, "Princess of Moon"},
+	{ MON_GLYPH, PM_GOBLIN_KING, "Jedeite"},
+	{ MON_GLYPH, PM_HIGH_ELF, "planetary fighter"},
+	{ OBJ_GLYPH, LEATHER_JACKET, "sailor blouse"},
+#endif
 	{ 0, 0, 0}
 };
 

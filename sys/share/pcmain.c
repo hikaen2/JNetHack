@@ -4,6 +4,12 @@
 
 /* main.c - MSDOS, OS/2, ST, Amiga, and NT NetHack */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "dlb.h"
 
@@ -201,7 +207,10 @@ char *argv[];
 #ifdef CHDIR
 			chdirx(hackdir,0);
 #endif
+/*JP*/
+			init_jtrns();
 			prscore(argc, argv);
+			jputchar('\0'); /* reset */
 			nethack_exit(EXIT_SUCCESS);
 		}
 		/* Don't inialize the window system just to print usage */
@@ -343,7 +352,8 @@ char *argv[];
 		    iflags.news = FALSE;
 		}
 #endif
-		pline("Restoring save file...");
+/*JP		pline("Restoring save file...");*/
+		pline("セーブファイルを復元中．．．");
 		mark_synch();	/* flush output */
 
 		if(!dorecover(fd))
@@ -353,10 +363,12 @@ char *argv[];
 #endif
 		check_special_room(FALSE);
 		if (discover)
-			You("are in non-scoring discovery mode.");
+/*JP			You("are in non-scoring discovery mode.");*/
+			pline("探検モードではスコアはのらないよ．");
 
 		if (discover || wizard) {
-			if(yn("Do you want to keep the save file?") == 'n'){
+/*JP			if(yn("Do you want to keep the save file?") == 'n'){*/
+			if(yn("セーブファイルを残しておきますか？") == 'n'){
 				(void) delete_savefile();
 			}
 # ifdef AMIGA
@@ -371,7 +383,8 @@ not_recovered:
 		player_selection();
 		newgame();
 		if (discover)
-			You("are in non-scoring discovery mode.");
+/*JP			You("are in non-scoring discovery mode.");*/
+			pline("探検モードではスコアはのらないよ．");
 
 		flags.move = 0;
 		set_wear();

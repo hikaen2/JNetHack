@@ -8,6 +8,12 @@
  * interface.
  */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994-1999
+**	changing point is marked `JP' (94/6/7) or XI18N (96/7/19)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #ifndef SYSV
 #define PRESERVE_NO_SYSV	/* X11 include files may define SYSV */
 #endif
@@ -160,7 +166,6 @@ static int FDECL(input_event, (int));
 static void FDECL(win_visible, (Widget,XtPointer,XEvent *,Boolean *));
 static void NDECL(init_standard_windows);
 
-
 /*
  * Local variables.
  */
@@ -170,6 +175,10 @@ static winid message_win = WIN_ERR,	/* These are the winids of the	    */
 	     status_win  = WIN_ERR;	/*   windows, when they are created */
 					/*   in init_windows().		    */
 static Pixmap icon_pixmap = None;	/* Pixmap for icon.		    */
+
+#ifdef	INSTALLCOLORMAP
+Colormap     cmap;
+#endif
 
 /*
  * Find the window structure that corresponds to the given widget.  Note
@@ -265,7 +274,7 @@ XColor   *color;	/* the X color structure; changed only if successful */
     long	cdiff = 16777216; /* 2^24; hopefully our map is smaller */
     XColor	tmp;
     static	XColor *table = 0;
-    register	i, j;
+    register int i, j;
     register long tdiff;
 
     /* if the screen doesn't have a big colormap, don't waste our time */
@@ -325,6 +334,50 @@ try_again:
     }
     return True;
 }
+
+#ifdef INSTALLCOLORMAP
+Boolean
+nhCvtStringToColormap(dpy, args, num_args, fromVal, toVal, data)
+Display*	dpy;
+XrmValuePtr	args;
+Cardinal	*num_args;
+XrmValuePtr	fromVal;
+XrmValuePtr	toVal;
+XtPointer	data;
+{
+  XColor	black, white;
+  int screen = DefaultScreen(dpy);
+  Colormap dcmap = DefaultColormap(dpy, screen);
+  
+  if(strncmp(fromVal->addr, "install", 7)){
+    return False;
+  }
+  if(!cmap){
+    cmap = XCreateColormap(dpy,
+			   RootWindow(dpy, screen),
+			   DefaultVisual(dpy, screen),
+			   AllocNone);
+    /*
+      手抜き
+     */
+    black.red = 0;
+    black.green = 0;
+    black.blue = 0;
+
+    white.red = 0xffff;
+    white.green = 0xffff;
+    white.blue = 0xffff;
+
+    XAllocColor(dpy, dcmap, &black);
+    XAllocColor(dpy, dcmap, &white);
+
+    XAllocColor(dpy, cmap, &black);
+    XAllocColor(dpy, cmap, &white);
+  }
+  
+  done(Colormap, cmap);
+}
+#endif
 
 Boolean
 nhCvtStringToPixel(dpy, args, num_args, fromVal, toVal, closure_ret)
@@ -455,14 +508,20 @@ void
 X11_raw_print(str)
     const char *str;
 {
+/*JP
     (void) puts(str);
+*/
+    (void) jputs(str);
 }
 
 void
 X11_raw_print_bold(str)
     const char *str;
 {
+/*JP
     (void) puts(str);
+*/
+    (void) jputs(str);
 }
 
 void
@@ -831,7 +890,11 @@ void X11_outrip(window, how)
 	panic("ripout on non-text window (window type [%d])\n", wp->type);
     }
 
+#ifndef XI18N
     calculate_rip_text(how);
+#else
+    calculate_rip_text(how, wp->Win_info.Text_info->fontset);
+#endif
 }
 #endif
 
@@ -849,6 +912,9 @@ static XtActionsRec actions[] = {
     {"key_dismiss_text",key_dismiss_text},/* key action for text widget */
 #ifdef GRAPHIC_TOMBSTONE
     {"rip_dismiss_text",rip_dismiss_text},/* action for rip in text widget */
+#endif
+#ifdef RADAR
+    {"dismiss_radar",	dismiss_radar},
 #endif
     {"menu_key",	menu_key},	/* action for menu accelerators */
     {"yn_key",		yn_key},	/* action for yn accelerators */
@@ -876,6 +942,12 @@ static XtResource resources[] = {
       XtOffset(AppResources *,double_tile_size), XtRString, "False" },
     { "tile_file", "Tile_file", XtRString, sizeof(String),
       XtOffset(AppResources *,tile_file), XtRString, "" },
+/*JP*/
+    { "tile_width", "Tile_width", XtRInt, sizeof(int),
+      XtOffset(AppResources *,tile_width), XtRString, "32" },
+    { "tile_height", "Tile_height", XtRInt, sizeof(int),
+      XtOffset(AppResources *,tile_height), XtRString, "32" },
+/*JP*/
     { "icon", "Icon", XtRString, sizeof(String),
       XtOffset(AppResources *,icon), XtRString, "nh72" },
     { "message_lines", "Message_lines", XtRInt, sizeof(int),
@@ -895,7 +967,13 @@ static XtResource resources[] = {
       XtOffset(AppResources *,tombtext_dx), XtRString, "0" },
     { "tombtext_dy", "Tombtext_dy", XtRInt, sizeof(int),
       XtOffset(AppResources *,tombtext_dy), XtRString, "13" },
+#ifdef RADAR	/* 機能してません */
+    { "radar", "Radar", XtRBoolean, sizeof(Boolean),
+      XtOffset(AppResources *, radar), XtRString, "True" },
 #endif
+#endif
+    { "centerPopups", "CenterPopups", XtRBoolean, sizeof(Boolean),
+      XtOffset(AppResources *,center_popups), XtRImmediate, False },
 };
 
 void
@@ -908,6 +986,9 @@ char** argv;
 	COPYRIGHT_BANNER_B,
 	COPYRIGHT_BANNER_C,
 	"",
+/*JP*/
+	"NetHack[日本語版], Copyright 1993, 1994",
+	"         By I. Numata , S. Miyashita and N. Hamada.",
 	"",
 	0
     };
@@ -933,11 +1014,26 @@ char** argv;
 
     XSetIOErrorHandler((XIOErrorHandler) hangup);
 
+/*JP
+** i18n initialize by issei 1994/1/8
+*/
+
+#ifdef XI18N
+    XtSetLanguageProc(NULL,NULL,NULL);
+    setlocale(LC_CTYPE, "");
+#endif
+    XSetIOErrorHandler((XIOErrorHandler) hangup);
+#ifdef INSTALLCOLORMAP
+    XtSetTypeConverter(XtRString, XtRColormap, nhCvtStringToColormap, 
+		       0, 0, XtCacheByDisplay, 0);
+#endif
+
     num_args = 0;
     XtSetArg(args[num_args], XtNallowShellResize, True);	num_args++;
     toplevel = XtAppInitialize(
 		    &app_context,
-		    "NetHack",			/* application class */
+/*JP		    "NetHack",*/		/* application class */
+		    "JNetHack",			/* application class */
 		    (XrmOptionDescList)0, 0,	/* options list */
 		    argcp, (String *)argv,	/* command line args */
 		    (String *)0,		/* fallback resources */
@@ -1220,7 +1316,6 @@ X11_getlin(question, input)
     static boolean need_to_init = True;
 
     getline_input = input;
-
     flush_screen(1);
     if (need_to_init) {
 	Arg args[1];
@@ -1297,13 +1392,17 @@ X11_display_file(str, complain)
     Cardinal num_args;
     Widget popup, dispfile;
     Position top_margin, bottom_margin, left_margin, right_margin;
-    XFontStruct *fs;
+/*JP    XFontStruct *fs;*/
     int new_width, new_height;
 #define LLEN 128
     char line[LLEN];
     int num_lines;
     char *textlines;
     int charcount;
+#ifdef XI18N
+    XFontSet fontset;
+    XFontSetExtents *extent;
+#endif
 
     /* Use the port-independent file opener to see if the file exists. */
     fp = dlb_fopen(str, RDTMODE);
@@ -1366,6 +1465,10 @@ X11_display_file(str, complain)
     XtSetArg(args[num_args], XtNdisplayCaret, False);		num_args++;
     XtSetArg(args[num_args], XtNtranslations,
 	XtParseTranslationTable(display_translations));		num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 
     dispfile = XtCreateManagedWidget(
 			"text",			/* name */
@@ -1376,7 +1479,11 @@ X11_display_file(str, complain)
 
     /* Get font and border information. */
     num_args = 0;
-    XtSetArg(args[num_args], XtNfont,	      &fs);	       num_args++;
+#ifndef XI18N
+    XtSetArg(args[num_args], XtNfont,	      &fs);	 	num_args++;
+#else
+    XtSetArg(args[num_args], XtNfontSet,      &fontset); 	num_args++;
+#endif
     XtSetArg(args[num_args], XtNtopMargin,    &top_margin);    num_args++;
     XtSetArg(args[num_args], XtNbottomMargin, &bottom_margin); num_args++;
     XtSetArg(args[num_args], XtNleftMargin,   &left_margin);   num_args++;
@@ -1389,9 +1496,16 @@ X11_display_file(str, complain)
      * The data files are currently set up assuming an 80 char wide window
      * and a fixed width font.  Soo..
      */
+#ifndef XI18N
     new_height = num_lines * (fs->ascent + fs->descent) +
 						top_margin + bottom_margin;
     new_width  = 80 * fs->max_bounds.width + left_margin + right_margin;
+#else
+    extent = XExtentsOfFontSet(fontset);
+    new_height = num_lines * extent->max_logical_extent.height +
+						top_margin + bottom_margin;
+    new_width  = 40 * extent->max_logical_extent.width + left_margin + right_margin;
+#endif
 
     /* Set the new width and height. */
     num_args = 0;
@@ -1591,6 +1705,10 @@ X11_yn_function(ques, choices, def)
 	num_args = 0;
 	XtSetArg(args[num_args], XtNtranslations,
 		XtParseTranslationTable(yn_translations));	num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 	yn_label = XtCreateManagedWidget("yn_label",
 				labelWidgetClass,
 				yn_popup,
@@ -1704,7 +1822,8 @@ init_standard_windows()
 
     num_args = 0;
     XtSetArg(args[num_args], XtNallowShellResize, True);	num_args++;
-    form = XtCreateManagedWidget("nethack",
+/*JP    form = XtCreateManagedWidget("nethack",*/
+    form = XtCreateManagedWidget("jnethack",
 				panedWidgetClass,
 				toplevel, args, num_args);
 
@@ -1725,7 +1844,6 @@ init_standard_windows()
     create_message_window(wp, FALSE, form);
     message_viewport = XtParent(wp->w);
 
-
     /* Tell the form that contains it that resizes are OK. */
     num_args = 0;
     XtSetArg(args[num_args], XtNresizable, True);		num_args++;
@@ -1737,6 +1855,10 @@ init_standard_windows()
 	num_args = 0;
 	XtSetArg(args[num_args], XtNtranslations,
 		 XtParseTranslationTable(yn_translations)); num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 	yn_label = XtCreateManagedWidget("yn_label",
 					 labelWidgetClass,
 					 form,
@@ -1963,7 +2085,9 @@ nh_keyscroll(viewport, event, params, num_params)
     if (in_nparams != 1) return; /* bad translation */
 
     direction=atoi(params[0]);
-
+#ifdef RADAR
+    viewport = XtNameToWidget(toplevel, "*map_viewport");
+#endif
     horiz_sb = XtNameToWidget(viewport, "*horizontal");
     vert_sb  = XtNameToWidget(viewport, "*vertical");
 

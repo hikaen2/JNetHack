@@ -1103,6 +1103,7 @@ E boolean FDECL(levl_follower, (struct monst *));
 E int FDECL(little_to_big, (int));
 E int FDECL(big_to_little, (int));
 E const char *FDECL(locomotion, (const struct permonst *,const char *));
+E const char *FDECL(locomotion2, (const struct permonst *,const char *));
 
 /* ### monmove.c ### */
 
@@ -1262,7 +1263,8 @@ E int NDECL(dodiscovered);
 E void NDECL(objects_init);
 
 /* ### objnam.c ### */
-
+/*JP*/
+E char *FDECL(obj_jtypename, (int));
 E char *FDECL(obj_typename, (int));
 E boolean FDECL(obj_is_pname, (struct obj *));
 E char *FDECL(distant_name, (struct obj *,char *(*)(OBJ_P)));
@@ -1429,6 +1431,9 @@ E void FDECL(make_stunned, (long,BOOLEAN_P));
 E void FDECL(make_blinded, (long,BOOLEAN_P));
 E void FDECL(make_sick, (long, const char *, BOOLEAN_P,int));
 E void FDECL(make_vomiting, (long,BOOLEAN_P));
+#ifdef JPEXTENSION
+E void FDECL(make_totter, (long, BOOLEAN_P));
+#endif
 E void FDECL(make_hallucinated, (long,BOOLEAN_P,long));
 E int NDECL(dodrink);
 E int FDECL(dopotion, (struct obj *));
@@ -1602,8 +1607,12 @@ E int FDECL(str2gend, (char *));
 E int FDECL(str2align, (char *));
 E void NDECL(role_init);
 E void NDECL(plnamesuffix);
+/*JP
 E const char *NDECL(Hello);
 E const char *NDECL(Goodbye);
+*/
+E const char *FDECL(Hello, (int));
+E const char *FDECL(Goodbye, (int));
 
 /* ### rumors.c ### */
 
@@ -2203,6 +2212,76 @@ E void NDECL(makewish);
 
 #endif /* !MAKEDEFS_C && !LEV_LEX_C */
 
+/* ### jconj.c , jtrns.c, jlib.c  ### */
+
+E  void FDECL(setkcode,(int));
+E  void FDECL(cputchar,(int));
+E  void FDECL(jputchar,(int));
+E  void FDECL(jputs,(const char *));
+E  int FDECL(jbuffer, (unsigned int, unsigned int *, void (*)(), void (*)(), void (*)()));
+E  int FDECL(cbuffer, (unsigned int, unsigned int *, void (*)(), void (*)(), void (*)()));
+E  const char *FDECL(str2ic, (const char *));
+E  const char *FDECL(jconj, (const char *,const char *));
+E  const char *FDECL(jconj_adj, (const char *));
+E  const char *FDECL(jcan, (const char *));
+E  const char *FDECL(jcannot, (const char *));
+E  const char *FDECL(jpast, (const char *));
+E  const char *FDECL(joffmsg, (struct obj *, const char **));
+E  const char *FDECL(jonmsg, (struct obj *, const char **));
+E  void NDECL(init_jtrns);
+E  int NDECL(dotogglelang);
+E  int NDECL(query_lang_mode);
+E  void FDECL(set_trns_mode, (int));
+E  const char *FDECL(jtrns_mon, (const char *, int));
+E  const char *FDECL(jtrns_obj, (const int, const char *));
+E  const char *FDECL(etrns_mon, (const char *));
+E  const char *FDECL(etrns_obj, (const int, const char *));
+E  char FDECL(objclass_to_sym, (const int));
+E  int FDECL(is_kanji, (unsigned int));
+E  int FDECL(is_kanji1, (const char *,int));
+E  int FDECL(is_kanji2, (const char *,int));
+E  int FDECL(isspace_8, (const int));
+/*E  void FDECL(zen2han, (char *));*/
+E  void FDECL(split_japanese, (char *,char *,char *,int));
+E  void FDECL(jrndm_replace, (char *));
+
+E  unsigned char *FDECL(e2sj, (unsigned char *));
+E  unsigned char *FDECL(sj2e, (unsigned char *));
+
+E  char *NDECL(soc_err);
+E  int FDECL(soc_write, (int, char *, size_t));
+E  int FDECL(soc_read, (int, char *, size_t));
+E  int FDECL(soc_write_str, (int, char *));
+
+E  int NDECL(connect_scoreserver);
+E  int NDECL(connect_bonesserver);
+E  int FDECL(disconnect_server, (int));
+
+E  void FDECL(report_score, (char *, char *));
+E  void NDECL(send_bones);
+
+#include <nhbuf.h>
+
+E  NHBUF *NDECL(nh_buf_new);
+E  void   FDECL(nh_buf_delete, (NHBUF *b));
+E  int    FDECL(nh_buf_append, (NHBUF *b, const char *data, size_t));
+E  int    FDECL(nh_buf_sprintf, (NHBUF *b, const char *fmt, ...));
+E  int    FDECL(nh_buf_read, (NHBUF *b, int fd));
+E  int    FDECL(nh_buf_write, (NHBUF *b, int fd));
+E  int    FDECL(nh_buf_search, (NHBUF *b, const char *data));	
+E  NHBUF *FDECL(nh_buf_subbuf, (NHBUF *b, int pos1, size_t));
+
+E  void  FDECL(set_homeurl, (char *));
+E  char *NDECL(get_homeurl);
+
+E  void  FDECL(set_proxy, (char *));
+E  char *NDECL(get_proxy);
+E  char *NDECL(get_proxy_host);
+E  int	 NDECL(get_proxy_port);
+
+E  void	NDECL(GTK_init_nhwindows2);
+
 #undef E
 
 #endif /* EXTERN_H */
+
