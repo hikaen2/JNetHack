@@ -2,12 +2,28 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
+/*
+	Y2K problem fixed
+	by Issei Numata		1 Nov, 1999	
+ */
+
 #include "hack.h"
 #include "dlb.h"
 #ifdef SHORT_FILENAMES
 #include "patchlev.h"
 #else
 #include "patchlevel.h"
+#endif
+
+#ifdef NH_EXTENSION_REPORT	/* jp */
+extern int report_flag;		/* end.c で定義 */
 #endif
 
 #ifdef VMS
@@ -60,7 +76,10 @@ static void FDECL(topten_print, (const char *));
 static void FDECL(topten_print_bold, (const char *));
 static xchar FDECL(observable_depth, (d_level *));
 static void NDECL(outheader);
+/*JP
 static void FDECL(outentry, (int,struct toptenentry *,BOOLEAN_P));
+*/
+static void FDECL(outentry, (int,struct toptenentry *,BOOLEAN_P,BOOLEAN_P));
 static void FDECL(readentry, (FILE *,struct toptenentry *));
 static void FDECL(writeentry, (FILE *,struct toptenentry *));
 static void FDECL(free_ttlist, (struct toptenentry *));
@@ -74,9 +93,15 @@ static void FDECL(nsb_unmung_line,(char*));
 
 /* must fit with end.c; used in rip.c */
 NEARDATA const char *killed_by_prefix[] = {
+#if 0 /*JP*/
 	"killed by ", "choked on ", "poisoned by ", "", "drowned in ",
 	"", "dissolved in ", "crushed to death by ", "petrified by ", "",
 	"", "",
+	"", "", ""
+#endif /*JP*/
+	"に殺された", "で窒息した", "の毒で死んだ", "", "溺死した",
+	"焼死した", "溶岩に溶けた", "押し潰された", "石化した", "死んだ", "虐殺された",
+        "", "",
 	"", "", ""
 };
 
@@ -86,20 +111,20 @@ static void
 topten_print(x)
 const char *x;
 {
-	if (toptenwin == WIN_ERR)
-	    raw_print(x);
-	else
-	    putstr(toptenwin, ATR_NONE, x);
+     if (toptenwin == WIN_ERR)
+	  raw_print(x);
+     else
+	  putstr(toptenwin, ATR_NONE, x);
 }
 
 static void
 topten_print_bold(x)
 const char *x;
 {
-	if (toptenwin == WIN_ERR)
-	    raw_print_bold(x);
-	else
-	    putstr(toptenwin, ATR_BOLD, x);
+     if (toptenwin == WIN_ERR)
+	  raw_print_bold(x);
+     else
+	  putstr(toptenwin, ATR_BOLD, x);
 }
 
 static xchar
@@ -142,9 +167,10 @@ struct toptenentry *tt;
 			&tt->maxlvl, &tt->hp, &tt->maxhp, &tt->deaths,
 			&tt->deathdate, &tt->birthdate,
 			&tt->uid, &tt->plchar, &tt->sex,
-			tt->name, tt->death) != TTFIELDS)
+		        tt->name, tt->death) != TTFIELDS){
 #undef TTFIELDS
 		tt->points = 0;
+	}
 	else {
 #ifdef NO_SCAN_BRACK
 		if(tt->points > 0) {
@@ -259,19 +285,27 @@ int how;
 	t0->plchar = pl_character[0];
 	t0->sex = (flags.female ? 'F' : 'M');
 	(void) strncpy(t0->name, plname, NAMSZ);
+	if( is_kanji1(t0->name, NAMSZ-1) )	/* JP */
+		t0->name[NAMSZ-1] = '_';
 	t0->name[NAMSZ] = '\0';
 	t0->death[0] = '\0';
 	switch (killer_format) {
 		default: impossible("bad killer format?");
 		case KILLED_BY_AN:
-			Strcat(t0->death, killed_by_prefix[how]);
+/*JP			Strcat(t0->death, killed_by_prefix[how]);
+			(void) strncat(t0->death, an(killer),
+						DTHSZ-strlen(t0->death));*/
 			(void) strncat(t0->death, an(killer),
 						DTHSZ-strlen(t0->death));
+			Strcat(t0->death, killed_by_prefix[how]);
 			break;
 		case KILLED_BY:
-			Strcat(t0->death, killed_by_prefix[how]);
+/*JP			Strcat(t0->death, killed_by_prefix[how]);
+			(void) strncat(t0->death, killer,
+						DTHSZ-strlen(t0->death));*/
 			(void) strncat(t0->death, killer,
 						DTHSZ-strlen(t0->death));
+			Strcat(t0->death, killed_by_prefix[how]);
 			break;
 		case NO_KILLER_PREFIX:
 			(void) strncat(t0->death, killer, DTHSZ);
@@ -296,17 +330,21 @@ int how;
 	}
 #endif /* LOGFILE */
 
+#if 1	/*バグ出しのため*/
 	if (wizard || discover) {
 	    if (how != PANICKED) HUP {
 		char pbuf[BUFSZ];
 		topten_print("");
 		Sprintf(pbuf,
-	      "Since you were in %s mode, the score list will not be checked.",
-		    wizard ? "wizard" : "discover");
+/*JP	      "Since you were in %s mode, the score list will not be checked.",
+		    wizard ? "wizard" : "discover");*/
+	      "%sモードでプレイしたのでスコアリストには載らない．",
+		    wizard ? "ウィザード" : "ディスカバリ");
 		topten_print(pbuf);
 	    }
 	    goto showwin;
 	}
+#endif
 
 	if (!lock_file(RECORD, 60))
 		goto destroywin;
@@ -363,7 +401,8 @@ int how;
 			HUP {
 			    char pbuf[BUFSZ];
 			    Sprintf(pbuf,
-			  "You didn't beat your previous score of %ld points.",
+/*JP			  "You didn't beat your previous score of %ld points.",*/
+			  "あなたは以前の%ldポイントのスコアに届かなかった．",
 				    t1->points);
 			    topten_print(pbuf);
 			    topten_print("");
@@ -399,12 +438,15 @@ int how;
 #endif	/* UPDATE_RECORD_IN_PLACE */
 		if(!done_stopprint) if(rank0 > 0){
 		    if(rank0 <= 10)
-			topten_print("You made the top ten list!");
+/*JP			topten_print("You made the top ten list!");*/
+			topten_print("あなたはトップ10リストに載った！");
 		    else {
 			char pbuf[BUFSZ];
 			Sprintf(pbuf,
-			  "You reached the %d%s place on the top %d list.",
-				rank0, ordin(rank0), ENTRYMAX);
+/*JP			  "You reached the %d%s place on the top %d list.",
+				rank0, ordin(rank0), ENTRYMAX);*/
+			  "あなたは，トップ%dリストの%d位に載った！",
+				ENTRYMAX, rank0 );
 			topten_print(pbuf);
 		    }
 		    topten_print("");
@@ -436,16 +478,16 @@ int how;
 		    !flags.end_own)
 		topten_print("");
 	    if(rank != rank0)
-		outentry(rank, t1, FALSE);
+		outentry(rank, t1, FALSE, FALSE);
 	    else if(!rank1)
-		outentry(rank, t1, TRUE);
+		outentry(rank, t1, TRUE, TRUE);
 	    else {
-		outentry(rank, t1, TRUE);
-		outentry(0, t0, TRUE);
+		outentry(rank, t1, TRUE, FALSE);
+		outentry(0, t0, TRUE, TRUE);
 	    }
 	}
 	if(rank0 >= rank) if(!done_stopprint)
-		outentry(0, t0, TRUE);
+		outentry(0, t0, TRUE, TRUE);
 #ifdef UPDATE_RECORD_IN_PLACE
 	if (flg) {
 # ifdef TRUNCATE_FILE
@@ -469,8 +511,8 @@ int how;
 	(void) fclose(rfile);
 	unlock_file(RECORD);
 	free_ttlist(tt_head);
-
   showwin:
+
 	if (flags.toptenwin && !done_stopprint) display_nhwindow(toptenwin, 1);
   destroywin:
 	if (!t0_used) dealloc_ttentry(t0);
@@ -494,40 +536,90 @@ outheader()
 }
 
 /* so>0: standout line; so=0: ordinary line */
+/* re=TRUE: report */
 static void
-outentry(rank, t1, so)
+outentry(rank, t1, so, re)
 struct toptenentry *t1;
 int rank;
 boolean so;
+boolean re;
 {
 	boolean second_line = TRUE;
 	char linebuf[BUFSZ];
-	char *bp, hpbuf[24], linebuf3[BUFSZ];
+	char *bp, hpbuf[24]/*JP, linebuf3[BUFSZ]*/;
 	int hppos, lngr;
-
+/*JP*/
+	char who[BUFSZ];
+	char where[BUFSZ];
+	char action[BUFSZ];
+	char car[BUFSZ];
+	char cdr[BUFSZ];
+	const char *jdeath;
 
 	linebuf[0] = '\0';
+	who[0] = '\0';
+	where[0] = '\0';
+	action[0] = '\0';
+
 	if (rank) Sprintf(eos(linebuf), "%3d", rank);
 	else Strcat(linebuf, "   ");
 
-	Sprintf(eos(linebuf), " %10ld  %.10s", t1->points, t1->name);
-	Sprintf(eos(linebuf), "-%c ", t1->plchar);
-	if (!strncmp("escaped", t1->death, 7)) {
+/*JP	Sprintf(eos(linebuf), " %10ld  %.10s", t1->points, t1->name);*/
+/*JP	Sprintf(eos(linebuf), "-%c ", t1->plchar);*/
+	bp = index(pl_classes, t1->plchar);
+	Sprintf(who, " %10ld  %sの", t1->points, 
+		jtrns_mon(roles[bp - pl_classes], t1->sex == 'F'));
+/*JP
+		jtrns_mon(pl_character, flags.female));*/
+	Sprintf(eos(who), "%s(%s)は", t1->name,
+		t1->sex == 'F' ? "女" : "男");
+/*JP*/
+	jdeath = t1->death;
+	if (!strncmp(jdeath, "魔除けを手に", 12))
+	    jdeath += 12;
+	else if (!strncmp(jdeath, "天上で恥辱を受け", 16))
+	    jdeath += 16;
+	else if (!strncmp(jdeath, "偽物の魔除けを掴まされ", 24))
+	    jdeath += 24;
+
+/*JP	if (!strncmp("escaped", t1->death, 7)) {*/
+	if (!strncmp("脱出した", jdeath, 8)
+	    || !strncmp("escaped", jdeath, 7)) {
+#if 0 /*JP*/
 	    Sprintf(eos(linebuf), "escaped the dungeon %s[max level %d]",
 		    !strncmp(" (", t1->death + 7, 2) ? t1->death + 7 + 2 : "",
+		    t1->maxlvl);*/
+	    Sprintf(action, "%s迷宮から脱出した[最大地下%d階]",
+		    !strncmp("魔除けを手に", t1->death, 12) ?
+		    "魔除けを手に" : "",
 		    t1->maxlvl);
 	    /* fixup for closing paren in "escaped... with...Amulet)[max..." */
 	    if ((bp = index(linebuf, ')')) != 0)
 		*bp = (t1->deathdnum == astral_level.dnum) ? '\0' : ' ';
+#endif /*JP*/
+	    char jbuf[BUFSZ];
+	    strncpy(jbuf, t1->death, jdeath - t1->death);
+	    jbuf[jdeath - t1->death] = '\0';
+	    Sprintf(action, "%s迷宮から脱出した[最大地下%d階]",
+		    jbuf, t1->maxlvl);
 	    second_line = FALSE;
-	} else if (!strncmp("ascended", t1->death, 8)) {
-	    Sprintf(eos(linebuf), "ascended to demigod%s-hood",
-		    (t1->sex == 'F') ? "dess" : "");
+/*JP	} else if (!strncmp("ascended", t1->death, 8)) {*/
+	} else if (!strncmp("昇天した", jdeath, 8)
+		   || !strncmp("ascended", jdeath, 8)) {
+/*JP	    Sprintf(eos(linebuf), "ascended to demigod%s-hood",
+		    (t1->sex == 'F') ? "dess" : "");*/
+	    Sprintf(action, "昇天し%s神となった",
+		    (t1->sex == 'F') ? "女" : "");
 	    second_line = FALSE;
 	} else {
-	    if (!strncmp(t1->death, "quit", 4)) {
-		Strcat(linebuf, "quit");
+/*JP	    if (!strncmp(t1->death, "quit", 4)) {*/
+	    if (!strncmp(jdeath, "抜けた", 4)
+		|| !strncmp(jdeath, "quit", 4)) {
+/*JP		Strcat(linebuf, "quit");*/
+		Strcat(action, t1->death);
 		second_line = FALSE;
+	    }
+#if 0
 	    } else if (!strncmp(t1->death, "starv", 5)) {
 		Strcat(linebuf, "starved to death");
 		second_line = FALSE;
@@ -541,46 +633,95 @@ boolean so;
 	    } else if (!strncmp(t1->death, "petrified by ", 13)) {
 		Strcat(linebuf, "turned to stone");
 	    } else Strcat(linebuf, "died");
+#endif /*JP*/
 
 	    if (t1->deathdnum == astral_level.dnum) {
-		const char *arg, *fmt = " on the Plane of %s";
+	        const char *arg/*JP, *fmt = " on the Plane of %s"*/;
 
 		switch (t1->deathlev) {
 		case -5:
+/*JP
 			fmt = " on the %s Plane";
 			arg = "Astral";	break;
+*/
+			arg = "命の精霊界"; break;
 		case -4:
-			arg = "Water";	break;
+/*JP			arg = "Water";	break;*/
+			arg = "水の精霊界";	break;
 		case -3:
-			arg = "Fire";	break;
+/*JP			arg = "Fire";	break;*/
+			arg = "火の精霊界";	break;
 		case -2:
-			arg = "Air";	break;
+/*JP			arg = "Air";	break;*/
+			arg = "風の精霊界";	break;
 		case -1:
-			arg = "Earth";	break;
+/*JP			arg = "Earth";	break;*/
+			arg = "地の精霊界";	break;
 		default:
 			arg = "Void";	break;
 		}
-		Sprintf(eos(linebuf), fmt, arg);
+/*JP		Sprintf(eos(linebuf), fmt, arg);*/
+		Sprintf(where, "%sにて", arg);
 	    } else {
+/*JP
 		Sprintf(eos(linebuf), " in %s on level %d",
 			dungeons[t1->deathdnum].dname, t1->deathlev);
+*/
+		Sprintf(where, "%sの地下%d階にて",
+			jtrns_obj('d', dungeons[t1->deathdnum].dname), t1->deathlev);
 		if (t1->deathlev != t1->maxlvl)
-		    Sprintf(eos(linebuf), " [max %d]", t1->maxlvl);
+/*JP		    Sprintf(eos(linebuf), " [max %d]", t1->maxlvl);*/
+		    Sprintf(eos(where), "[最大地下%d階]", t1->maxlvl);
 	    }
 
 	    /* kludge for "quit while already on Charon's boat" */
 	    if (!strncmp(t1->death, "quit ", 5))
 		Strcat(linebuf, t1->death + 4);
 	}
-	Strcat(linebuf, ".");
+/*JP	Strcat(linebuf, ".");*/
 
 	/* Quit, starved, ascended, and escaped contain no second line */
 	if (second_line)
-	    Sprintf(eos(linebuf), "  %c%s.", highc(*(t1->death)), t1->death+1);
+/*JP	    Sprintf(eos(linebuf), "  %c%s.", highc(*(t1->death)), t1->death+1);*/
+	    Sprintf(action, "%s", t1->death);
+
+	Sprintf(eos(linebuf), "%s%s%s．", who, where, action);
 
 	lngr = (int)strlen(linebuf);
 	if (t1->hp <= 0) hpbuf[0] = '-', hpbuf[1] = '\0';
 	else Sprintf(hpbuf, "%d", t1->hp);
+
+	hppos = COLNO - (sizeof("  Hp [max]")-1); /* sizeof(str) includes \0 */
+
+#ifdef NH_EXTENSION_REPORT
+	if(report_flag && re){
+	    report_score(action, linebuf);
+	    send_bones();
+	}
+#endif
+	while(lngr >= hppos ){
+/*
+**	hpposより前の適当な位置で分割する．
+*/
+	  split_japanese(linebuf, car, cdr, hppos);
+
+	  bp = eos(car);
+	  if (so) {
+	    while (bp < car + (COLNO-1)) *bp++ = ' ';
+	    *bp = 0;
+	    topten_print_bold(car);
+	  } else
+	    topten_print(car);
+
+	  Sprintf(linebuf, "%15s %s", "", cdr);
+	  lngr = (int)strlen(linebuf);
+	}
+
+/*
+**	日本語が入ると文字列を後から見ていくことはできない．
+*/
+
+#if 0 /*JP*/
 	/* beginning of hp column after padding (not actually padded yet) */
 	hppos = COLNO - (sizeof("  Hp [max]")-1); /* sizeof(str) includes \0 */
 	while (lngr >= hppos) {
@@ -602,6 +743,8 @@ boolean so;
 	    Sprintf(linebuf, "%15s %s", "", linebuf3);
 	    lngr = strlen(linebuf);
 	}
+#endif /*JP*/
+
 	/* beginning of hp column not including padding */
 	hppos = COLNO - 7 - (int)strlen(hpbuf);
 	bp = eos(linebuf);
@@ -623,8 +766,8 @@ boolean so;
 	    topten_print_bold(linebuf);
 	} else
 	    topten_print(linebuf);
-}
 
+}
 static int
 score_wanted(current_ver, rank, t1, playerct, players, uid)
 boolean current_ver;
@@ -769,7 +912,7 @@ char **argv;
 	    t1 = tt_head;
 	    for (rank = 1; t1->points != 0; rank++, t1 = t1->tt_next) {
 		if (score_wanted(current_ver, rank, t1, playerct, players, uid))
-		    (void) outentry(rank, t1, 0);
+		    (void) outentry(rank, t1, 0, 0);
 	    }
 	} else {
 	    Sprintf(pbuf, "Cannot find any %sentries for ",
@@ -805,7 +948,11 @@ boolean fem;
 		case 'C': return (fem ? PM_CAVEWOMAN : PM_CAVEMAN);
 		case 'E': return PM_ELF;
 		case 'H': return PM_HEALER;
+#ifndef FIGHTER
 		case 'F':	/* accept old Fighter class */
+#else
+		case 'F': return PM_FIGHTER;
+#endif
 		case 'K': return PM_KNIGHT;
 		case 'P': return (fem ? PM_PRIESTESS : PM_PRIEST);
 		case 'R': return PM_ROGUE;
@@ -892,4 +1039,13 @@ nsb_unmung_line(p)
 }
 #endif /* NO_SCAN_BRACK */
 
+#ifdef GTK_GRAPHICS
+winid
+create_toptenwin()
+{
+    toptenwin = create_nhwindow(NHW_TEXT);
+
+    return toptenwin;
+}
+#endif
 /*topten.c*/

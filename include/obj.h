@@ -5,7 +5,7 @@
 #ifndef OBJ_H
 #define OBJ_H
 
-/* #define obj obj_nh	/* uncomment for SCO UNIX, which has a conflicting
+/* #define obj obj_nh	*//* uncomment for SCO UNIX, which has a conflicting
 			 * typedef for "obj" in <sys/types.h> */
 
 union vptrs {
@@ -22,7 +22,7 @@ struct obj {
 #define ocarry		v.v_ocarry
 
 	struct obj *cobj;       /* contents list for containers */
-/*	unsigned o_cwt;		/* container weight capacity */
+/*	unsigned o_cwt;		*//* container weight capacity */
 	unsigned o_id;
 	xchar ox,oy;
 	short otyp;		/* object class number */

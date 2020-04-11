@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "artifact.h"
 
@@ -9,9 +16,11 @@ void
 take_gold()
 {
 	if (u.ugold <= 0)  {
-		You_feel("a strange sensation.");
+/*JP		You_feel("a strange sensation.");*/
+		You("奇妙な感覚を覚えた．");
 	} else {
-		You("notice you have no gold!");
+/*JP		You("notice you have no gold!");*/
+		You("お金を持ってないことに気がついた！");
 		u.ugold = 0;
 		flags.botl = 1;
 	}
@@ -20,15 +29,24 @@ take_gold()
 int
 dosit()
 {
+/*JP
 	static const char *sit_message = "sit on the %s.";
+*/
+	static const char *sit_message = "%sに座った．";
 	register struct trap *trap;
 	register int typ = levl[u.ux][u.uy].typ;
 
 	if(!can_reach_floor())	{
 	    if (Levitation)
+/*JP
 		You("tumble in place.");
+*/
+		You("その場で宙返りした．");
 	    else
+/*JP
 		You("are sitting on air.");
+*/
+		You("空中に座った．");
 	    return 0;
 	}
 
@@ -36,113 +54,203 @@ dosit()
 	    register struct obj *obj;
 
 	    obj = level.objects[u.ux][u.uy];
+/*JP
 	    You("sit on %s.", the(xname(obj)));
 	    if(!Is_box(obj)) pline("It's not very comfortable...");
+*/
+	    You("%sに座った．", the(xname(obj)));
+	    if(!Is_box(obj)) pline("あまり座りごこちがよくない．．．");
 
 	} else if ((trap = t_at(u.ux, u.uy)) != 0) {
 
 	    if (u.utrap) {
 		exercise(A_WIS, FALSE);	/* you're getting stuck longer */
 		if(u.utraptype == TT_BEARTRAP) {
+/*JP
 		    You_cant("sit down with your %s in the bear trap.", body_part(FOOT));
+*/
+		    pline("%sが熊の罠にはさまっているので座れない．", body_part(FOOT));
 		    u.utrap++;
 	        } else if(u.utraptype == TT_PIT) {
 		    if(trap->ttyp == SPIKED_PIT) {
+/*JP
 			You("sit down on a spike.  Ouch!");
 			losehp(1, "sitting on an iron spike", KILLED_BY);
+*/
+			You("トゲの上に座った．いてっ！");
+			losehp(1, "鉄のトゲの上に座って", KILLED_BY);
 			exercise(A_STR, FALSE);
 		    } else
+/*JP
 			You("sit down in the pit.");
+*/
+			You("落し穴の中で座った．");
 		    u.utrap += rn2(5);
 		} else if(u.utraptype == TT_WEB) {
+/*JP
 		    You("sit in the spider web and get entangled further!");
+*/
+		    You("蜘蛛の巣の中で座ったら，より絡まった！");
 		    u.utrap += rn1(10, 5);
 		} else if(u.utraptype == TT_LAVA) {
 		    /* Must have fire resistance or they'd be dead already */
+/*JP
 		    You("sit in the lava!");
+*/
+		    You("溶岩の中に座った！");
 		    u.utrap += rnd(4);
+/*JP
 		    losehp(d(2,10), "sitting in lava", KILLED_BY);
+*/
+		    losehp(d(2,10), "溶岩の中に座って", KILLED_BY);
 		} else if(u.utraptype == TT_INFLOOR) {
+/*JP
 		    You_cant("maneuver to sit!");
+*/
+		    You("座ったところで移動できない！");
 		    u.utrap++;
 		}
 	    } else {
+/*JP
 	        You("sit down.");
+*/
+	        You("座った．");
 		dotrap(trap);
 	    }
 	} else if(Underwater || Is_waterlevel(&u.uz)) {
 	    if (Is_waterlevel(&u.uz))
+/*JP
 		pline("There are no cushions floating nearby.");
+*/
+		pline("近くに浮いているクッションはない．");
 	    else
+/*JP
 		You("sit down on the muddy bottom.");
+*/
+		You("どろどろした底に座った．");
 	} else if(is_pool(u.ux, u.uy)) {
 
+/*JP
 	    You("sit in the water.");
+*/
+	    You("水の中で座った．");
 	    if (!rn2(10) && uarm)
+/*JP
 		(void) rust_dmg(uarm, "armor", 1, TRUE);
+*/
+		(void) rust_dmg(uarm, "鎧", 1, TRUE);
 	    if (!rn2(10) && uarmf && uarmf->otyp != WATER_WALKING_BOOTS)
+/*JP
 		(void) rust_dmg(uarm, "armor", 1, TRUE);
+*/
+		(void) rust_dmg(uarm, "鎧", 1, TRUE);
 #ifdef SINKS
 	} else if(IS_SINK(typ)) {
 
+/*JP
 	    You(sit_message, defsyms[S_sink].explanation);
 	    Your("%s gets wet.", humanoid(uasmon) ? "rump" : "underside");
+*/
+	    You(sit_message, jtrns_obj('S',defsyms[S_sink].explanation));
+	    Your("%sは濡れた．", humanoid(uasmon) ? "尻" : "下部");
 #endif
 	} else if(IS_ALTAR(typ)) {
 
+/*JP
 	    You(sit_message, defsyms[S_altar].explanation);
+*/
+	    You(sit_message, jtrns_obj('S', defsyms[S_altar].explanation));
 	    altar_wrath(u.ux, u.uy);
 
 	} else if(typ == STAIRS) {
 
+/*JP
 	    You(sit_message, "stairs");
+*/
+	    You(sit_message, "階段");
 
 	} else if(typ == LADDER) {
 
+/*JP
 	    You(sit_message, "ladder");
+*/
+	    You(sit_message, "梯子");
 
 	} else if (is_lava(u.ux, u.uy)) {
 
 	    /* must be WWalking */
+/*JP
 	    You(sit_message, "lava");
+*/
+	    You(sit_message, "溶岩");
 	    if (likes_lava(uasmon)) {
+/*JP
 		pline_The("lava feels warm.");
+*/
+		pline("溶岩は暖かい．");
 		return 1;
 	    }
+/*JP
 	    pline_The("lava burns you!");
 	    losehp(d((Fire_resistance ? 2 : 10), 10),
 		   "sitting on lava", KILLED_BY);
+*/
+	    You("溶岩で燃えた！");
+	    losehp(d((Fire_resistance ? 2 : 10), 10),
+		   "溶岩に座って", KILLED_BY);
 
 	} else if (is_ice(u.ux, u.uy)) {
 
+/*JP
 	    You(sit_message, defsyms[S_ice].explanation);
 	    if (!Cold_resistance) pline_The("ice feels cold.");
+*/
+	    You(sit_message, jtrns_obj('S', defsyms[S_ice].explanation));
+	    if (!Cold_resistance) pline("氷は冷たく感じた");
 
 	} else if (typ == DRAWBRIDGE_DOWN) {
 
+/*JP
 	    You(sit_message, "drawbridge");
+*/
+	    You(sit_message, "跳ね橋");
 
 	} else if(IS_THRONE(typ)) {
 
+/*JP
 	    You(sit_message, defsyms[S_throne].explanation);
+*/
+	    You(sit_message, jtrns_obj('S',defsyms[S_throne].explanation));
 	    if (rnd(6) > 4)  {
 		switch (rnd(13))  {
 		    case 1:
 			(void) adjattrib(rn2(A_MAX), -rn1(4,3), FALSE);
+/*JP
 			losehp(rnd(10), "cursed throne", KILLED_BY_AN);
+*/
+			losehp(rnd(10), "呪われた玉座で", KILLED_BY_AN);
 			break;
 		    case 2:
 			(void) adjattrib(rn2(A_MAX), 1, FALSE);
 			break;
 		    case 3:
+/*JP
 			pline("A%s electric shock shoots through your body!",
 			      (Shock_resistance) ? "n" : " massive");
 			losehp(Shock_resistance ? rnd(6) : rnd(30),
 			       "electric chair", KILLED_BY_AN);
+*/
+			pline("%s電気があなたの体を走り抜けた！",
+			      (Shock_resistance) ? "" : "激しい");
+			losehp(Shock_resistance ? rnd(6) : rnd(30),
+			       "電気椅子で", KILLED_BY_AN);
 			exercise(A_CON, FALSE);
 			break;
 		    case 4:
+/*JP
 			You_feel("much, much better!");
+*/
+			You("とても，とても元気になったような気がした！");
 			if (Upolyd) {
 			    if (u.mh >= (u.mhmax - 5))  u.mhmax += 4;
 			    u.mh = u.mhmax;
@@ -159,7 +267,8 @@ dosit()
 			break;
 		    case 6:
 			if(u.uluck + rn2(5) < 0) {
-			    You_feel("your luck is changing.");
+/*JP			    You_feel("your luck is changing.");*/
+			    pline("運がよくなったような気がする．");
 			    change_luck(1);
 			} else	    makewish();
 			break;
@@ -167,22 +276,30 @@ dosit()
 			{
 			register int cnt = rnd(10);
 
-			pline("A voice echoes:");
-			verbalize("Thy audience hath been summoned, %s!",
-				  flags.female ? "Dame" : "Sire");
+/*JP			pline("A voice echoes:");*/
+			pline("声が響いた:");
+/*JP			verbalize("Thy audience hath been summoned, %s!",
+				  flags.female ? "Dame" : "Sire");*/
+			verbalize("%sよ！汝の聴衆召喚されし．",
+				  flags.female ? "女" : "男");
 			while(cnt--)
 			    (void) makemon(courtmon(), u.ux, u.uy, NO_MM_FLAGS);
 			break;
 			}
 		    case 8:
-			pline("A voice echoes:");
-			verbalize("By thy Imperious order, %s...",
-				  flags.female ? "Dame" : "Sire");
+/*JP			pline("A voice echoes:");*/
+			pline("声が響いた:");
+/*JP			verbalize("By thy Imperious order, %s...",
+				  flags.female ? "Dame" : "Sire");*/
+			verbalize("%sよ！汝の傲慢聞きいれようぞ．",
+				  flags.female ? "女" : "男");
 			do_genocide(1);
 			break;
 		    case 9:
-			pline("A voice echoes:");
-	verbalize("A curse upon thee for sitting upon this most holy throne!");
+/*JP			pline("A voice echoes:");*/
+			pline("声が響いた:");
+/*JP	verbalize("A curse upon thee for sitting upon this most holy throne!");*/
+	verbalize("聖なる玉座に座りし汝に呪いあれ！");
 			if (Luck > 0)  {
 			    make_blinded(Blinded + rn1(100,250),TRUE);
 			} else	    rndcurse();
@@ -191,48 +308,58 @@ dosit()
 			if (Luck < 0 || (HSee_invisible & INTRINSIC))  {
 				if (level.flags.nommap) {
 					pline(
-					"A terrible drone fills your head!");
+/*JP					"A terrible drone fills your head!");*/
+					"恐しいブンブンという音が頭に響いた！");
 					make_confused(HConfusion + rnd(30),
 									FALSE);
 				} else {
-					pline("An image forms in your mind.");
+/*JP					pline("An image forms in your mind.");*/
+					pline("イメージが頭に浮んだ．");
 					do_mapping();
 				}
 			} else  {
-				Your("vision becomes clear.");
+/*JP				Your("vision becomes clear.");*/
+				Your("視界は冴え渡った．");
 				HSee_invisible |= FROMOUTSIDE;
 				newsym(u.ux, u.uy);
 			}
 			break;
 		    case 11:
 			if (Luck < 0)  {
-			    You_feel("threatened.");
+/*JP			    You_feel("threatened.");*/
+			    You("脅迫されているような気がした．");
 			    aggravate();
 			} else  {
 
-			    You_feel("a wrenching sensation.");
+/*JP			    You_feel("a wrenching sensation.");*/
+			    You("ねじられたような感覚を感じた．");
+
 			    tele();		/* teleport him */
 			}
 			break;
 		    case 12:
-			You("are granted an insight!");
+/*JP			You("are granted an insight!");*/
+			You("洞察力を得た！");
 			if (invent) {
 			    /* rn2(5) agrees w/seffects() */
 			    identify_pack(rn2(5));
 			}
 			break;
 		    case 13:
-			Your("mind turns into a pretzel!");
+/*JP			Your("mind turns into a pretzel!");*/
+			Your("心はクネクネになった！");
 			make_confused(HConfusion + rn1(7,16),FALSE);
 			break;
 		    default:	impossible("throne effect");
 				break;
 		}
-	    } else	You_feel("somehow out of place...");
+/*JP	    } else	You_feel("somehow out of place...");*/
+	    } else	You("何故か場違いの気がした．．．");
 
 	    if (!rn2(3) && IS_THRONE(levl[u.ux][u.uy].typ)) {
 		/* may have teleported */
-		pline_The("throne vanishes in a puff of logic.");
+/*JP		pline_The("throne vanishes in a puff of logic.");*/
+		pline("玉座はふっと消えた．");
 		levl[u.ux][u.uy].typ = ROOM;
 		if(Invisible) newsym(u.ux,u.uy);
 	    }
@@ -241,12 +368,14 @@ dosit()
 		struct obj *uegg;
 
 		if (!flags.female) {
-			pline("Males can't lay eggs!");
+/*JP			pline("Males can't lay eggs!");*/
+			pline("雄は卵を産めない！");
 			return 0;
 		}
 
 		if (u.uhunger < (int)objects[EGG].oc_nutrition) {
-			You("don't have enough energy to lay an egg.");
+/*JP			You("don't have enough energy to lay an egg.");*/
+			You("卵を産むだけのエネルギーがない．");
 			return 0;
 		}
 
@@ -257,14 +386,17 @@ dosit()
 		uegg->corpsenm = egg_type_from_parent(u.umonnum, FALSE);
 		uegg->known = uegg->dknown = 1;
 		attach_egg_hatch_timeout(uegg);
-		You("lay an egg.");
+/*JP		You("lay an egg.");*/
+		You("卵を産んだ");
 		dropy(uegg);
 		stackobj(uegg);
 		morehungry((int)objects[EGG].oc_nutrition);
 	} else if (u.uswallow)
-		pline("There are no seats in here!");
+/*JP		pline("There are no seats in here!");*/
+		pline("ここには椅子はない！");
 	else
-		pline("Having fun sitting on the %s?", surface(u.ux,u.uy));
+/*JP		pline("Having fun sitting on the %s?", surface(u.ux,u.uy));*/
+		pline("%sに座って楽しいかい？", surface(u.ux,u.uy));
 	return(1);
 }
 
@@ -274,16 +406,19 @@ rndcurse()			/* curse a few inventory items at random! */
 	int	nobj = 0;
 	int	cnt, onum;
 	struct	obj	*otmp;
-	static const char *mal_aura = "feel a malignant aura surround %s.";
+/*JP	static const char *mal_aura = "feel a malignant aura surround %s.";*/
+	static const char *mal_aura = "邪悪なオーラを%sの回りに感じた．";
 
 	if (uwep && (uwep->oartifact == ART_MAGICBANE) && rn2(20)) {
-	    You(mal_aura, "the magic-absorbing blade");
+/*JP	    You(mal_aura, "the magic-absorbing blade");*/
+	    You(mal_aura, "魔力を吸いとる刀");
 	    return;
 	}
 
 	if(Antimagic) {
 	    shieldeff(u.ux, u.uy);
-	    You(mal_aura, "you");
+/*JP	    You(mal_aura, "you");*/
+	    You(mal_aura, "あなた");
 	}
 
 	for (otmp = invent; otmp; otmp = otmp->nobj)  nobj++;
@@ -297,7 +432,8 @@ rndcurse()			/* curse a few inventory items at random! */
 
 		if(otmp->oartifact && spec_ability(otmp, SPFX_INTEL) &&
 		   rn2(10) < 8) {
-		    pline("%s resists!", The(xname(otmp)));
+/*JP		    pline("%s resists!", The(xname(otmp)));*/
+		    pline("%sは影響を受けない！", The(xname(otmp)));
 		    continue;
 		}
 
@@ -314,60 +450,74 @@ attrcurse()			/* remove a random INTRINSIC ability */
 	switch(rnd(11)) {
 	case 1 : if (HFire_resistance & INTRINSIC) {
 			HFire_resistance &= ~INTRINSIC;
-			You_feel("warmer.");
+/*JP			You_feel("warmer.");*/
+			You("暖かさを感じた．");
 			break;
 		}
 	case 2 : if (HTeleportation & INTRINSIC) {
 			HTeleportation &= ~INTRINSIC;
-			You_feel("less jumpy.");
+/*JP			You_feel("less jumpy.");*/
+			You("ちょっと神経過敏になった．");
 			break;
 		}
 	case 3 : if (HPoison_resistance & INTRINSIC) {
 			HPoison_resistance &= ~INTRINSIC;
-			You_feel("a little sick!");
+/*JP			You_feel("a little sick!");*/
+			You("少し気分が悪くなった！");
 			break;
 		}
 	case 4 : if (HTelepat & INTRINSIC) {
 			HTelepat &= ~INTRINSIC;
 			if (Blind && !Telepat)
 			    see_monsters();	/* Can't sense mons anymore! */
-			Your("senses fail!");
+/*JP			Your("senses fail!");*/
+			Your("五感は麻痺した！");
 			break;
 		}
 	case 5 : if (HCold_resistance & INTRINSIC) {
 			HCold_resistance &= ~INTRINSIC;
-			You_feel("cooler.");
+/*JP			You_feel("cooler.");*/
+			You("涼しさを感じた．");
 			break;
 		}
 	case 6 : if (HInvis & INTRINSIC) {
 			HInvis &= ~INTRINSIC;
-			You_feel("paranoid.");
+/*JP			You_feel("paranoid.");*/
+			You("妄想を抱いた．");
 			break;
 		}
 	case 7 : if (HSee_invisible & INTRINSIC) {
 			HSee_invisible &= ~INTRINSIC;
-			You("%s!", Hallucination ? "tawt you taw a puttie tat"
-						: "thought you saw something");
+/*JP			You("%s!", Hallucination ? "tawt you taw a puttie tat"
+						: "thought you saw something");*/
+			if(Hallucination)
+			  You("だれ蟹みら，れている．");
+			else
+			  You("誰かに見られているような気がした！");
 			break;
 		}
 	case 8 : if (Fast & INTRINSIC) {
 			Fast &= ~INTRINSIC;
-			You_feel("slower.");
+/*JP			You_feel("slower.");*/
+			You("遅くなったような気がした．");
 			break;
 		}
 	case 9 : if (Stealth & INTRINSIC) {
 			Stealth &= ~INTRINSIC;
-			You_feel("clumsy.");
+/*JP			You_feel("clumsy.");*/
+			You("不器用になったような気がした．");
 			break;
 		}
 	case 10: if (Protection & INTRINSIC) {
 			Protection &= ~INTRINSIC;
-			You_feel("vulnerable.");
+/*JP			You_feel("vulnerable.");*/
+			You("目立つようになった気がした．");
 			break;
 		}
 	case 11: if (Aggravate_monster & INTRINSIC) {
 			Aggravate_monster &= ~INTRINSIC;
-			You_feel("less attractive.");
+/*JP			You_feel("less attractive.");*/
+			You("魅力が失せたような気がした．");
 			break;
 		}
 	default: break;

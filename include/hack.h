@@ -34,7 +34,11 @@
  * This is the way the game ends.  If these are rearranged, the arrays
  * in end.c and topten.c will need to be changed.
  */
+
+/*JP
 #define DIED		 0
+*/
+#define KILLED		 0
 #define CHOKING		 1
 #define POISONING	 2
 #define STARVING	 3
@@ -43,12 +47,21 @@
 #define DISSOLVED	 6
 #define CRUSHING	 7
 #define STONING		 8
+/*JP
 #define GENOCIDED	 9
 #define PANICKED	10
 #define TRICKED		11
 #define QUIT		12
 #define ESCAPED		13
 #define ASCENDED	14
+*/
+#define DIED		 9
+#define GENOCIDED	10
+#define PANICKED	11
+#define TRICKED		12
+#define QUIT		13
+#define ESCAPED		14
+#define ASCENDED	15
 
 #ifndef DUNGEON_H	/* includes align.h */
 #include "dungeon.h"
@@ -136,6 +149,10 @@ NEARDATA extern coord bhitpos;	/* place where thrown weapon falls to the ground 
 #undef EXTERN_H
 #include "extern.h"
 #endif /* USE_TRAMPOLI */
+
+#ifdef NEWBIE
+#include "newbie.h"
+#endif
 
 #define NO_SPELL	0
 

@@ -2,6 +2,12 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright (c) Issei Numata 1994-2000
+**	changing point is marked `JP' (94/1/6)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 static void FDECL(m_lose_armor, (struct monst *,struct obj *));
@@ -224,6 +230,8 @@ boolean creation;
 {
 	struct obj *old, *best, *obj;
 	int m_delay = 0;
+	const char *j, *jj;
+	char m[BUFSZ], mm[BUFSZ];
 
 	if (mon->mfrozen) return; /* probably putting previous item on */
 
@@ -297,11 +305,25 @@ outer_break:
 	    if (old) {
 		char buf[BUFSZ];
 
-		Sprintf(buf, "%s", distant_name(old, doname));
+/*JP		Sprintf(buf, "%s", distant_name(old, doname));
 		pline("%s removes %s and puts on %s.",
-		    Monnam(mon), buf, distant_name(best, doname));
-	    } else
-		pline("%s puts on %s.", Monnam(mon),distant_name(best,doname));
+		    Monnam(mon), buf, distant_name(best, doname));*/
+		Strcpy(m, jconj(jonmsg(best, &j), "た"));
+		Strcpy(mm, jconj(joffmsg(best, &jj), "て"));
+
+		Sprintf(buf, "%s", distant_name(old, doname));
+		pline("%sは%s%s%s%s%s%s．", 
+		    Monnam(mon), buf, jj,
+		      Blind ? "はずして" : mm, 
+		      distant_name(best, doname), j,
+		      Blind ? "身につけた" : m);
+	    } else{
+/*JP		pline("%s puts on %s.", Monnam(mon),distant_name(best,doname));*/
+		Strcpy(m, jonmsg(best, &j));
+		pline("%sは%s%s%s．", Monnam(mon),
+		      distant_name(best,doname), j,
+		      Blind ? "身につける" : jconj(m, "た"));
+	    }
 	    m_delay += objects[best->otyp].oc_delay;
 	    mon->mfrozen = m_delay;
 	    if (mon->mfrozen) mon->mcanmove = 0;
@@ -348,67 +370,87 @@ struct monst *mon;
 	register struct obj *otmp;
 	struct permonst *mdat = mon->data;
 	boolean vis = cansee(mon->mx, mon->my);
+/*JP
 	const char *pronoun = him[pronoun_gender(mon)],
-			*ppronoun = his[pronoun_gender(mon)];
+			*ppronoun = his[pronoun_gender(mon)];*/
 
 	if (breakarm(mdat)) {
 	    if ((otmp = which_armor(mon, W_ARM)) != 0) {
 		if (vis)
-		    pline("%s breaks out of %s armor!", Monnam(mon), ppronoun);
+/*JP		    pline("%s breaks out of %s armor!", Monnam(mon), ppronoun);*/
+		    pline("%sは鎧をやぶり出た！", Monnam(mon));
 		else
-		    You_hear("a cracking sound.");
+/*JP		    You_hear("a cracking sound.");*/
+		    You("バリバリという音を聞いた．");
 		m_useup(mon, otmp);
 	    }
 	    if ((otmp = which_armor(mon, W_ARMC)) != 0) {
 		if (otmp->oartifact) {
 		    if (vis)
-			pline("%s cloak falls off!", s_suffix(Monnam(mon)));
+/*JP			pline("%s cloak falls off!", s_suffix(Monnam(mon)));*/
+			pline("%sのクロークは落ちた！", s_suffix(Monnam(mon)));
 		    m_lose_armor(mon, otmp);
 		} else {
 		    if (vis)
-			pline("%s cloak tears apart!", s_suffix(Monnam(mon)));
+/*JP			pline("%s cloak tears apart!", s_suffix(Monnam(mon)));*/
+			pline("%sのクロークはずたずたになった！", s_suffix(Monnam(mon)));
 		    else
-			You_hear("a ripping sound.");
+/*JP			You_hear("a ripping sound.");*/
+			You("ビリッという音を聞いた．");
 		    m_useup(mon, otmp);
 		}
 	    }
 #ifdef TOURIST
 	    if ((otmp = which_armor(mon, W_ARMU)) != 0) {
 		if (vis)
-		    pline("%s shirt rips to shreds!", s_suffix(Monnam(mon)));
+/*JP		    pline("%s shirt rips to shreds!", s_suffix(Monnam(mon)));*/
+		    pline("%sのシャツはずたずたになった！", s_suffix(Monnam(mon)));
 		else
-		    You_hear("a ripping sound.");
+/*JP		    You_hear("a ripping sound.");*/
+		    You("ビリッという音を聞いた．");
 		m_useup(mon, otmp);
 	    }
 #endif
 	} else if (sliparm(mdat)) {
 	    if ((otmp = which_armor(mon, W_ARM)) != 0) {
 		if (vis)
-		    pline("%s armor falls around %s!",
-			         s_suffix(Monnam(mon)), pronoun);
+/*JP		    pline("%s armor falls around %s!",
+			         s_suffix(Monnam(mon)), pronoun);*/
+		    pline("%sの鎧が回りに落ちた！", 
+			         s_suffix(Monnam(mon)));
 		else
-		    You_hear("a thud.");
+/*JP		    You_hear("a thud.");*/
+		    You("ドシンという音を聞いた．");
 		m_lose_armor(mon, otmp);
 	    }
 	    if ((otmp = which_armor(mon, W_ARMC)) != 0) {
-		if (vis)
+		if (vis){
 		    if (is_whirly(mon->data))
-			pline("%s cloak falls, unsupported!",
+/*JP			pline("%s cloak falls, unsupported!",
+			             s_suffix(Monnam(mon)));*/
+			pline("%sのクロークは支えきれずに落ちた！", 
 			             s_suffix(Monnam(mon)));
 		    else
-			pline("%s shrinks out of %s cloak!", Monnam(mon),
-								ppronoun);
+/*JP			pline("%s shrinks out of %s cloak!", Monnam(mon),
+								ppronoun);*/
+			pline("%sはクロークより縮んだ！", Monnam(mon));
+		}
 		m_lose_armor(mon, otmp);
 	    }
 #ifdef TOURIST
 	    if ((otmp = which_armor(mon, W_ARMU)) != 0) {
-		if (vis)
+		if (vis){
 		    if (sliparm(mon->data))
-			pline("%s seeps right through %s shirt!",
-					Monnam(mon), ppronoun);
+/*JP			pline("%s seeps right through %s shirt!",
+					Monnam(mon), ppronoun);*/
+			pline("%sは自分のシャツにしみ込んだ！",
+					Monnam(mon));
 		    else
-			pline("%s becomes much too small for %s shirt!",
-					Monnam(mon), ppronoun);
+/*JP			pline("%s becomes much too small for %s shirt!",
+					Monnam(mon), ppronoun);*/
+			pline("%sは自分のシャツよりずっと小さくなった！",
+					Monnam(mon));
+		}
 		m_lose_armor(mon, otmp);
 	    }
 #endif
@@ -416,25 +458,33 @@ struct monst *mon;
 	if (nohands(mdat) || verysmall(mdat)) {
 	    if ((otmp = which_armor(mon, W_ARMG)) != 0) {
 		if (vis)
-		    pline("%s drops %s gloves%s!", Monnam(mon), ppronoun,
-					MON_WEP(mon) ? " and weapon" : "");
+/*JP		    pline("%s drops %s gloves%s!", Monnam(mon), ppronoun,
+					MON_WEP(mon) ? " and weapon" : "");*/
+		    pline("%sは小手%sを落した！", Monnam(mon), 
+					MON_WEP(mon) ? "と武器" : "");
 		possibly_unwield(mon);
 		m_lose_armor(mon, otmp);
 	    }
 	    if ((otmp = which_armor(mon, W_ARMS)) != 0) {
 		if (vis)
-		    pline("%s can no longer hold %s shield!", Monnam(mon),
-								ppronoun);
+/*JP		    pline("%s can no longer hold %s shield!", Monnam(mon),
+								ppronoun);*/
+		    pline("%sはもはや盾を持つことができない！", Monnam(mon));
 		else
-		    You_hear("a clank.");
+/*JP		    You_hear("a clank.");*/
+		    You("ガチャンという音を聞いた．");
 		m_lose_armor(mon, otmp);
 	    }
 	    if ((otmp = which_armor(mon, W_ARMH)) != 0) {
 		if (vis)
-		    pline("%s helmet falls to the %s!",
+/*JP		    pline("%s helmet falls to the %s!",
+			  s_suffix(Monnam(mon)), surface(mon->mx, mon->my));*/
+		    pline("%sの兜は%sへ落ちた！", 
 			  s_suffix(Monnam(mon)), surface(mon->mx, mon->my));
+
 		else
-		    You_hear("a clank.");
+/*JP		    You_hear("a clank.");*/
+		    You("ガチャンという音を聞いた．");
 		m_lose_armor(mon, otmp);
 	    }
 	}
@@ -443,11 +493,15 @@ struct monst *mon;
 	    if ((otmp = which_armor(mon, W_ARMF)) != 0) {
 		if (vis) {
 		    if (is_whirly(mon->data))
-			pline("%s boots fall away!",
+/*JP			pline("%s boots fall away!", */
+			pline("%sの靴は脱げ落ちた！", 
 			               s_suffix(Monnam(mon)));
-		    else pline("%s boots %s off %s feet!",
+/*JP		    else pline("%s boots %s off %s feet!",
 			s_suffix(Monnam(mon)),
-			verysmall(mdat) ? "slide" : "are pushed", ppronoun);
+			verysmall(mdat) ? "slide" : "are pushed", ppronoun);*/
+		    else pline("%sの靴は足から%s！", 
+			s_suffix(Monnam(mon)),
+			verysmall(mdat) ? "滑り落ちた" : "引っぱられた");
 		}
 		m_lose_armor(mon, otmp);
 	    }

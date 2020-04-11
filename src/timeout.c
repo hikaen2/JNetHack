@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "lev.h"	/* for checking save modes */
 
@@ -16,11 +23,19 @@ static void FDECL(lantern_message, (struct obj *));
 
 /* He is being petrified - dialogue by inmet!tower */
 static NEARDATA const char *stoned_texts[] = {
+/*JP*/
+#if 0
 	"You are slowing down.",		/* 5 */
 	"Your limbs are stiffening.",		/* 4 */
 	"Your limbs have turned to stone.",	/* 3 */
 	"You have turned to stone.",		/* 2 */
 	"You are a statue."			/* 1 */
+#endif
+	"あなたはのろくなった．",		/* 5 */
+	"あなたの手足は硬直した．",		/* 4 */
+	"あなたの手足は石化した．",	/* 3 */
+	"あなたは石になった．",		/* 2 */
+	"あなたは彫像になった．"	/* 1 */
 };
 
 STATIC_OVL void
@@ -39,11 +54,18 @@ stoned_dialogue()
 
 /* He is getting sicker and sicker prior to vomiting */
 static NEARDATA const char *vomiting_texts[] = {
+#if 0
 	"You are feeling mildly nauseous.",	/* 14 */
 	"You feel slightly confused.",		/* 11 */
 	"You can't seem to think straight.",	/* 8 */
 	"You feel incredibly sick.",		/* 5 */
 	"You suddenly vomit!"			/* 2 */
+#endif
+	"あなたはちょっと吐き気がした．",	/* 14 */
+	"あなたは少し混乱した．",		/* 11 */
+	"あなたはまともに思考できなくなった．",	/* 8 */
+	"あなたはとても気分が悪くなった．",	/* 5 */
+	"あなたは突然吐血した．"		/* 2 */
 };
 
 STATIC_OVL void
@@ -71,19 +93,31 @@ vomiting_dialogue()
 }
 
 static NEARDATA const char *choke_texts[] = {
+#if 0
 	"You find it hard to breathe.",
 	"You're gasping for air.",
 	"You can no longer breathe.",
 	"You're turning %s.",
 	"You suffocate."
+#endif
+	"あなたは呼吸が困難になった．",
+	"あなたは苦しくてあえいだ．",
+	"あなたはもう呼吸ができない．",
+	"あなたは%sなった．",
+	"あなたは窒息した．"
 };
 
 static NEARDATA const char *choke_texts2[] = {
-	"Your %s is becoming constricted.",
+/*JP	"Your %s is becoming constricted.",
 	"Your blood is having trouble reaching your brain.",
 	"The pressure on your %s increases.",
 	"Your consciousness is fading.",
-	"You suffocate."
+	"You suffocate."*/
+	"あなたの%sは締めつけられた．",
+	"血液のめぐりが悪くなった．",
+	"%sの圧力が高くなった．",
+	"意識が遠くなってきた．",
+	"あなたは窒息した．"
 };
 
 STATIC_OVL void
@@ -95,7 +129,7 @@ choke_dialogue()
 	    if (Breathless || !rn2(50))
 		pline(choke_texts2[SIZE(choke_texts2) - i], body_part(NECK));
 	    else
-		pline(choke_texts[SIZE(choke_texts) - i], hcolor(blue));
+		pline(choke_texts[SIZE(choke_texts) - i], jconj_adj(hcolor(blue)));
 	}
 	exercise(A_STR, FALSE);
 }
@@ -138,16 +172,19 @@ nh_timeout()
 	    if((upp->p_flgs & TIMEOUT) && !(--upp->p_flgs & TIMEOUT)) {
 		switch(upp - u.uprops){
 		case STONED:
+			killer = NULL;	/* for JP */
 			if (!killer) {
 				killer_format = KILLED_BY_AN;
-				killer = "cockatrice";
+/*JP				killer = "cockatrice";*/
+				killer = "コカトリスの攻撃で";
 			} done(STONING);
 			break;
 		case VOMITING:
 			make_vomiting(0L, TRUE);
 			break;
 		case SICK:
-			You("die from your illness.");
+/*JP			You("die from your illness.");*/
+			You("病気で死にました．");
 			killer_format = KILLED_BY_AN;
 			killer = u.usick_cause;
 			if ((m_idx = name_to_mon(killer)) >= LOW_PM) {
@@ -165,14 +202,18 @@ nh_timeout()
 #endif
 			}
 			u.usick_type = 0;
-			done(POISONING);
+/*JP			done(POISONING);*/
+			done(DIED);
 			break;
 		case FAST:
 			if (Fast & ~INTRINSIC) /* boot speed */
 				;
 			else
-				You_feel("yourself slowing down%s.",
-							Fast ? " a bit" : "");
+/*JP				You_feel("yourself slowing down%s.",
+							Fast ? " a bit" : "");*/
+				You("%s遅くなったような気がした．",
+							Fast ? "ちょっと" : "");
+
 			break;
 		case CONFUSION:
 			HConfusion = 1; /* So make_confused works properly */
@@ -193,7 +234,8 @@ nh_timeout()
 			newsym(u.ux,u.uy);
 			if (!Invis && !(HInvis & I_BLOCKED) &&
 			    !See_invisible && !Blind) {
-				You("are no longer invisible.");
+/*JP				You("are no longer invisible.");*/
+				You("もう透明ではない．");
 				stop_occupation();
 			}
 			break;
@@ -207,6 +249,13 @@ nh_timeout()
 			heal_legs();
 			stop_occupation();
 			break;
+#ifdef JPEXTENSION
+		case TOTTER:
+		    	Totter = 0;
+			make_totter(0L, TRUE);
+			stop_occupation();
+			break;
+#endif
 		case HALLUC:
 			HHallucination = 1;
 			make_hallucinated(0L, TRUE, 0L);
@@ -216,7 +265,8 @@ nh_timeout()
 			if (unconscious() || Sleep_resistance)
 				Sleeping += rnd(100);
 			else {
-				You("fall asleep.");
+/*JP				You("fall asleep.");*/
+				You("眠りに落ちた．");
 				sleeptime = rnd(20);
 				fall_asleep(-sleeptime, TRUE);
 				Sleeping = sleeptime + rnd(100);
@@ -227,7 +277,8 @@ nh_timeout()
 			break;
 		case STRANGLED:
 			killer_format = KILLED_BY;
-			killer = (u.uburied) ? "suffocation" : "strangulation";
+/*JP			killer = (u.uburied) ? "suffocation" : "strangulation";*/
+			killer = (u.uburied) ? "窒息して" : "首を締められて";
 			done(DIED);
 			break;
 		case FUMBLING:
@@ -242,7 +293,8 @@ nh_timeout()
 			     * to this number must be thoroughly play tested.
 			     */
 			    if ((inv_weight() > -500)) {
-				You("make a lot of noise!");
+/*JP				You("make a lot of noise!");*/
+				You("大きな音をたてた！");
 				wake_nearby();
 			    }
 			}
@@ -270,7 +322,8 @@ boolean wakeup_msg;
 	nomul(how_long);
 	/* early wakeup from combat won't be possible until next monster turn */
 	u.usleep = monstermoves;
-	nomovemsg = wakeup_msg ? "You wake up." : You_can_move_again;
+/*JP	nomovemsg = wakeup_msg ? "You wake up." : You_can_move_again;*/
+	nomovemsg = wakeup_msg ? "目を覚ました．" : You_can_move_again;
 }
 
 /* Attach an egg hatch timeout to the given egg. */
@@ -393,31 +446,45 @@ long timeout;
 	    boolean siblings = (hatchcount > 1), redraw = FALSE;
 
 	    if (canseeit) {
-		Sprintf(monnambuf, "%s%s",
+/*JP		Sprintf(monnambuf, "%s%s",
 			siblings ? "some " : "",
-			siblings ? makeplural(m_monnam(mon)) : a_monnam(mon));
+			siblings ? makeplural(m_monnam(mon)) : a_monnam(mon));*/
+		Sprintf(monnambuf, "%s%s",
+			siblings ? "いくつかの" : "",
+			a_monnam(mon));
 		learn_egg_type(mnum);
 	    }
 	    switch (egg->where) {
 		case OBJ_INVENT:
 		    if (Blind)
-			You_feel("%s %s from your pack!", something,
-			    locomotion(mon->data, "drop"));
+/*JP			You_feel("%s %s from your pack!", something,
+			    locomotion(mon->data, "drop"));*/
+		        You("何かがあなたの背負い袋から%sような気がした．",
+			    jconj(locomotion(mon->data, "落ちる"),"た"));
+
 		    else
-			You("see %s %s out of your pack!",
-			    monnambuf, locomotion(mon->data, "drop"));
+/*JP			You("see %s %s out of your pack!",
+			    monnambuf, locomotion(mon->data, "drop"));*/
+		        pline("%sがあなたの背負い袋から%s．",
+			    monnambuf,
+			    jconj(locomotion(mon->data, "落ちる"),"た"));
+
 		    if (yours) {
-			pline("%s cries sound like \"%s.\"",
+/*JP			pline("%s cries sound like \"%s.\"",
 			    siblings ? "Their" : "Its",
-			    flags.female ? "mommy" : "daddy");
+			    flags.female ? "mommy" : "daddy");*/
+			pline("それは『%s』と鳴いているようだ",
+			    flags.female ? "ママ" : "パパ");
 		    } else if (mon->data->mlet == S_DRAGON) {
-			verbalize("Gleep!");		/* Mything eggs :-) */
+/*JP			verbalize("Gleep!");*/		/* Mything eggs :-) */
+			verbalize("ブォー！");		/* Mything eggs :-) */
 		    }
 		    break;
 
 		case OBJ_FLOOR:
 		    if (canseeit) {
-			You("see %s hatch.", monnambuf);
+/*JP			You("see %s hatch.", monnambuf);*/
+			You("%sが卵から孵化するのを見た．", monnambuf);
 			redraw = TRUE;	/* update egg's map location */
 		    }
 		    break;
@@ -426,12 +493,18 @@ long timeout;
 		    if (canseeit) {
 			/* egg carring monster might be invisible */
 			if (canseemon(egg->ocarry))
-			    Sprintf(carriedby, "%s pack",
+/*JP			    Sprintf(carriedby, "%s pack",
+				     s_suffix(a_monnam(egg->ocarry)));*/
+			    Sprintf(carriedby, "%sの背負い袋から",
 				     s_suffix(a_monnam(egg->ocarry)));
 			else
-			    Strcpy(carriedby, "thin air");
-			You("see %s %s out of %s!", monnambuf,
-			    locomotion(mon->data, "drop"), carriedby);
+/*JP			    Strcpy(carriedby, "thin air");*/
+			    Strcpy(carriedby, "何もない空間から出現し");
+/*JP			You("see %s %s out of %s!", monnambuf,
+			    locomotion(mon->data, "drop"), carriedby);*/
+			You("%sが%s%sのを見た．", monnambuf,
+			    carriedby, 
+			    locomotion(mon->data, "落ちる"));
 		    }
 		    break;
 #if 0
@@ -488,36 +561,48 @@ slip_or_trip()
 		name; if not, look for rocks to trip over; trip over
 		anonymous "something" if there aren't any rocks.
 	     */
-	    pronoun = otmp->quan == 1L ? "it" : Hallucination ? "they" : "them";
+/*	    pronoun = otmp->quan == 1L ? "it" : Hallucination ? "they" : "them";*/
+	    pronoun = "何か";
 	    what = !otmp->nexthere ? pronoun :
 		  (otmp->dknown || !Blind) ? doname(otmp) :
 		  ((otmp = sobj_at(ROCK, u.ux, u.uy)) == 0 ? something :
-		  (otmp->quan == 1L ? "a rock" : "some rocks"));
+/*JP		  (otmp->quan == 1L ? "a rock" : "some rocks"));*/
+		   "石");
 	    if (Hallucination) {
 		what = strcpy(buf, what);
 		buf[0] = highc(buf[0]);
-		pline("Egads!  %s bite%s your %s!",
+/*JP		pline("Egads!  %s bite%s your %s!",
 			what, (!otmp || otmp->quan == 1L) ? "s" : "",
-			body_part(FOOT));
+			body_part(FOOT));*/
+		pline("ぐわぁ！%sが%sに噛みついた！",
+			what, body_part(FOOT));
 	    } else {
-		You("trip over %s.", what);
+/*JP		You("trip over %s.", what);*/
+		You("%sにつまづいた．", what);
 	    }
 	} else if (rn2(3) && is_ice(u.ux, u.uy)) {
-	    You("%s on the ice.", rn2(2) ? "slip" : "slide");
+/*JP	    You("%s on the ice.", rn2(2) ? "slip" : "slide");*/
+	    You("氷の上で滑った．");
 	} else switch (rn2(4)) {
 	    case 1:
-		You("trip over your own %s.", Hallucination ?
-			"elbow" : makeplural(body_part(FOOT)));
+/*JP		You("trip over your own %s.", Hallucination ?
+			"elbow" : makeplural(body_part(FOOT)));*/
+		You("自分の%sを踏んでつまづいた．", Hallucination ?
+			"肘" : makeplural(body_part(FOOT)));
 		break;
 	    case 2:
-		You("slip %s.", Hallucination ?
-			"on a banana peel" : "and nearly fall");
+/*JP		You("slip %s.", Hallucination ?
+			"on a banana peel" : "and nearly fall");*/
+		You("%s．", Hallucination ?
+			"バナナの皮で滑った" : "滑って転びそうになった");
 		break;
 	    case 3:
-		You("flounder.");
+/*JP		You("flounder.");*/
+		You("じたばたした．");
 		break;
 	    default:
-		You("stumble.");
+/*JP		You("stumble.");*/
+		You("よろめいた．");
 		break;
 	}
 }
@@ -531,10 +616,16 @@ const char *tailer;
 	switch (obj->where) {
 	    case OBJ_INVENT:
 	    case OBJ_MINVENT:
+/*JP
 		pline("%s flickers%s.", Yname2(obj), tailer);
+*/
+		pline("%sは%s点滅した．", Yname2(obj), tailer);
 		break;
 	    case OBJ_FLOOR:
+/*JP
 		You("see %s flicker%s.", an(xname(obj)), tailer);
+*/
+		You("%sが%s点滅するのを見た．", an(xname(obj)), tailer);
 		break;
 	}
 }
@@ -547,15 +638,19 @@ struct obj *obj;
 	/* from adventure */
 	switch (obj->where) {
 	    case OBJ_INVENT:
-		Your("lantern is getting dim.");
+/*JP		Your("lantern is getting dim.");*/
+		Your("ランタンは暗くなった．");
 		if (Hallucination)
-		    pline("Batteries have not been invented yet.");
+/*JP		    pline("Batteries have not been invented yet.");*/
+		    pline("電池はまだ発明されてないんだっけ．");
 		break;
 	    case OBJ_FLOOR:
-		You("see a lantern getting dim.");
+/*JP		You("see a lantern getting dim.");*/
+		pline("ランタンが暗くなったのを見た．");
 		break;
 	    case OBJ_MINVENT:
-		pline("%s lantern is getting dim.",
+/*JP		pline("%s lantern is getting dim.",*/
+		pline("%sのランタンは暗くなった．",
 		    s_suffix(Monnam(obj->ocarry)));
 		break;
 	}
@@ -620,11 +715,13 @@ long timeout;
 			switch (obj->where) {
 			    case OBJ_INVENT:
 			    case OBJ_MINVENT:
-				pline("%s potion of oil has burnt away.",
+/*JP				pline("%s potion of oil has burnt away.",*/
+				pline("%sオイルは燃えつきた．",
 				    whose);
 				break;
 			    case OBJ_FLOOR:
-				You("see a burning potion of oil go out.");
+/*JP				You("see a burning potion of oil go out.");*/
+				You("オイルの火が消えたのを見た．");
 				need_newsym = TRUE;
 				break;
 			}
@@ -646,7 +743,8 @@ long timeout;
 				lantern_message(obj);
 			    else
 				see_lamp_flicker(obj,
-				    obj->age == 50L ? " considerably" : "");
+/*JP				    obj->age == 50L ? " considerably" : "");*/
+				    obj->age == 50L ? "激しく" : "");
 			}
 			break;
 
@@ -658,11 +756,14 @@ long timeout;
 				switch (obj->where) {
 				    case OBJ_INVENT:
 				    case OBJ_MINVENT:
-					pline("%s %s seems about to go out.",
+/*JP					pline("%s %s seems about to go out.",
+					    whose, xname(obj));*/
+					pline("%s%sは今にも消えそうだ．",
 					    whose, xname(obj));
 					break;
 				    case OBJ_FLOOR:
-					You("see %s about to go out.",
+/*JP					You("see %s about to go out.",*/
+					pline("%sが消えかけているのを見た．",
 					    an(xname(obj)));
 					break;
 				}
@@ -677,17 +778,21 @@ long timeout;
 				case OBJ_INVENT:
 				case OBJ_MINVENT:
 				    if (obj->otyp == BRASS_LANTERN)
-					pline("%s lantern has run out of power.",
+/*JP					pline("%s lantern has run out of power.",*/
+					pline("%sランタンの力を使い切った．",
 					    whose);
 				    else
-					pline("%s %s has gone out.",
+/*JP					pline("%s %s has gone out.",*/
+					pline("%s%sは消えた．",
 					    whose, xname(obj));
 				    break;
 				case OBJ_FLOOR:
 				    if (obj->otyp == BRASS_LANTERN)
-					You("see a lantern run out of power.");
+/*JP					You("see a lantern run out of power.");*/
+					You("ランタンが消えるのを見た．");
 				    else
-					You("see %s go out.",
+/*JP					You("see %s go out.",*/
+					You("%sが消えるのを見た．",
 					    an(xname(obj)));
 				    break;
 			    }
@@ -718,16 +823,21 @@ long timeout;
 			    switch (obj->where) {
 				case OBJ_INVENT:
 				case OBJ_MINVENT:
-				    pline("%s %scandle%s getting short.",
+/*JP				    pline("%s %scandle%s getting short.",
 					whose,
 					menorah ? "candelabrum's " : "",
-					many ? "s are" : " is");
+					many ? "s are" : " is");*/
+				    pline("%s%sろうそくは短くなった．",
+					whose,
+					menorah ? "燭台の" : "");
 				    break;
 				case OBJ_FLOOR:
-				    You("see %scandle%s getting short.",
+/*JP				    You("see %scandle%s getting short.",
 					    menorah ? "a candelabrum's " :
 						many ? "some " : "a ",
-					    many ? "s" : "");
+					    many ? "s" : "");*/
+				    You("%sろうそくが短くなるのを見た．",
+					    menorah ? "燭台の" : "");
 				    break;
 			    }
 			break;
@@ -738,19 +848,24 @@ long timeout;
 				case OBJ_INVENT:
 				case OBJ_MINVENT:
 				    pline(
-					"%s %scandle%s flame%s flicker%s low!",
+/*JP					"%s %scandle%s flame%s flicker%s low!",
 					    whose,
 					    menorah ? "candelabrum's " : "",
 					    many ? "s'" : "'s",
 					    many ? "s" : "",
-					    many ? "" : "s");
+					    many ? "" : "s");*/
+					"%s%sろうそくの炎は点滅し，暗くなった！",
+					    whose,
+					    menorah ? "燭台の" : "");
 				    break;
 				case OBJ_FLOOR:
-				    You("see %scandle%s flame%s flicker low!",
+/*JP				    You("see %scandle%s flame%s flicker low!",
 					    menorah ? "a candelabrum's " :
 						many ? "some " : "a ",
 					    many ? "s'" : "'s",
-					    many ? "s" : "");
+					    many ? "s" : "");*/
+				    You("%sろうそくの炎が点滅し，暗くなるのを見た！",
+					    menorah ? "燭台の" : "");
 				    break;
 			    }
 			break;
@@ -762,43 +877,53 @@ long timeout;
 				switch (obj->where) {
 				    case OBJ_INVENT:
 				    case OBJ_MINVENT:
-					pline("%s candelabrum's flame%s.",
+/*JP					pline("%s candelabrum's flame%s.",
 					    whose,
-					    many ? "s die" : " dies");
+					    many ? "s die" : " dies");*/
+					pline("%s燭台の炎は消えた．",
+					    whose);
 					break;
 				    case OBJ_FLOOR:
-					You("see a candelabrum's flame%s die.",
-						many ? "s" : "");
+/*JP					You("see a candelabrum's flame%s die.",
+						many ? "s" : "");*/
+					You("燭台の炎が消えるのを見た．");
 					break;
 				}
 			    } else {
 				switch (obj->where) {
 				    case OBJ_INVENT:
 				    case OBJ_MINVENT:
-					pline("%s %s %s consumed!",
+/*JP					pline("%s %s %s consumed!",
 					    whose,
 					    xname(obj),
-					    many ? "are" : "is");
+					    many ? "are" : "is");*/
+					pline("%s%sは燃えつきた！",
+					    whose,
+					    xname(obj));
 					break;
 				    case OBJ_FLOOR:
 					/*
 					You see some wax candles consumed!
 					You see a wax candle consumed!
 					*/
-					You("see %s%s consumed!",
+/*JP					You("see %s%s consumed!",
 					    many ? "some " : "",
-					    many ? xname(obj):an(xname(obj)));
+					    many ? xname(obj):an(xname(obj)));*/
+					You("%sが燃えつきるのを見た！",
+					    xname(obj));
 					need_newsym = TRUE;
 					break;
 				}
 
 				/* post message */
 				pline(Hallucination ?
-					(many ? "They shriek!" :
+/*JP					(many ? "They shriek!" :
 						"It shrieks!") :
 					Blind ? "" :
 					    (many ? "Their flames die." :
-						    "Its flame dies."));
+						    "Its flame dies."));*/
+				        "それは震えた．" :
+					"炎は消えた．");
 			    }
 			}
 			end_burn(obj, FALSE);
@@ -1005,13 +1130,15 @@ do_storms()
 
     if(levl[u.ux][u.uy].typ == CLOUD) {
 	/* inside a cloud during a thunder storm is deafening */
-	pline("Kaboom!!!  Boom!!  Boom!!");
+/*JP	pline("Kaboom!!!  Boom!!  Boom!!");*/
+	pline("ピカッ！！ゴロゴロゴロゴロ！！ドーン！");
 	if(!u.uinvulnerable) {
 	    stop_occupation();
 	    nomul(-3);
 	}
     } else
-	You_hear("a rumbling noise.");
+/*JP	You_hear("a rumbling noise.");*/
+	You_hear("雷の音を聞いた．");
 }
 #endif /* OVL1 */
 

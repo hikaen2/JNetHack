@@ -4,6 +4,13 @@
 
 /* various code that was replicated in *main.c */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifndef NO_SIGNAL
@@ -28,14 +35,17 @@ moveloop()
 
 	flags.moonphase = phase_of_the_moon();
 	if(flags.moonphase == FULL_MOON) {
-		You("are lucky!  Full moon tonight.");
+/*JP		You("are lucky!  Full moon tonight.");*/
+	        pline("ラッキー！今晩は満月だ．");
 		change_luck(1);
 	} else if(flags.moonphase == NEW_MOON) {
-		pline("Be careful!  New moon tonight.");
+/*JP		pline("Be careful!  New moon tonight.");*/
+	        pline("注意しろ！今晩は新月だ．");
 	}
 	flags.friday13 = friday_13th();
 	if (flags.friday13) {
-		pline("Watch out!  Bad things can happen on Friday the 13th.");
+/*JP		pline("Watch out!  Bad things can happen on Friday the 13th.");*/
+	        pline("用心しろ！１３日の金曜日にはよくないことがある．") ;
 		change_luck(-1);
 	}
 
@@ -170,7 +180,8 @@ moveloop()
 			    } else if (!Upolyd && u.uhp > 1) {
 				u.uhp--;
 			    } else {
-				You("pass out from exertion!");
+/*JP				You("pass out from exertion!");*/
+				pline("疲労で意識を失った！");
 				exercise(A_CON, FALSE);
 				fall_asleep(-10, FALSE);
 			    }
@@ -317,11 +328,14 @@ moveloop()
 			u.utrap -= 1<<8;
 			if(u.utrap < 1<<8) {
 			    killer_format = KILLED_BY;
-			    killer = "molten lava";
-			    You("sink below the surface and die.");
+/*JP			    killer = "molten lava";*/
+/*JP			    You("sink below the surface and die.");*/
+			    killer = "どろどろの溶岩で";
+			    You("溶岩に深く沈み，溶けた．");
 			    done(DISSOLVED);
 			} else if(didmove && !u.umoved) {
-			    Norep("You sink deeper into the lava.");
+/*JP			    Norep("You sink deeper into the lava.");*/
+			    Norep("溶岩に深く沈んだ．");
 			    u.utrap += rnd(4);
 			}
 		    }
@@ -368,7 +382,8 @@ void
 stop_occupation()
 {
 	if(occupation) {
-		You("stop %s.", occtxt);
+/*JP		You("stop %s.", occtxt);*/
+		You("%sのを中断した．", occtxt);
 		occupation = 0;
 /* fainting stops your occupation, there's no reason to sync.
 		sync_hunger();
@@ -475,6 +490,7 @@ newgame()
 	save_currentstate();
 #endif
 	program_state.something_worth_saving++;	/* useful data now exists */
+
 	return;
 }
 

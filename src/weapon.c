@@ -7,6 +7,14 @@
  *	bonuses for any given weapon used, as well as weapons selection
  *	code for monsters.
  */
+
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifdef WEAPON_SKILLS
@@ -35,7 +43,8 @@ STATIC_OVL NEARDATA const char *odd_skill_names[] = {
 };
 
 static NEARDATA const char may_advance_msg[] =
-				"feel more confident in your fighting skills.";
+/*JP				"feel more confident in your fighting skills.";*/
+				"戦いの技量を高める自信が湧いてきた．";
 
 #endif	/* OVLB */
 
@@ -431,7 +440,8 @@ register struct monst *mon;
 		place_object(obj, mon->mx, mon->my);
 		stackobj(obj);
 		if (cansee(mon->mx, mon->my)) {
-			pline("%s drops %s.", Monnam(mon),
+/*JP			pline("%s drops %s.", Monnam(mon),*/
+			pline("%sは%sを置いた．", Monnam(mon),
 				distant_name(obj, doname));
 			newsym(mon->mx, mon->my);
 		}
@@ -495,22 +505,30 @@ register struct monst *mon;
 		    if (canseemon(mon)) {
 			char welded_buf[BUFSZ];
 
-			Sprintf(welded_buf, "%s welded to %s hand%s",
+/*JP			Sprintf(welded_buf, "%s welded to %s hand%s",
 				(mw_tmp->quan == 1L) ? "is" : "are",
 				his[pronoun_gender(mon)],
-				objects[mw_tmp->otyp].oc_bimanual ? "s" : "");
+				objects[mw_tmp->otyp].oc_bimanual ? "s" : "");*/
+			Sprintf(welded_buf, "手に");
 
 			if (obj->otyp == PICK_AXE) {
-			    pline("Since %s weapon%s %s,",
+/*JP			    pline("Since %s weapon%s %s,",
 				  s_suffix(mon_nam(mon)),
-				  plur(mw_tmp->quan), welded_buf);
-			    pline("%s cannot wield that %s.",
+				  plur(mw_tmp->quan), welded_buf);*/
+			    pline("%sは武器を%sしようとしたが，",
+				  mon_nam(mon), welded_buf);
+/*JP			    pline("%s cannot wield that %s.",*/
+			    pline("%sは%sを装備できなかった．",
 				mon_nam(mon), xname(obj));
 			} else {
-			    pline("%s tries to wield %s.", Monnam(mon),
+/*JP			    pline("%s tries to wield %s.", Monnam(mon),*/
+			    pline("%sは%sを装備しようとした．", Monnam(mon),
 				doname(obj));
-			    pline("%s %s %s!",
+/*JP			    pline("%s %s %s!",
 				  s_suffix(Monnam(mon)),
+				  xname(mw_tmp), welded_buf);*/
+			    pline("%sは%sを%sした！",
+				  Monnam(mon),
 				  xname(mw_tmp), welded_buf);
 			}
 			mw_tmp->bknown = 1;
@@ -522,13 +540,17 @@ register struct monst *mon;
 		if (mw_tmp) mw_tmp->owornmask &= ~W_WEP;
 		mon->weapon_check = NEED_WEAPON;
 		if (canseemon(mon)) {
-			pline("%s wields %s!", Monnam(mon), doname(obj));
+/*JP			pline("%s wields %s!", Monnam(mon), doname(obj));*/
+			pline("%sは%sを装備した！", Monnam(mon), doname(obj));
 			if (obj->cursed && obj->otyp != CORPSE) {
-				pline("%s %s to %s hand!",
+/*JP				pline("%s %s to %s hand!",
 					The(xname(obj)),
 					(obj->quan == 1L) ? "welds itself"
 					    : "weld themselves",
-					s_suffix(mon_nam(mon)));
+					s_suffix(mon_nam(mon)));*/
+				pline("%sは勝手に%sの手に装備された！",
+					The(xname(obj)),
+					mon_nam(mon));
 				obj->bknown = 1;
 			}
 		}
@@ -595,6 +617,7 @@ char *buf;
     const char *ptr;
 
     switch (P_SKILL(skill)) {
+#if 0 /*JP*/
 	case P_UNSKILLED:    ptr = "Unskilled"; break;
 	case P_BASIC:	     ptr = "Basic";     break;
 	case P_SKILLED:	     ptr = "Skilled";   break;
@@ -603,6 +626,15 @@ char *buf;
 	case P_MASTER:	     ptr = "Master";    break;
 	case P_GRAND_MASTER: ptr = "Grand Master"; break;
 	default:	     ptr = "Unknown";	break;
+#endif
+	case P_UNSKILLED:    ptr = "初心者"; break;
+	case P_BASIC:	     ptr = "入門者";     break;
+	case P_SKILLED:	     ptr = "熟練者";   break;
+	case P_EXPERT:	     ptr = "エキスパート";    break;
+	/* these are for unarmed combat/martial arts only */
+	case P_MASTER:	     ptr = "マスター";    break;
+	case P_GRAND_MASTER: ptr = "グランドマスター"; break;
+	default:	     ptr = "不明";	break;
     }
     Strcpy(buf, ptr);
     return buf;
@@ -654,9 +686,14 @@ int skill;
     P_SKILL(skill)++;
     u.skill_record[u.skills_advanced++] = skill;
     /* subtly change the adavnce message to indicate no more advancement */
+/*JP
     You("are now %s skilled in %s.",
     	P_SKILL(skill) >= P_MAX_SKILL(skill) ? "most" : "more",
     	P_NAME(skill));
+*/
+    Your("%sの技量を%s高めた．", 
+    	jtrns_obj(')', P_NAME(skill)),
+	P_SKILL(skill) >= P_MAX_SKILL(skill) ? "最高に" : "さらに");
 }
 
 /*
@@ -699,21 +736,24 @@ enhance_weapon_skill()
 	if (wizard)
 	    Sprintf(buf2, "%s%-*s %-12s %4d(%4d)",
 		    to_advance == 0 || can_advance(i) ? "" : "    " ,
-		    longest, P_NAME(i),
+		    longest, jtrns_obj(')', P_NAME(i)),
 		    skill_level_name(i, buf),
 		    P_ADVANCE(i), practice_needed_to_advance(P_SKILL(i)));
 	else
 #endif
 	    Sprintf(buf2, "%s %-*s [%s]",
 		    to_advance == 0 || can_advance(i) ? "" : "    ",
-		    longest, P_NAME(i),
+		    longest, jtrns_obj(')', P_NAME(i)),
 		    skill_level_name(i, buf));
 
 	any.a_int = can_advance(i) ? i+1 : 0;
 	add_menu(win, NO_GLYPH, &any, 0, 0, ATR_NONE, buf2, MENU_UNSELECTED);
     }
 
+/*JP
     Strcpy(buf, to_advance ? "Pick a skill to advance:" : "Current skills:");
+*/
+    Strcpy(buf, to_advance ? "技量を高める武器を選択してください：" : "現在の技量：");
 #ifdef WIZARD
     if (wizard) Sprintf(eos(buf), "  (%d slot%s available)",
 			u.weapon_slots, plur(u.weapon_slots));
@@ -728,7 +768,8 @@ enhance_weapon_skill()
 	/* check for more skills able to advance, if so then .. */
 	for (i = 0; i < P_NUM_SKILLS; i++) {
 	    if (can_advance(i)) {
-		You("feel you could be more dangerous!");
+/*JP		You("feel you could be more dangerous!");*/
+		You("さらに技量を高めることができそうな気がした！");
 		break;
 	    }
 	}

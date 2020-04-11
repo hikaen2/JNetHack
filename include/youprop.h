@@ -125,4 +125,8 @@
 #define Half_spell_damage	u.uprops[HALF_SPDAM].p_flgs
 #define Half_physical_damage	u.uprops[HALF_PHDAM].p_flgs
 
+#ifdef	JPEXTENSION
+#define Totter			u.uprops[TOTTER].p_flgs
+#endif
+
 #endif /* YOUPROP_H */

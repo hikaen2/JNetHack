@@ -341,6 +341,6 @@ makerogueghost()
 		ghostobj->known = TRUE;
 	}
 }
-#endif /* REINCARNATION /**/
+#endif /* REINCARNATION */
 
 /*extralev.c*/

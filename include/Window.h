@@ -48,6 +48,11 @@
  white		     Color		Pixel		"white"
 
  font		     Font		XFontStruct*	XtDefaultFont
+**
+** by issei 1996/1/8
+**
+ fontSet             FontSet            XFontSet        XtDefaultFontSet
+
  exposeCallback	     Callback		Callback	NULL
  callback	     Callback		Callback	NULL
  resizeCallback	     Callback		Callback	NULL
@@ -78,6 +83,9 @@
 
 extern XFontStruct *WindowFontStruct(/* Widget */);
 extern Font WindowFont(/* Widget */);
+#ifdef XI18N
+extern XFontSet WindowFontSet(/* Widget */);
+#endif
 
 #define XtCWindowResource "WindowResource"
 #define XtCRows			"Rows"

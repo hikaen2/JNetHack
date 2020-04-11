@@ -3,6 +3,11 @@
 /* Copyright (c) Robert Patrick Rankin, 1991		  */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+	Y2K problem fixed
+	by Issei Numata		1 Nov, 1999	
+ */
+
 /* We could include only config.h, except for the overlay definitions... */
 #include "hack.h"
 /*=
@@ -41,6 +46,7 @@ NetHack, except that rounddiv may call panic().
 	int		night		(void)
 	int		midnight	(void)
 =*/
+
 #ifdef LINT
 # define Static		/* pacify lint */
 #else
@@ -119,7 +125,18 @@ eos(s)			/* return the end of a string (pointing at '\0') */
     while (*s) s++;	/* s += strlen(s); */
     return s;
 }
+/* there are no `possessive' in Japanese	*/
+/* by issei@jaist.ac.jp                        	*/
+char *
+s_suffix(s)
+     const char *s;
+{
+  Static char buf[BUFSZ];
 
+  Strcpy(buf, s);
+  return buf;
+}
+#if 0
 char *
 s_suffix(s)		/* return a name converted to possessive */
     const char *s;
@@ -135,7 +152,7 @@ s_suffix(s)		/* return a name converted to possessive */
 	Strcat(buf, "'s");
     return buf;
 }
-
+#endif
 char *
 xcrypt(str, buf)	/* trivial text encryption routine (see makedefs) */
 const char *str;
@@ -294,7 +311,7 @@ boolean
 online2(x0, y0, x1, y1) /* are two points lined up (on a straight line)? */
     int x0, y0, x1, y1;
 {
-    register dx = x0 - x1, dy = y0 - y1;
+    register int dx = x0 - x1, dy = y0 - y1;
   /*  If either delta is zero then they're on an orthogonal line,
    :  else if the deltas are equal (signs ignored) they're on a diagonal.
    */
@@ -463,7 +480,7 @@ char *
 yymmdd(date)
 time_t date;
 {
-	Static char datestr[10];
+	Static char datestr[16];
 	struct tm *lt;
 
 	if (date == 0)
@@ -475,8 +492,16 @@ time_t date;
 		lt = localtime(&date);
 #endif
 
+/*
+  Y2K problem fixed (by issei 1 Nov 1999)
+
+  now yymmdd returned 8 degits format like as '20000101'
+
 	Sprintf(datestr, "%02d%02d%02d",
 		lt->tm_year, lt->tm_mon + 1, lt->tm_mday);
+ */
+	Sprintf(datestr, "%04d%02d%02d",
+		lt->tm_year + 1900, lt->tm_mon + 1, lt->tm_mday);
 	return(datestr);
 }
 

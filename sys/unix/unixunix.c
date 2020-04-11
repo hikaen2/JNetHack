@@ -24,14 +24,15 @@ void
 gethdate(name)
 	const char *name;
 {
-/* old version - for people short of space */
-/*
-/* register char *np;
-/*	if(stat(name, &hbuf))
-/*		error("Cannot get status of %s.",
-/*			(np = rindex(name, '/')) ? np+1 : name);
-/*
-/* version using PATH from: seismo!gregc@ucsf-cgl.ARPA (Greg Couch) */
+
+/* old version - for people short of space 
+ *
+ * register char *np;
+ *	if(stat(name, &hbuf))
+ *		error("Cannot get status of %s.",
+ *			(np = rindex(name, '/')) ? np+1 : name);
+ *
+ * version using PATH from: seismo!gregc@ucsf-cgl.ARPA (Greg Couch) */
 
 /*
  * The problem with   #include	<sys/param.h>   is that this include file
@@ -123,8 +124,8 @@ int fd;
 			/* strange ... */
 			return(0);
 
-		/* From: Rick Adams <seismo!rick>
-		/* This will work on 4.1cbsd, 4.2bsd and system 3? & 5.
+		/* From: Rick Adams <seismo!rick> */
+		/* This will work on 4.1cbsd, 4.2bsd and system 3? & 5. */
 		/* It will do nothing on V7 or 4.1bsd. */
 #ifndef NETWORK
 		/* It will do a VERY BAD THING if the playground is shared
@@ -218,7 +219,10 @@ getlock()
 		(void) close(fd);
 
 		if(iflags.window_inited) {
+		    c = yn("あなたの名前で不正終了したゲームが残っています．破棄しますか？");
+/*JP
 		    c = yn("There is already a game in progress under your name.  Destroy old game?");
+*/
 		} else {
 		    (void) printf("\nThere is already a game in progress under your name.");
 		    (void) printf("  Destroy old game? [yn] ");
@@ -303,7 +307,7 @@ dosh()
 	}
 	return 0;
 }
-#endif /* SHELL /**/
+#endif /* SHELL */
 
 #if defined(SHELL) || defined(DEF_PAGER) || defined(DEF_MAILREADER)
 int

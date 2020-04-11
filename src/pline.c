@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #define NEED_VARARGS /* Uses ... */	/* comment line for pre-compiled headers */
 #include "hack.h"
 #include "epri.h"
@@ -104,7 +111,8 @@ You VA_DECL(const char *, line)
 	char *tmp;
 	VA_START(line);
 	VA_INIT(line, const char *);
-	vpline(YouMessage(tmp, "You ", line), VA_ARGS);
+/*JP	vpline(YouMessage(tmp, "You ", line), VA_ARGS);*/
+	vpline(YouMessage(tmp, "あなたは", line), VA_ARGS);
 	VA_END();
 }
 
@@ -114,7 +122,8 @@ Your VA_DECL(const char *,line)
 	char *tmp;
 	VA_START(line);
 	VA_INIT(line, const char *);
-	vpline(YouMessage(tmp, "Your ", line), VA_ARGS);
+/*JP	vpline(YouMessage(tmp, "Your ", line), VA_ARGS);*/
+	vpline(YouMessage(tmp, "あなたの", line), VA_ARGS);
 	VA_END();
 }
 
@@ -124,7 +133,8 @@ You_feel VA_DECL(const char *,line)
 	char *tmp;
 	VA_START(line);
 	VA_INIT(line, const char *);
-	vpline(YouMessage(tmp, "You feel ", line), VA_ARGS);
+/*JP	vpline(YouMessage(tmp, "You feel ", line), VA_ARGS);*/
+	vpline(YouMessage(tmp, "あなたは", line), VA_ARGS);
 	VA_END();
 }
 
@@ -135,7 +145,8 @@ You_cant VA_DECL(const char *,line)
 	char *tmp;
 	VA_START(line);
 	VA_INIT(line, const char *);
-	vpline(YouMessage(tmp, "You can't ", line), VA_ARGS);
+/*JP	vpline(YouMessage(tmp, "You can't ", line), VA_ARGS);*/
+	vpline(YouMessage(tmp, "あなたは", line), VA_ARGS);
 	VA_END();
 }
 
@@ -145,7 +156,8 @@ pline_The VA_DECL(const char *,line)
 	char *tmp;
 	VA_START(line);
 	VA_INIT(line, const char *);
-	vpline(YouMessage(tmp, "The ", line), VA_ARGS);
+/*JP	vpline(YouMessage(tmp, "The ", line), VA_ARGS);*/
+	vpline(YouMessage(tmp, "", line), VA_ARGS);
 	VA_END();
 }
 
@@ -153,13 +165,32 @@ pline_The VA_DECL(const char *,line)
 void
 You_hear VA_DECL(const char *,line)
 	char *tmp;
+	const char *adj;
+	char *p;
 	VA_START(line);
 	VA_INIT(line, const char *);
+
 	if (!Underwater)
-		YouPrefix(tmp, "You hear ", line);
+/*JP		YouPrefix(tmp, "You hear ", line);*/
+		adj = "";
 	else
-		YouPrefix(tmp, "You barely hear ", line);
-	vpline(strcat(tmp, line), VA_ARGS);
+/*JP		YouPrefix(tmp, "You barely hear ", line);*/
+		adj = "かすかに";
+
+	tmp = You_buf(strlen(adj) + strlen(line) + sizeof("あなたは   "));
+
+	Strcpy(tmp, "あなたは");
+	if((p = (char *)strstr(line, "聞い")) != NULL){
+	  strncat(tmp, line, (p - line));
+	  strcat(tmp, adj);
+	  strcat(tmp, p);
+	}
+	else{
+		Strcat(tmp, line);
+	}
+
+/*JP	vpline(strcat(tmp, line), VA_ARGS);*/
+	vpline(tmp, VA_ARGS);
 	VA_END();
 }
 
@@ -171,9 +202,11 @@ verbalize VA_DECL(const char *,line)
 	VA_START(line);
 	VA_INIT(line, const char *);
 	tmp = You_buf((int)strlen(line) + sizeof "\"\"");
-	Strcpy(tmp, "\"");
+/*JP	Strcpy(tmp, "\"");*/
+	Strcpy(tmp, "「");
 	Strcat(tmp, line);
-	Strcat(tmp, "\"");
+/*JP	Strcat(tmp, "\"");*/
+	Strcat(tmp, "」");
 	vpline(tmp, VA_ARGS);
 	VA_END();
 }
@@ -234,12 +267,17 @@ align_str(alignment)
     aligntyp alignment;
 {
     switch ((int)alignment) {
-	case A_CHAOTIC: return "chaotic";
+/*JP	case A_CHAOTIC: return "chaotic";
 	case A_NEUTRAL: return "neutral";
 	case A_LAWFUL:	return "lawful";
-	case A_NONE:	return "unaligned";
+	case A_NONE:	return "unaligned";*/
+	case A_CHAOTIC: return "混沌";
+	case A_NEUTRAL: return "中立";
+	case A_LAWFUL:	return "秩序";
+	case A_NONE:	return "無心";
     }
-    return "unknown";
+/*JP    return "unknown";*/
+    return "不明";
 }
 
 void
@@ -259,6 +297,7 @@ register struct monst *mtmp;
 		A_NEUTRAL;
 
 	info[0] = 0;
+#if 0 /*JP*/
 	if (mtmp->mtame) {	  Strcat(info, ", tame");
 #ifdef WIZARD
 	    if (wizard)		  Sprintf(eos(info), " (%d)", mtmp->mtame);
@@ -296,16 +335,57 @@ register struct monst *mtmp;
 				", swallowed you" :
 				", engulfed you") :
 				", holding you");
+#endif /*JP*/
+	if (mtmp->mtame) {	  Strcat(info, ", 飼いならされている");
+#ifdef WIZARD
+	    if (wizard)		  Sprintf(eos(info), " (%d)", mtmp->mtame);
+#endif
+	}
+	if (mtmp->mblinded || !mtmp->mcansee)
+				  Strcat(info, ", 盲目");
+	if (mtmp->mstun)	  Strcat(info, ", くらくら状態");
+	if (mtmp->msleep)	  Strcat(info, ", 眠っている");
+#if 0	/* unfortunately mfrozen covers temporary sleep and being busy
+	   (donning armor, for instance) as well as paralysis */
+	else if (mtmp->mfrozen)	  Strcat(info, ", 麻痺状態");
+#else
+	else if (mtmp->mfrozen || !mtmp->mcanmove)
+				  Strcat(info, ", 動けない");
+#endif
+				  /* [arbitrary reason why it isn't moving] */
+	else if (mtmp->mstrategy & STRAT_WAITMASK)
+				  Strcat(info, ", 黙想中");
+	else if (mtmp->mflee)	  Strcat(info, ", 怯えている");
+	if (mtmp->mtrapped)	  Strcat(info, ", 罠にかかっている");
+	if (mtmp->mspeed)	  Strcat(info,
+					mtmp->mspeed == MFAST ? ", 素早い" :
+					mtmp->mspeed == MSLOW ? ", 遅い" :
+					", 速度 ????");
+	if (mtmp->mundetected)	  Strcat(info, ", 隠れている");
+	if (mtmp->minvis)	  Strcat(info, ", 不可視");
+	if (mtmp == u.ustuck)	  Strcat(info,
+			(Upolyd && sticks(uasmon)) ? ", あなたが掴まえている" :
+				u.uswallow ? (is_animal(u.ustuck->data) ?
+				", あなたを飲み込んでいる" :
+				", あなたを巻き込んでいる") :
+				", あなたを掴まえている");
 
 	Strcpy(monnambuf, mon_nam(mtmp));
 	/* avoid "Status of the invisible newt ..., invisible" */
+/*JP
 	if (mtmp->minvis && strstri(monnambuf, "invisible")) {
+*/
+	if (mtmp->minvis && (strstri(monnambuf, "invisible") ||
+			     strstr(monnambuf, "姿の見えない"))) {
 	    mtmp->minvis = 0;
 	    Strcpy(monnambuf, mon_nam(mtmp));
 	    mtmp->minvis = 1;
 	}
 
+/*JP
 	pline("Status of %s (%s):  Level %d  HP %d(%d)  AC %d%s.",
+*/
+	pline("%sの状態 (%s):  Level %d  HP %d(%d)  AC %d%s.",
 		monnambuf,
 		align_str(alignment),
 		mtmp->m_lev,
@@ -322,51 +402,105 @@ ustatusline()
 
 	info[0] = '\0';
 	if (Sick) {
+/*JP
 		Strcat(info, ", dying from");
+*/
+		Strcat(info, ", ");
 		if (u.usick_type & SICK_VOMITABLE)
+/*JP
 			Strcat(info, " food poisoning");
+*/
+			Strcat(info, "食中毒");
 		if (u.usick_type & SICK_NONVOMITABLE) {
 			if (u.usick_type & SICK_VOMITABLE)
+/*JP
 				Strcat(info, " and");
 			Strcat(info, " illness");
+*/
+				Strcat(info, "と");
+			Strcat(info, "病気");
 		}
+		Strcat(info, "で死につつある");
 	}
+#if 0 /*JP*/
 	if (Stoned)		Strcat(info, ", solidifying");
 	if (Strangled)		Strcat(info, ", being strangled");
 	if (Vomiting)		Strcat(info, ", nauseated"); /* !"nauseous" */
 	if (Confusion)		Strcat(info, ", confused");
+#endif
+	if (Stoned)		Strcat(info, ", 石化しつつある");
+	if (Strangled)		Strcat(info, ", 首を締められている");
+	if (Vomiting)		Strcat(info, ", 吐き気がする");
+	if (Confusion)		Strcat(info, ", 混乱状態");
 	if (Blind) {
+/*JP
 	    Strcat(info, ", blind");
+*/
+	    Strcat(info, ", ");
 	    if (u.ucreamed) {
+/*JP
 		if ((long)u.ucreamed < Blinded || Blindfolded
 						|| !haseyes(uasmon))
 		    Strcat(info, ", cover");
 		Strcat(info, "ed by sticky goop");
+*/
+		Strcat(info, "ねばねばべとつくもので");
+		if ((long)u.ucreamed < Blinded || Blindfolded
+						|| !haseyes(uasmon))
+		    Strcat(info, "覆われている, ");
 	    }	/* note: "goop" == "glop"; variation is intentional */
+	    Strcat(info, "盲目");
 	}
+/*JP
 	if (Stunned)		Strcat(info, ", stunned");
+*/
+	if (Stunned)		Strcat(info, ", くらくら状態");
 	if (Wounded_legs) {
 	    const char *what = body_part(LEG);
 	    if ((Wounded_legs & BOTH_SIDES) == BOTH_SIDES)
 		what = makeplural(what);
+/*JP
 				Sprintf(eos(info), ", injured %s", what);
+*/
+				Sprintf(eos(info), ", %sにけがをしている", what);
 	}
+/*JP
 	if (Glib)		Sprintf(eos(info), ", slippery %s",
+*/
+	if (Glib)		Sprintf(eos(info), ", %sがぬるぬる",
 					makeplural(body_part(HAND)));
+#if 0 /*JP*/
 	if (u.utrap)		Strcat(info, ", trapped");
 	if (Fast)		Strcat(info, ", fast");
 	if (u.uundetected)	Strcat(info, ", concealed");
 	if (Invis)		Strcat(info, ", invisible");
+#endif
+	if (u.utrap)		Strcat(info, ", 罠にかかっている");
+	if (Fast)		Strcat(info, ", 素早い");
+	if (u.uundetected)	Strcat(info, ", 隠れている");
+	if (Invis)		Strcat(info, ", 不可視");
 	if (u.ustuck) {
+#if 0 /*JP*/
 	    if (Upolyd && sticks(uasmon))
 		Strcat(info, ", holding ");
 	    else
 		Strcat(info, ", held by ");
 	    Strcat(info, mon_nam(u.ustuck));
+#endif
+	    Strcat(info, ", ");
+	    Strcat(info, mon_nam(u.ustuck));
+	    if (Upolyd && sticks(uasmon))
+		Strcat(info, "を掴まえている");
+	    else
+		Strcat(info, "に掴まえられている");
 	}
 
+/*JP
 	pline("Status of %s (%s%s):  Level %d  HP %d(%d)  AC %d%s.",
+*/
+	pline("%sの状態 (%s %s):  Level %d  HP %d(%d)  AC %d%s.",
 		plname,
+#if 0 /*JP*/
 		    (u.ualign.record >= 20) ? "piously " :
 		    (u.ualign.record > 13) ? "devoutly " :
 		    (u.ualign.record > 8) ? "fervently " :
@@ -375,6 +509,15 @@ ustatusline()
 		    (u.ualign.record >= 1) ? "haltingly " :
 		    (u.ualign.record == 0) ? "nominally " :
 					    "insufficiently ",
+#endif
+		    (u.ualign.record >= 20) ? "敬虔" :
+		    (u.ualign.record > 13) ? "信心深い" :
+		    (u.ualign.record > 8) ? "熱烈" :
+		    (u.ualign.record > 3) ? "声のかん高い" :
+		    (u.ualign.record == 3) ? "" :
+		    (u.ualign.record >= 1) ? "有名無実" :
+		    (u.ualign.record == 0) ? "迷惑" :
+					    "不適当",
 		align_str(u.ualign.type),
 		Upolyd ? mons[u.umonnum].mlevel : u.ulevel,
 		Upolyd ? u.mh : u.uhp,
@@ -386,3 +529,4 @@ ustatusline()
 #endif /* OVLB */
 
 /*pline.c*/
+

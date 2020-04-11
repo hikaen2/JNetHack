@@ -2,6 +2,12 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifdef TTY_GRAPHICS
@@ -18,6 +24,8 @@ STATIC_DCL void FDECL(redotoplin, (const char*));
 STATIC_DCL void FDECL(topl_putsym, (CHAR_P));
 STATIC_DCL void NDECL(remember_topl);
 static void FDECL(removetopl, (int));
+/*JP*/
+STATIC_DCL void FDECL(raw_topl_putsym, (CHAR_P));
 
 #ifdef OVLB
 
@@ -51,12 +59,15 @@ redotoplin(str)
 {
 	int otoplin = ttyDisplay->toplin;
 	home();
+/*JP*/
+#if 0
 	if(*str & 0x80) {
 		/* kludge for the / command, the only time we ever want a */
 		/* graphics character on the top line */
 		g_putch((int)*str++);
 		ttyDisplay->curx++;
 	}
+#endif
 	end_glyphout();	/* in case message printed during graphics output */
 	putsyms(str);
 	cl_end();
@@ -135,12 +146,33 @@ more()
     ttyDisplay->toplin = 0;
     ttyDisplay->inmore = 0;
 }
+/*JP*/
+static char *
+folding_japanese( str, pos )
+     char *str;
+     int pos;
+{
+  char ss[1024],s1[1024],s2[1024];
+  static char newstr[1024];		/* may be enough */
 
+  newstr[0] = '\0';
+  Strcpy(ss, str);
+  while(1){
+    split_japanese(ss, s1, s2, pos);
+    Strcat(newstr, s1);
+    if(!*s2)
+      break;
+    Strcat(newstr, "\n");
+    Strcpy(ss,s2);
+  }
+
+  return newstr;
+}
 void
 update_topl(bp)
 	register const char *bp;
 {
-	register char *tl, *otl;
+  /*JP	register char *tl, *otl;*/
 	register int n0;
 	int notdied = 1;
 	struct WinDesc *cw = wins[WIN_MESSAGE];
@@ -165,7 +197,11 @@ update_topl(bp)
 	    }
 	}
 	remember_topl();
-	Strcpy(toplines, bp);
+	if( n0<CO )
+	  Strcpy(toplines, bp);
+	else
+	  Strcpy(toplines,folding_japanese(bp, CO-2));
+#if 0
 	for(tl = toplines; n0 >= CO; ){
 	    otl = tl;
 	    for(tl+=CO-1; tl != otl && !isspace(*tl); --tl) ;
@@ -177,13 +213,17 @@ update_topl(bp)
 	    *tl++ = '\n';
 	    n0 = strlen(tl);
 	}
+#endif
 	if(!notdied) cw->flags &= ~WIN_STOP;
 	if(!(cw->flags & WIN_STOP)) redotoplin(toplines);
 }
 
+/* JP
+** do not translate kcode this function(see topl_putsym)
+*/
 STATIC_OVL
 void
-topl_putsym(c)
+raw_topl_putsym(c)
     char c;
 {
     register struct WinDesc *cw = wins[WIN_MESSAGE];
@@ -200,6 +240,8 @@ topl_putsym(c)
 	return;
     case '\n':
 	cl_end();
+	(void) cputchar('\r'); /* raw mode で必要? */
+	(void) cputchar('\n');
 	ttyDisplay->curx = 0;
 	ttyDisplay->cury++;
 	cw->cury = ttyDisplay->cury;
@@ -207,11 +249,65 @@ topl_putsym(c)
     default:
 	if(ttyDisplay->curx == CO-1)
 	    topl_putsym('\n'); /* 1 <= curx <= CO; avoid CO */
+	cw->curx = ttyDisplay->curx;
+	if(cw->curx == 0) cl_end();
+	(void) cputchar(c);
+	++cw->curx;
+	++ttyDisplay->curx;
+    }
+}
+/* JP
+** do not translate kcode this function(see putsym)
+*/
+void
+raw_putsyms(str)
+    const char *str;
+{
+    while(*str)
+	raw_topl_putsym(*str++);
+}
+
+STATIC_OVL
+void
+topl_putsym(c)
+    char c;
+{
+    register struct WinDesc *cw = wins[WIN_MESSAGE];
+/*JP*/
+    unsigned char uc = *((unsigned char *)(&c));
+/*JP
+    static int kmode;
+*/
+
+    if(cw == (struct WinDesc *) 0) panic("Putsym window MESSAGE nonexistant");
+	
+    switch(c) {
+    case '\b':
+	if(ttyDisplay->curx == 0 && ttyDisplay->cury > 0)
+	    tty_curs(BASE_WINDOW, CO, (int)ttyDisplay->cury-1);
+	backsp();
+	ttyDisplay->curx--;
+	cw->curx = ttyDisplay->curx;
+	return;
+    case '\n':
+	cl_end();
+	(void) jputchar('\r'); /* raw mode で必要? */
+	(void) jputchar('\n');
+	ttyDisplay->curx = 0;
+	ttyDisplay->cury++;
+	cw->cury = ttyDisplay->cury;
+	break;
+    default:
+	if(ttyDisplay->curx == CO-1)
+	    topl_putsym('\n'); /* 1 <= curx <= CO; avoid CO */
+	cw->curx = ttyDisplay->curx;
+
+	if(cw->curx == 0) cl_end();
+/*JP*/
+	(void) jputchar((unsigned char)uc);
+	++cw->curx;
 	ttyDisplay->curx++;
     }
-    cw->curx = ttyDisplay->curx;
-    if(cw->curx == 0) cl_end();
-    (void) putchar(c);
 }
 
 void

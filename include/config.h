@@ -5,7 +5,6 @@
 #ifndef CONFIG_H /* make sure the compiler does not see the typedefs twice */
 #define CONFIG_H
 
-
 /*
  * Section 1:	OS selection.
  *		Select the version of the OS you are using.
@@ -14,6 +13,7 @@
  *		provide it (no need to change sec#1, vmsconf.h handles it).
  */
 
+#define JNETHACK
 #define UNIX		/* delete if no fork(), exec() available */
 
 /*
@@ -24,7 +24,7 @@
  * DJGPP       auto-defines MSDOS.
  */
 
-/* #define MSDOS	/* use if not defined by compiler or cases below */
+/* #define MSDOS	*//* use if not defined by compiler or cases below */
 
 #ifdef __MSDOS__	/* for Borland C */
 # ifndef MSDOS
@@ -120,22 +120,22 @@
  * and other systems...
  */
 
-/* #define OS2		/* define for OS/2 */
+/* #define OS2		*//* define for OS/2 */
 
-/* #define TOS		/* define for Atari ST/TT */
+/* #define TOS		*//* define for Atari ST/TT */
 
-/* #define STUPID	/* avoid some complicated expressions if
+/* #define STUPID	*//* avoid some complicated expressions if
 			   your C compiler chokes on them */
-/* #define TERMINFO	/* uses terminfo rather than termcap */
+/* #define TERMINFO	*//* uses terminfo rather than termcap */
 			/* should be defined for HPUX and most, but not all,
 			   SYSV */
 			/* in particular, it should NOT be defined for the
 			 * UNIXPC unless you remove the use of the shared
 			 * library in the makefile */
-/* #define MINIMAL_TERM	/* if a terminal handles highlighting or tabs poorly,
+/* #define MINIMAL_TERM	*//* if a terminal handles highlighting or tabs poorly,
 			   try this define, used in pager.c and termcap.c */
-/* #define ULTRIX_CC20	/* define only if using cc v2.0 on a DECstation */
-/* #define ULTRIX_PROTO	/* define for Ultrix 4.0 (or higher) on a DECstation;
+/* #define ULTRIX_CC20	*//* define only if using cc v2.0 on a DECstation */
+/* #define ULTRIX_PROTO	*//* define for Ultrix 4.0 (or higher) on a DECstation;
 			 * if you get compiler errors, don't define this. */
 			/* Hint: if you're not developing code, don't define
 			   ULTRIX_PROTO. */
@@ -211,7 +211,29 @@
  * Some combinations make no sense.  See the installation document.
  */
 #define TTY_GRAPHICS	/* good old tty based graphics */
-/* #define X11_GRAPHICS	/* X11 interface */
+#define X11_GRAPHICS	/* X11 interface */
+#define GTK_GRAPHICS	/* GTK interface */
+
+/*  Only unix supports X11_GRAPHICS and GTK_GRAPHICS */
+#ifndef UNIX
+# undef X11_GRAPHICS
+# undef GTK_GRAPHICS
+#endif
+
+/*
+** added by issei, Tue May 24 11:55:10 JST 1994
+*/
+#if defined(X11_GRAPHICS) || defined(GTK_GRAPHICS)
+#define XI18N		/* if you use X11 internationalization, define this */
+#endif
+
+#ifdef XI18N
+#undef  XAW_I18N	/* if you use X11R5 & Xawi18n, define this */
+#define X11R6		/* ,or if use X11R6, define this */
+
+#define	BIGTILE
+#define	BIG3DTILE
+#endif
 
 /*
  * Define the default window system.  This should be one that is compiled
@@ -244,10 +266,22 @@
 #endif
 
 #ifndef DEFAULT_WINDOW_SYS
-# define DEFAULT_WINDOW_SYS "tty"
+# ifdef GTK_GRAPHICS
+#  define DEFAULT_WINDOW_SYS "gtk"
+# endif
 #endif
 
-#ifdef X11_GRAPHICS
+#ifndef DEFAULT_WINDOW_SYS
+# ifdef X11_GRAPHICS
+#  define DEFAULT_WINDOW_SYS "x11"
+# endif
+#endif
+
+#ifndef DEFAULT_WINDOW_SYS
+#  define DEFAULT_WINDOW_SYS "tty"
+#endif
+
+#if defined(X11_GRAPHICS) || defined(GTK_GRAPHICS)
 /*
  * There are two ways that X11 tiles may be defined.  (1) using a custom
  * format loaded by NetHack code, or (2) using the XPM format loaded by
@@ -256,9 +290,11 @@
  * would allow:
  *  xpmtoppm <x11tiles.xpm | pnmscale 1.25 | ppmquant 90 >x11tiles_big.xpm
  */
-/* # define USE_XPM		/* Disable if you do not have the XPM library */
+# define USE_XPM		/* Disable if you do not have the XPM library */
 # ifdef USE_XPM
 #  define GRAPHIC_TOMBSTONE	/* Use graphical tombstone (rip.xpm) */
+#  define RADAR			/* Use radar */
+#  define INSTALLCOLORMAP
 # endif
 #endif
 
@@ -268,6 +304,39 @@
  *		from the game; otherwise set the appropriate wizard name.
  *		LOGFILE and NEWS refer to files in the playground.
  */
+
+#ifdef JNETHACK
+#define	NEWBIE		/* more verbose for newbie */
+#define FIGHTER		/* Sailor Fighter with sailor blouse */
+#define NH_EXTENSION	/* Some extension for game */
+#endif
+
+#if (defined(UNIX) || defined(WIN32)) && defined(NH_EXTENSION)
+
+#define NH_EXTENSION_REPORT
+
+#define REPORTSCORE_VER	1030
+#define SCORE_SERVER	"score.jnethack.org"
+#define SCORE_PATH	"http://www.jnethack.org/cgi-bin/report"
+#define SCORE_PORT	80
+
+#define BONES_SERVER	"bones.jnethack.org"
+#define BONES_PATH	"http://www.jnethack.org/cgi-bin/bones"
+#define BONES_PORT	80
+
+#define HTTP_PROXY	""		/* default proxy if you need */
+#define HTTP_PROXY_PORT	3128		/* default proxy port if you need */
+/*
+  Example:
+
+#define HTTP_PROXY	"proxy.hoehoe.com"
+#define HTTP_PROXY_PORT	3128
+
+ */
+
+#define HTTP_TIMEOUT	20
+
+#endif
 
 #ifndef WIZARD		/* allow for compile-time or Makefile changes */
 # ifndef KR1ED
@@ -294,15 +363,18 @@
  *	compression.
  */
 
+#ifndef NH_EXTENSION
 #ifdef UNIX
 /* path and file name extension for compression program */
-# define COMPRESS "/usr/ucb/compress"	     /* Lempel-Ziv compression */
-# define COMPRESS_EXTENSION ".Z"	     /* compress's extension */
+/* # define COMPRESS "/usr/ucb/compress"	     *//* Lempel-Ziv compression */
+/* # define COMPRESS_EXTENSION ".Z"	     *//* compress's extension */
 
 /* An example of one alternative you might want to use: */
-/* # define COMPRESS "/usr/local/bin/gzip"   /* FSF gzip compression */
-/* # define COMPRESS_EXTENSION ".gz"	     /* normal gzip extension */
+# define COMPRESS "/usr/bin/gzip"   /* FSF gzip compression */
+# define COMPRESS_EXTENSION ".gz"	     /* normal gzip extension */
 #endif
+#endif
+
 #ifndef COMPRESS
 # define INTERNAL_COMP	/* control use of NetHack's compression routines */
 #endif
@@ -312,7 +384,7 @@
  *	a tar-like file, thus making a neater installation.  See *conf.h
  *	for detailed configuration.
  */
-/* #define DLB		/* not supported on all platforms */
+/* #define DLB */	/* not supported on all platforms */
 
 /*
  *	Defining INSURANCE slows down level changes, but allows games that
@@ -331,7 +403,7 @@
  * otherwise it will be the current directory.
  */
 # ifndef HACKDIR
-#  define HACKDIR "/usr/games/lib/nethackdir"	/* nethack directory */
+#  define HACKDIR "/usr/games/lib/jnethackdir"	/* nethack directory */
 # endif
 
 /*
@@ -341,7 +413,7 @@
  * since the user might create files in a directory of his choice.
  * Of course SECURE is meaningful only if HACKDIR is defined.
  */
-/* #define SECURE	/* do setuid(getuid()) after chdir() */
+/* #define SECURE	*//* do setuid(getuid()) after chdir() */
 
 /*
  * If it is desirable to limit the number of people that can play Hack
@@ -363,14 +435,14 @@
  * 'void' type (and thus would give all sorts of compile errors without
  * this definition).
  */
-/* #define NOVOID			/* define if no "void" data type. */
+/* #define NOVOID			*//* define if no "void" data type. */
 
 /*
  * Uncomment the following line if your compiler falsely claims to be
  * a standard C compiler (i.e., defines __STDC__ without cause).
  * Examples are Apollo's cc (in some versions) and possibly SCO UNIX's rcc.
  */
-/* #define NOTSTDC			/* define for lying compilers */
+/* #define NOTSTDC			*//* define for lying compilers */
 
 #include "tradstdc.h"
 
@@ -412,7 +484,7 @@ typedef unsigned char	uchar;
  */
 #define BITFIELDS	/* Good bitfield handling */
 
-/* #define STRNCMPI /* compiler/library has the strncmpi function */
+/* #define STRNCMPI *//* compiler/library has the strncmpi function */
 
 /*
  * There are various choices for the NetHack vision system.  There is a
@@ -427,7 +499,7 @@ typedef unsigned char	uchar;
  * functions that have been macroized.
  */
 
-/*#define VISION_TABLES	/* use vision tables generated at compile time */
+/*#define VISION_TABLES	*//* use vision tables generated at compile time */
 #ifndef VISION_TABLES
 # ifndef NO_MACRO_CPATH
 #  define MACRO_CPATH	/* use clear_path macros instead of functions */
@@ -465,7 +537,7 @@ typedef unsigned char	uchar;
 #endif
 
 #define EXP_ON_BOTL	/* Show experience on bottom line */
-/* #define SCORE_ON_BOTL	/* added by Gary Erickson (erickson@ucivax) */
+#define SCORE_ON_BOTL	/* added by Gary Erickson (erickson@ucivax) */
 
 #include "global.h"	/* Define everything else according to choices above */
 

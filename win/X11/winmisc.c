@@ -8,6 +8,12 @@
  *	+ Global functions: player_selection() and get_ext_cmd().
  */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994-1999
+**	changing point is marked `JP' (94/6/7) or XI18N (96/7/19)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #ifndef SYSV
 #define PRESERVE_NO_SYSV	/* X11 include files may define SYSV */
 #endif
@@ -132,6 +138,10 @@ X11_player_selection()
     char pc;
     int num_roles;
     Widget popup, player_form;
+#ifdef XI18N
+    char **jroles;
+    char jtmp[256];
+#endif
 
     if ((pc = highc(pl_character[0])) != 0) {
 	if (index(pl_classes, pc)) goto got_suffix;
@@ -141,11 +151,26 @@ X11_player_selection()
     for (num_roles = 0; roles[num_roles]; num_roles++)
 	;	/* do nothing */
 
+/*JP
     popup = make_menu("player_selection", "Choose a Role",
 		player_select_translations,
 		"quit", ps_quit,
 		"random", ps_random,
 		num_roles, roles, (Widget **)0, ps_select, &player_form);
+*/
+    jroles = (char **)malloc(sizeof(char *)*num_roles);
+    for (num_roles = 0; roles[num_roles]; num_roles++){
+      jroles[num_roles] = (char *)malloc(strlen(jtrns_mon(roles[num_roles], -1))+3);
+      strcpy(jroles[num_roles], jtrns_mon(roles[num_roles], -1));
+      sprintf(jtmp, "(%c)", roles[num_roles][0]);
+      strcat(jroles[num_roles], jtmp);
+    }
+    popup = make_menu("player_selection", "キャラクターを選んでください",
+		player_select_translations,
+		"やめる", ps_quit,
+		"おまかせ", ps_random,
+		num_roles, (const char **)jroles,
+	        (Widget **)0, ps_select, &player_form);
 
     ps_selected = 0;
     positionpopup(popup, FALSE);
@@ -168,7 +193,10 @@ X11_player_selection()
 
 	ps_selected = rn2(strlen(pl_classes));
 	pc = pl_classes[ps_selected];
+/*JP
 	Sprintf(buf, "This game you will be %s.", an(roles[ps_selected]));
+*/
+	Sprintf(buf, "このゲームではあなたは%sです．", jtrns_mon(roles[ps_selected], -1));
 
 	tmpwin = X11_create_nhwindow(NHW_TEXT);
 	X11_putstr(tmpwin, 0, "");
@@ -458,6 +486,9 @@ make_menu(popup_name, popup_label, popup_translations,
      * Create the label.
      */
     num_args = 0;
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     XtSetArg(args[num_args], XtNborderWidth, 0);	num_args++;
     label = XtCreateManagedWidget(popup_label,
 				labelWidgetClass,
@@ -473,6 +504,9 @@ make_menu(popup_name, popup_label, popup_translations,
     XtSetArg(args[num_args], XtNshapeStyle,
 				XmuShapeRoundedRectangle);	num_args++;
 */
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     left = XtCreateManagedWidget(left_name,
 		    commandWidgetClass,
 		    form,
@@ -491,6 +525,9 @@ make_menu(popup_name, popup_label, popup_translations,
     XtSetArg(args[num_args], XtNshapeStyle,
 				XmuShapeRoundedRectangle);	num_args++;
 */
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     right = XtCreateManagedWidget(right_name,
 		    commandWidgetClass,
 		    form,
@@ -512,6 +549,9 @@ make_menu(popup_name, popup_label, popup_translations,
 	    XtSetArg(args[num_args], XtNvertDistance, skip);	num_args++;
 	}
 
+#if defined(X11R6) && defined(XI18N)
+	    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 	*curr = XtCreateManagedWidget(widget_names[i],
 		    commandWidgetClass,
 		    form,

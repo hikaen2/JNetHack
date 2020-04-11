@@ -306,24 +306,79 @@ txt_startup(wid, hgt)
  */
 
 # ifdef OVL0
+/*JP*/
 void
-txt_xputs(s,col,row)
-const char *s;
-int col,row;
+txt_xputc2(ch, ch2, attr)	/* write out 2byte code character */
+     char ch;
+     char ch2;
+     int attr;
 {
-	char c;
+#  ifdef PC9800
+  unsigned char uc1, uc2;
 
-	if (s != (char *)0) {
-		while (*s != '\0') {
-			txt_gotoxy(col,row);
-			c = *s++;
-			txt_xputc(c,g_attribute);
-			if (col < (CO-1)) col++;
-			txt_gotoxy(col,row);
-		}
-	}
+  uc1 = *((unsigned char *)&ch);
+  uc2 = *((unsigned char *)&ch2);
+
+  union REGS regs;
+
+  regs.h.dl = attr98[attr];
+  regs.h.ah = SETATT;
+  regs.h.cl = DIRECT_CON_IO;
+
+  (void) int86(DOS_EXT_FUNC, &regs, &regs);
+
+  regs.h.dl = uc1;
+  regs.h.ah = PUTCHAR;
+  regs.h.cl = DIRECT_CON_IO;
+
+  (void) int86(DOS_EXT_FUNC, &regs, &regs);
+
+  regs.h.dl = uc2;
+  regs.h.ah = PUTCHAR;
+  regs.h.cl = DIRECT_CON_IO;
+
+  (void) int86(DOS_EXT_FUNC, &regs, &regs);
+#  else
+#   ifdef SCREEN_BIOS
+  union REGS regs;
+#   endif
+  int col,row;
+  unsigned char uc1, uc2;
+
+  uc1 = *((unsigned char *)&ch);
+  uc2 = *((unsigned char *)&ch2);
+
+  txt_get_cursor(&col,&row);
+/*
+  ++col;
+  txt_gotoxy(col,row);
+*/
+
+#   ifdef SCREEN_DJGPPFAST
+  ScreenPutChar((int)uc1,attr,col,row);
+  ScreenPutChar((int)uc2,attr,col,row);
+#   endif
+#   ifdef SCREEN_BIOS
+  regs.h.ah = PUTCHARATT;  /* write att & character */
+  regs.h.al = uc1;	 /* character             */
+  regs.h.bh = 0;           /* display page          */
+  regs.h.bl = (char)attr;  /* BL = attribute        */
+  regs.x.cx = 1;	   /* one character         */
+  (void) int86(VIDEO_BIOS, &regs, &regs);
+  if (col < (CO - 1)) ++col;
+  txt_gotoxy(col,row);
+
+  regs.h.ah = PUTCHARATT;  /* write att & character */
+  regs.h.al = uc2;	 /* character             */
+  regs.h.bh = 0;           /* display page          */
+  regs.h.bl = (char)attr;  /* BL = attribute        */
+  regs.x.cx = 1;	   /* one character         */
+  (void) int86(VIDEO_BIOS, &regs, &regs);
+#   endif
+  if (col < (CO - 1 )) ++col;
+  txt_gotoxy(col,row);
+#  endif /* PC9800 */
 }
-
 void
 txt_xputc(ch,attr)	/* write out character (and attribute) */
 char ch;
@@ -355,14 +410,9 @@ int attr;
 	union REGS regs;
 #   endif
 	int col,row;
-
 	txt_get_cursor(&col,&row);
 	switch(ch) {
 	    case '\n':	
-#if 0
-			col = 0;
-			++row;
-#endif
 			break;
 	    default:
 #   ifdef SCREEN_DJGPPFAST
@@ -370,10 +420,10 @@ int attr;
 #   endif
 #   ifdef SCREEN_BIOS
 			regs.h.ah = PUTCHARATT;  /* write att & character */
-			regs.h.al = ch;	    	 /* character             */
+			regs.h.al = ch;		 /* character             */
 			regs.h.bh = 0;           /* display page          */
-		 	regs.h.bl = (char)attr;        /* BL = attribute        */
-			regs.x.cx = 1;	    	 /* one character         */
+			regs.h.bl = (char)attr;  /* BL = attribute        */
+			regs.x.cx = 1;	   /* one character         */
 			(void) int86(VIDEO_BIOS, &regs, &regs);
 #   endif
 			if (col < (CO -1 )) ++col;
@@ -381,6 +431,23 @@ int attr;
 	} /* end switch */
 	txt_gotoxy(col,row);
 #  endif /* PC9800 */
+}
+
+void
+txt_xputs(s,col,row)
+const char *s;
+int col,row;
+{
+  unsigned int buf[2];
+
+  if(s){
+    while(*s){
+      txt_gotoxy(col, row);
+      jbuffer(*s, buf, NULL, xputc, xputc2);
+      ++col;
+      ++s;
+    }
+  }
 }
 # endif /* OVL0 */
 

@@ -2,8 +2,15 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
-/* #define DEBUG	/* uncomment to enable new eat code debugging */
+/* #define DEBUG	*//* uncomment to enable new eat code debugging */
 
 #ifdef DEBUG
 # ifdef WIZARD
@@ -72,7 +79,7 @@ STATIC_OVL NEARDATA const char allobj[] = {
 
 STATIC_OVL boolean force_save_hs = FALSE;
 
-const char *hu_stat[] = {
+/*JP const char *hu_stat[] = {
 	"Satiated",
 	"        ",
 	"Hungry  ",
@@ -80,6 +87,15 @@ const char *hu_stat[] = {
 	"Fainting",
 	"Fainted ",
 	"Starved "
+}; */
+const char *hu_stat[] = {
+	"満腹    ",
+	"        ",
+	"ぺこぺこ",
+	"衰弱    ",
+	"ふらふら",
+	"卒倒    ",
+	"餓死    "
 };
 
 #endif /* OVLB */
@@ -122,13 +138,22 @@ init_uhunger()
 	u.uhs = NOT_HUNGRY;
 }
 
-static const struct { const char *txt; int nut; } tintxts[] = {
+/*JP static const struct { const char *txt; int nut; } tintxts[] = {
 	{"deep fried",	 60},
 	{"pickled",	 40},
 	{"soup made from", 20},
 	{"pureed",	500},
 	{"rotten",	-50},
 	{"homemade",	 50},
+	{"", 0}
+}; */
+static const struct { const char *txt; int nut; } tintxts[] = {
+	{"の揚げ物",	 60},
+	{"の漬物",	 40},
+	{"のスープ",	 20},
+	{"のピューレ",	500},
+	{"腐った",	-50},
+	{"自家製の",	 50},
 	{"", 0}
 };
 #define TTSZ	SIZE(tintxts)
@@ -177,20 +202,28 @@ struct obj *food;
 boolean the_pfx;
 {
 	const char *result;
+#if 0	/*JP*/
 	int mnum = food->corpsenm;
 
 	if (food->otyp == CORPSE && (mons[mnum].geno & G_UNIQ)) {
 	    /* grab xname()'s modifiable return buffer for our own use */
 	    char *bufp = xname(food);
+/*JP
 	    Sprintf(bufp, "%s%s corpse",
 		    (the_pfx && !type_is_pname(&mons[mnum])) ? "the " : "",
 		    s_suffix(mons[mnum].mname));
+*/
+	    Sprintf(bufp, "%sの死体",
+		    s_suffix(mons[mnum].mname));
 	    result = bufp;
 	} else {
+#endif
 	    /* the ordinary case */
 	    result = singular(food, xname);
 	    if (the_pfx) result = the(result);
+#if 0	/*JP*/
 	}
+#endif
 	return result;
 }
 
@@ -217,10 +250,12 @@ choke(food)	/* To a full belly all food is bad. (It.) */
 	if (Breathless || (!Strangled && !rn2(20))) {
 		/* choking by eating AoS doesn't involve stuffing yourself */
 		if (food->otyp == AMULET_OF_STRANGULATION) {
-			You("choke, but recover your composure.");
+/*JP			You("choke, but recover your composure.");*/
+			You("首を絞められた．しかしなんともなかった．");
 			return;
 		}
-		You("stuff yourself and then vomit voluminously.");
+/*JP		You("stuff yourself and then vomit voluminously.");*/
+		pline("がつがつと口に詰め込んだが, ドバっと吐き出してしまった．");
 		morehungry(1000);	/* you just got *very* sick! */
 		vomit();
 	} else {
@@ -230,17 +265,30 @@ choke(food)	/* To a full belly all food is bad. (It.) */
 		 * high score list & tombstone.  So plan accordingly.
 		 */
 		if(food) {
+/*JP
 			You("choke over your %s.", foodword(food));
+*/
+			You("%sを喉に詰まらせてしまった．", foodword(food));
 			if (food->oclass == GOLD_CLASS) {
+/*JP
 				killer = "a very rich meal";
+*/
+				killer = "とても豪華な料理で";
 			} else {
 				killer = food_xname(food, FALSE);
 			}
 		} else {
+/*JP
 			You("choke over it.");
 			killer = "quick snack";
+*/
+			pline("喉に詰まらせてしまった．");
+			killer = "早食いで";
 		}
+/*JP
 		You("die...");
+*/
+		pline("あなたは死にました．．．");
 		done(CHOKING);
 	}
 }
@@ -298,7 +346,8 @@ register struct obj *otmp;
 		 || otmp->unpaid) &&
 		 (otmp->otyp == CORPSE || objects[otmp->otyp].oc_delay > 1)) {
 		/* create a dummy duplicate to put on bill */
-		verbalize("You bit it, you bought it!");
+/*JP		verbalize("You bit it, you bought it!");*/
+		verbalize("喰ったならお買いあげいただこう！");
 		bill_dummy_object(otmp);
 		otmp->no_charge = 1;	/* you now own this */
 	    }
@@ -384,7 +433,10 @@ boolean message;
 		if (message) pline(nomovemsg);
 		nomovemsg = 0;
 	} else if (message)
+/*JP
 		You("finish eating %s.", food_xname(victual.piece, TRUE));
+*/
+		You("%sを食べ終えた．",  food_xname(victual.piece, TRUE));
 
 	if(victual.piece->otyp == CORPSE)
 		cpostfx(victual.piece->corpsenm);
@@ -405,9 +457,11 @@ register int pm;
 
 	if (Role_is('E') ? is_elf(&mons[pm]) : is_human(&mons[pm])) {
 		if (uasmon != &playermon) {
-			You("have a bad feeling deep inside.");
+/*JP			You("have a bad feeling deep inside.");*/
+			You("嫌悪感におそわれた．");
 		}
-		You("cannibal!  You will regret this!");
+/*JP		You("cannibal!  You will regret this!");*/
+		pline("共喰いだ！後悔するぞ！");
 		Aggravate_monster |= FROMOUTSIDE;
 		change_luck(-rn1(4,2));		/* -5..-2 */
 	}
@@ -419,7 +473,8 @@ register int pm;
 	    case PM_KITTEN:
 	    case PM_HOUSECAT:
 	    case PM_LARGE_CAT:
-		You_feel("that eating the %s was a bad idea.", mons[pm].mname);
+/*JP		You_feel("that eating the %s was a bad idea.", mons[pm].mname); */
+		pline("%sを食べるのはよくない気がした．", jtrns_mon(mons[pm].mname, -1));
 		Aggravate_monster |= FROMOUTSIDE;
 		break;
 	    case PM_COCKATRICE:
@@ -428,10 +483,16 @@ register int pm;
 		    !(poly_when_stoned(uasmon) && polymon(PM_STONE_GOLEM))) {
 		    char kbuf[BUFSZ];
 
+/*JP
 		    Sprintf(kbuf, "tasting %s meat", mons[pm].mname);
+*/
+		    Sprintf(kbuf, "%sの肉を食べ", jtrns_mon(mons[pm].mname, -1));
 		    killer_format = KILLED_BY;
 		    killer = kbuf;
+/*JP
 		    You("turn to stone.");
+*/
+		    You("石化した．");
 		    done(STONING);
 		}
 		break;
@@ -442,11 +503,14 @@ register int pm;
 	    case PM_PESTILENCE:
 	    case PM_FAMINE:
 		{ char buf[BUFSZ];
-		    pline("Eating that is instantly fatal.");
-		    Sprintf(buf, "unwisely ate the body of %s",
-			    mons[pm].mname);
+/*JP		    pline("Eating that is instantly fatal."); */
+		    pline("食べたらすぐに死んでしまった．");
+/*JP		    Sprintf(buf, "unwisely ate the body of %s",*/
+		    Sprintf(buf, "愚かにも%sを食べて",
+			    jtrns_mon(mons[pm].mname,-1));
 		    killer = buf;
-		    killer_format = NO_KILLER_PREFIX;
+/*JP		    killer_format = NO_KILLER_PREFIX;*/
+		    killer_format = KILLED_BY;
 		    done(DIED);
 		    /* It so happens that since we know these monsters */
 		    /* cannot appear in tins, victual.piece will always */
@@ -463,10 +527,13 @@ register int pm;
 	if (fix_petrification) {
 	    Stoned = 0;
 	    if (!Hallucination)
-		You_feel("limber!");
+/*JP		You_feel("limber!");*/
+		You("体が軟らかくなったような気がした！");
 	    else
-		pline("What a pity - you just ruined a future piece of %sart!",
-		      ACURR(A_CHA) > 15 ? "fine " : "");
+/*JP		pline("What a pity - you just ruined a future piece of %sart!",
+		      ACURR(A_CHA) > 15 ? "fine " : "");*/
+		pline("なんてことだ！%s芸術作品になれたかもしれないのに！",
+		      ACURR(A_CHA) > 15 ? "貴重な" : "");
 	}
 
 	return;
@@ -621,8 +688,10 @@ register struct permonst *ptr;
 		debugpline("Trying to give fire resistance");
 #endif
 		if(!(HFire_resistance & FROMOUTSIDE)) {
-			You(Hallucination ? "be chillin'." :
-			    "feel a momentary chill.");
+/*JP			You(Hallucination ? "be chillin'." :
+			    "feel a momentary chill."); */
+		    You(Hallucination ? "「クール宅配便」されているようだ" :
+			    "一瞬寒けがした．");
 			HFire_resistance |= FROMOUTSIDE;
 		}
 		break;
@@ -631,8 +700,9 @@ register struct permonst *ptr;
 		debugpline("Trying to give sleep resistance");
 #endif
 		if(!(HSleep_resistance & FROMOUTSIDE)) {
-			You_feel("wide awake.");
-			HSleep_resistance |= FROMOUTSIDE;
+/*JP			You_feel("wide awake."); */
+		    You("ぱっちり目がさめた．");
+		    HSleep_resistance |= FROMOUTSIDE;
 		}
 		break;
 	    case COLD_RES:
@@ -640,7 +710,8 @@ register struct permonst *ptr;
 		debugpline("Trying to give cold resistance");
 #endif
 		if(!(HCold_resistance & FROMOUTSIDE)) {
-			You_feel("full of hot air.");
+/*JP			You_feel("full of hot air."); */
+		    You("熱風を全身に感じた．");
 			HCold_resistance |= FROMOUTSIDE;
 		}
 		break;
@@ -650,8 +721,10 @@ register struct permonst *ptr;
 #endif
 		if(!(HDisint_resistance & FROMOUTSIDE)) {
 			You_feel(Hallucination ?
-			    "totally together, man." :
-			    "very firm.");
+/*JP			    "totally together, man." :
+			    "very firm.");*/
+			  "世界人類と兄弟になったような気がした．" :
+			  "とても頑丈になったような気がした．");
 			HDisint_resistance |= FROMOUTSIDE;
 		}
 		break;
@@ -661,9 +734,11 @@ register struct permonst *ptr;
 #endif
 		if(!(HShock_resistance & FROMOUTSIDE)) {
 			if (Hallucination)
-				You_feel("grounded in reality.");
+/*JP				You_feel("grounded in reality."); */
+				You("アースされたような気がした．");
 			else
-				Your("health currently feels amplified!");
+/*JP				Your("health currently feels amplified!");*/
+				pline("健康が増幅されたような気がした！");
 			HShock_resistance |= FROMOUTSIDE;
 		}
 		break;
@@ -672,7 +747,8 @@ register struct permonst *ptr;
 		debugpline("Trying to give poison resistance");
 #endif
 		if(!(HPoison_resistance & FROMOUTSIDE)) {
-			You_feel("healthy.");
+/*JP			You_feel("healthy.");*/
+			You("健康的になったような気がした．");
 			HPoison_resistance |= FROMOUTSIDE;
 		}
 		break;
@@ -681,8 +757,10 @@ register struct permonst *ptr;
 		debugpline("Trying to give teleport");
 #endif
 		if(!(HTeleportation & FROMOUTSIDE)) {
-			You_feel(Hallucination ? "diffuse." :
-			    "very jumpy.");
+/*JP			You_feel(Hallucination ? "diffuse." :
+			    "very jumpy.");*/
+			pline(Hallucination ? "体が飛び散ったような気がした．" :
+			    "跳躍力が高まったような気がした．");
 			HTeleportation |= FROMOUTSIDE;
 		}
 		break;
@@ -692,8 +770,10 @@ register struct permonst *ptr;
 #endif
 		if(!(HTeleport_control & FROMOUTSIDE)) {
 			You_feel(Hallucination ?
-			    "centered in your personal space." :
-			    "in control of yourself.");
+/*JP			    "centered in your personal space." :
+			    "in control of yourself.");*/
+			    "自己中心的になったような気がした．" :
+			    "自分自身を制御できるような気がした．");
 			HTeleport_control |= FROMOUTSIDE;
 		}
 		break;
@@ -703,8 +783,10 @@ register struct permonst *ptr;
 #endif
 		if(!(HTelepat & FROMOUTSIDE)) {
 			You_feel(Hallucination ?
-			    "in touch with the cosmos." :
-			    "a strange mental acuity.");
+/*JP			    "in touch with the cosmos." :
+			    "a strange mental acuity.");*/
+			    "宇宙の神秘に触れたような気がした．" :
+			    "奇妙な精神的鋭さを感じた．");
 			HTelepat |= FROMOUTSIDE;
 			/* If blind, make sure monsters show up. */
 			if (Blind) see_monsters();
@@ -750,7 +832,8 @@ register int pm;
 		if(!Invis) {
 			set_itimeout(&HInvis, (long)rn1(100, 50));
 		} else {
-			if (!(HInvis & INTRINSIC)) You_feel("hidden!");
+/*JP			if (!(HInvis & INTRINSIC)) You_feel("hidden!");*/
+			if (!(HInvis & INTRINSIC)) Your("姿は隠された！");
 			HInvis |= FROMOUTSIDE;
 			HSee_invisible |= FROMOUTSIDE;
 		}
@@ -775,11 +858,19 @@ register int pm;
 		if (u.usym != S_MIMIC) {
 		    char buf[BUFSZ];
 
+/*JP
 		    You_cant("resist the temptation to mimic a pile of gold.");
+*/
+		    You("金貨の山を真似したい誘惑にかられた．");
 		    nomul(-tmp);
+/*JP
 		    Sprintf(buf, "You now prefer mimicking %s again.",
 			    an(Upolyd ? uasmon->mname :
 				Role_is('E') ? "elf" : "human"));
+*/
+		    Sprintf(buf, "こんどは%sの真似がしたくなった．",
+			    an(Upolyd ? uasmon->mname :
+				Role_is('E') ? "エルフ" : "人間"));
 		    eatmbuf = strcpy((char *) alloc(strlen(buf) + 1), buf);
 		    nomovemsg = eatmbuf;
 		    afternmv = eatmdone;
@@ -791,13 +882,16 @@ register int pm;
 		}
 		break;
 	    case PM_QUANTUM_MECHANIC:
-		Your("velocity suddenly seems very uncertain!");
+/*JP		Your("velocity suddenly seems very uncertain!");*/
+		Your("速度が突然、不確定になった！");
 		if (Fast & INTRINSIC) {
 			Fast &= ~INTRINSIC;
-			You("seem slower.");
+/*JP			You("seem slower.");*/
+			You("遅くなったようだ．");
 		} else {
 			Fast |= FROMOUTSIDE;
-			You("seem faster.");
+/*JP			You("seem faster.");*/
+			You("速くなったようだ．");
 		}
 		break;
 	    case PM_LIZARD:
@@ -805,19 +899,22 @@ register int pm;
 		if (HConfusion > 2)  make_confused(2L,FALSE);
 		break;
 	    case PM_CHAMELEON:
-		You_feel("a change coming over you.");
+/*JP		You_feel("a change coming over you.");*/
+		pline("変化が訪れた．");
 		polyself();
 		break;
 	    case PM_MIND_FLAYER:
 		if (ABASE(A_INT) < ATTRMAX(A_INT)) {
 			if (!rn2(2)) {
-				pline("Yum! That was real brain food!");
+/*JP				pline("Yum! That was real brain food!");*/
+				pline("ウェ！これこそ本当の脳味噌だ！");
 				(void) adjattrib(A_INT, 1, FALSE);
 				break;	/* don't give them telepathy, too */
 			}
 		}
 		else {
-			pline("For some reason, that tasted bland.");
+/*JP			pline("For some reason, that tasted bland.");*/
+			pline("どうしたわけか，口あたりがいい．");
 		}
 		/* fall through to default case */
 	    default: {
@@ -826,7 +923,8 @@ register int pm;
 
 		if (dmgtype(ptr, AD_STUN) || dmgtype(ptr, AD_HALU) ||
 		    pm == PM_VIOLET_FUNGUS) {
-			pline ("Oh wow!  Great stuff!");
+/*JP			pline ("Oh wow!  Great stuff!");*/
+			pline ("ワーォ！なんだこれは！");
 			make_hallucinated(HHallucination + 200,FALSE,0L);
 		}
 		if(is_giant(ptr)) gainstr((struct obj *)0, 0);
@@ -893,20 +991,24 @@ opentin()		/* called during each move whilst opening a tin */
 					/* perhaps it was stolen? */
 		return(0);		/* %% probably we should use tinoid */
 	if(tin.usedtime++ >= 50) {
-		You("give up your attempt to open the tin.");
+/*JP		You("give up your attempt to open the tin.");*/
+		You("缶を開けるのをあきらめた．");
 		return(0);
 	}
 	if(tin.usedtime < tin.reqtime)
 		return(1);		/* still busy */
 	if(tin.tin->otrapped ||
 	   (tin.tin->cursed && tin.tin->spe != -1 && !rn2(8))) {
-		b_trapped("tin", 0);
+/*JP		b_trapped("tin", 0);*/
+		b_trapped("缶", 0);
 		goto use_me;
 	}
-	You("succeed in opening the tin.");
+/*JP	You("succeed in opening the tin.");*/
+	You("缶を開けるのに成功した．");
 	if(tin.tin->spe != 1) {
 	    if (tin.tin->corpsenm == NON_PM) {
-		pline("It turns out to be empty.");
+/*JP		pline("It turns out to be empty.");*/
+		pline("缶は空っぽだった．");
 		tin.tin->dknown = tin.tin->known = TRUE;
 		goto use_me;
 	    }
@@ -924,18 +1026,29 @@ opentin()		/* called during each move whilst opening a tin */
 		    which = type_is_pname(&mons[tin.tin->corpsenm]) ? 1 : 2;
 	    }
 	    if (which == 0) what = makeplural(what);
-	    pline("It smells like %s%s.", (which == 2) ? "the " : "", what);
-	    if (yn("Eat it?") == 'n') {
+/*JP	    pline("It smells like %s%s.", (which == 2) ? "the " : "", what);*/
+ 	    pline("%sのような匂いがした．", jtrns_mon(what, -1));
+
+/*JP	    if (yn("Eat it?") == 'n') {*/
+	    if (yn("食べますか？") == 'n') {
 		if (!Hallucination) tin.tin->dknown = tin.tin->known = TRUE;
-		if (flags.verbose) You("discard the open tin.");
+/*JP		if (flags.verbose) You("discard the open tin.");*/
+		if (flags.verbose) You("開けた缶を捨てた．");
 		goto use_me;
 	    }
 	    /* in case stop_occupation() was called on previous meal */
 	    victual.piece = (struct obj *)0;
 	    victual.fullwarn = victual.eating = victual.doreset = FALSE;
 
-	    You("consume %s %s.", tintxts[r].txt,
-			mons[tin.tin->corpsenm].mname);
+/*JP	    You("consume %s %s.", tintxts[r].txt,
+			mons[tin.tin->corpsenm].mname); */
+/*JP
+	tintextsには最初の4つに，揚げ物，漬物，スープ，ピューレが入って
+	おり，これらは「○○のスープ」のように記述するのが自然である．
+*/
+	    You("%s%sをたいらげた．",
+		(r < 4) ? jtrns_mon(mons[tin.tin->corpsenm].mname, -1) : tintxts[r].txt,
+		(r < 4) ? tintxts[r].txt : jtrns_mon(mons[tin.tin->corpsenm].mname, -1));
 	    tin.tin->dknown = tin.tin->known = TRUE;
 	    cprefx(tin.tin->corpsenm); cpostfx(tin.tin->corpsenm);
 
@@ -946,26 +1059,33 @@ opentin()		/* called during each move whilst opening a tin */
 	    if(r == 0) {			/* Deep Fried */
 	        /* Assume !Glib, because you can't open tins when Glib. */
 		incr_itimeout(&Glib, rnd(15));
-		pline("Eating deep fried food made your %s very slippery.",
+/*JP		pline("Eating deep fried food made your %s very slippery.",*/
+		pline("あなたの%sは揚げすぎた食べ物のため滑りやすくなった．",
 		      makeplural(body_part(FINGER)));
 	    }
 	} else {
 	    if (tin.tin->cursed)
-		pline("It contains some decaying %s substance.",
+/*JP		pline("It contains some decaying %s substance.",*/
+		pline("%s腐った物体が入っている．",
 			hcolor(green));
 	    else
-		pline("It contains spinach.");
+/*JP		pline("It contains spinach.");*/
+		pline("ホウレン草が入っている．");
 
-	    if (yn("Eat it?") == 'n') {
+/*JP	    if (yn("Eat it?") == 'n') {*/
+	    if (yn("食べますか？") == 'n') {
 		if (!Hallucination && !tin.tin->cursed)
 		    tin.tin->dknown = tin.tin->known = TRUE;
 		if (flags.verbose)
-		    You("discard the open tin.");
+/*JP		    You("discard the open tin.");*/
+		    You("開けた缶を捨てた．");
 		goto use_me;
 	    }
 	    if (!tin.tin->cursed)
-		pline("This makes you feel like %s!",
-		      Hallucination ? "Swee'pea" : "Popeye");
+/*JP		pline("This makes you feel like %s!",
+		      Hallucination ? "Swee'pea" : "Popeye");*/
+		pline("%sのような気分になった！",
+		      Hallucination ? "スウィッピー" : "ポパイ");
 	    lesshungry(600);
 	    gainstr(tin.tin, 0);
 	}
@@ -984,13 +1104,16 @@ start_tin(otmp)		/* called when starting to open a tin */
 	register int tmp;
 
 	if (metallivorous(uasmon)) {
-		You("bite right into the metal tin...");
+/*JP		You("bite right into the metal tin...");*/
+		You("金属の缶を噛みはじめた．．．");
 		tmp = 1;
 	} else if (nolimbs(uasmon)) {
-		You("cannot handle the tin properly to open it.");
+/*JP		You("cannot handle the tin properly to open it.");*/
+		You("缶をうまく開けられない．");
 		return;
 	} else if (otmp->blessed) {
-		pline_The("tin opens like magic!");
+/*JP		pline_The("tin opens like magic!");*/
+		pline("缶は魔法のように開いた！");
 		tmp = 1;
 	} else if(uwep) {
 		switch(uwep->otyp) {
@@ -1011,13 +1134,17 @@ start_tin(otmp)		/* called when starting to open a tin */
 		default:
 			goto no_opener;
 		}
-		pline("Using your %s you try to open the tin.",
-			aobjnam(uwep, (char *)0));
+/*JP		pline("Using your %s you try to open the tin.",
+			aobjnam(uwep, (char *)0));*/
+		You("%sを使って缶を開けようとした．",
+			xname(uwep));
 	} else {
 no_opener:
-		pline("It is not so easy to open this tin.");
+/*JP		pline("It is not so easy to open this tin.");*/
+		pline("この缶を開けるのは容易なことではない．");
 		if(Glib) {
-			pline_The("tin slips from your %s.",
+/*JP			pline_The("tin slips from your %s.",*/
+			pline("缶はあなたの%sから滑り落ちた．",
 			      makeplural(body_part(FINGER)));
 			if(otmp->quan > 1L) {
 				register struct obj *obj;
@@ -1033,7 +1160,8 @@ no_opener:
 	tin.reqtime = tmp;
 	tin.usedtime = 0;
 	tin.tin = otmp;
-	set_occupation(opentin, "opening the tin", 0);
+/*JP	set_occupation(opentin, "opening the tin", 0);*/
+	set_occupation(opentin, "缶を開ける", 0);
 	return;
 }
 
@@ -1049,27 +1177,36 @@ static int
 rottenfood(obj)
 struct obj *obj;
 {
-	pline("Blecch!  Rotten %s!", foodword(obj));
+/*JP	pline("Blecch!  Rotten %s!", foodword(obj));*/
+	pline("ゲェ！腐った%sだ！", foodword(obj));
 	if(!rn2(4)) {
-		if (Hallucination) You_feel("rather trippy.");
-		else You_feel("rather %s.", body_part(LIGHT_HEADED));
+/*JP		if (Hallucination) You_feel("rather trippy.");*/
+		if (Hallucination) You("へろへろした．");
+/*JP		else You_feel("rather %s.", body_part(LIGHT_HEADED));*/
+		else You("%s．", body_part(LIGHT_HEADED));
 		make_confused(HConfusion + d(2,4),FALSE);
 	} else if(!rn2(4) && !Blind) {
-		pline("Everything suddenly goes dark.");
+/*JP		pline("Everything suddenly goes dark.");*/
+		pline("突然全てが暗くなった．");
 		make_blinded((long)d(2,10),FALSE);
 	} else if(!rn2(3)) {
 		const char *what, *where;
 		if (!Blind)
-		    what = "goes",  where = "dark";
+/*JP		    what = "goes",  where = "dark";*/
+		    what = "なった",  where = "暗闇に";
 		else if (Levitation || Is_airlevel(&u.uz) ||
 			 Is_waterlevel(&u.uz))
-		    what = "you lose control of",  where = "yourself";
+/*JP		    what = "you lose control of",  where = "yourself";*/
+		    what = "制御できなくなった",  where = "自分を";
 		else
-		    what = "you slap against the",  where = surface(u.ux,u.uy);
-		pline_The("world spins and %s %s.", what, where);
+/*JP		    what = "you slap against the",  where = surface(u.ux,u.uy);*/
+		    what = "にぶつかった",  where = surface(u.ux,u.uy);
+/*JP		pline_The("world spins and %s %s.", what, where);*/
+		pline("世界が回転し，%s%s.", where, what);
 		flags.soundok = 0;
 		nomul(-rnd(10));
-		nomovemsg = "You are conscious again.";
+/*JP		nomovemsg = "You are conscious again.";*/
+		nomovemsg = "あなたはまた正気づいた．";
 		afternmv = Hear_again;
 		return(1);
 	}
@@ -1082,7 +1219,9 @@ eatcorpse(otmp)		/* called when a corpse is selected as food */
 {
 	int tp = 0, mnum = otmp->corpsenm;
 	long rotted = 0L;
+	/*JP
 	boolean uniq = !!(mons[mnum].geno & G_UNIQ);
+	*/
 
 	if (mnum != PM_LIZARD) {
 		long age = peek_at_iced_corpse_age(otmp);
@@ -1093,11 +1232,19 @@ eatcorpse(otmp)		/* called when a corpse is selected as food */
 	}
 
 	if (mnum != PM_ACID_BLOB && rotted > 5L) {
+/*JP
 		pline("Ulch - that %s was tainted!",
 		      mons[mnum].mlet == S_FUNGUS ? "fungoid vegetation" :
 		      is_meaty(&mons[mnum]) ? "meat" : "protoplasm");
+*/
+		pline("オェ！この%sは腐っている！", 
+		      mons[mnum].mlet == S_FUNGUS ? "細菌に汚染された植物" :
+		      is_meaty(&mons[mnum]) ? "肉" : "生物");
 		if (u.usym == S_FUNGUS) {
+/*JP
 			pline("It doesn't seem at all sickening, though...");
+*/
+			pline("しかし，いたって元気だ．．．");
 		} else {
 			char buf[BUFSZ];
 			long sick_time;
@@ -1106,12 +1253,15 @@ eatcorpse(otmp)		/* called when a corpse is selected as food */
 			/* make sure new ill doesn't result in improvement */
 			if (Sick && (sick_time > Sick))
 			    sick_time = (Sick > 1L) ? Sick - 1L : 1L;
+/*JP
 			if (!uniq)
 			    Sprintf(buf, "rotted %s", corpse_xname(otmp,TRUE));
 			else
 			    Sprintf(buf, "%s%s rotted corpse",
 				    !type_is_pname(&mons[mnum]) ? "the " : "",
 				    s_suffix(mons[mnum].mname));
+*/
+			Sprintf(buf, "腐った%sを食べ食中毒で", corpse_xname(otmp,TRUE));
 			make_sick(sick_time, buf, TRUE, SICK_VOMITABLE);
 		}
 		if (carried(otmp)) useup(otmp);
@@ -1119,21 +1269,36 @@ eatcorpse(otmp)		/* called when a corpse is selected as food */
 		return(1);
 	} else if (acidic(&mons[mnum]) && !resists_acid(&youmonst)) {
 		tp++;
+/*JP
 		You("have a very bad case of stomach acid.");
 		losehp(rnd(15), "acidic corpse", KILLED_BY_AN);
+*/
+		pline("胃酸の調子がとても悪い．");
+		losehp(rnd(15), "酸の死体で", KILLED_BY_AN);
 	} else if (poisonous(&mons[mnum]) && rn2(5)) {
 		tp++;
+/*JP
 		pline("Ecch - that must have been poisonous!");
+*/
+		pline("ウゲェー，有毒だったにちがいない！");  
 		if(!Poison_resistance) {
 			losestr(rnd(4));
+/*JP
 			losehp(rnd(15), "poisonous corpse", KILLED_BY_AN);
 		} else	You("seem unaffected by the poison.");
+*/
+			losehp(rnd(15), "有毒な死体で", KILLED_BY_AN);
+		} else	You("毒の影響を受けないようだ．");
 	/* now any corpse left too long will make you mildly ill */
 	} else if ((rotted > 5L || (rotted > 3L && rn2(5)))
 					&& u.usym != S_FUNGUS) {
 		tp++;
+/*JP
 		You("feel%s sick.", (Sick) ? " very" : "");
 		losehp(rnd(8), "cadaver", KILLED_BY_AN);
+*/
+		You("%s気分が悪い．", (Sick) ? "とても" : "");
+		losehp(rnd(8), "死体で", KILLED_BY_AN);
 	}
 	if (!tp && mnum != PM_LIZARD && (otmp->orotten || !rn2(7))) {
 	    if (rottenfood(otmp)) {
@@ -1143,11 +1308,16 @@ eatcorpse(otmp)		/* called when a corpse is selected as food */
 	    }
 	    otmp->oeaten >>= 2;
 	} else {
+/*JP
 	    pline("%s%s %s!",
 		  !uniq ? "This " : !type_is_pname(&mons[mnum]) ? "The " : "",
 		  food_xname(otmp, FALSE),
 		  (carnivorous(uasmon) && !herbivorous(uasmon)) ?
 			"is delicious" : "tastes terrible");
+*/
+	    pline("この%sは%s！", food_xname(otmp, FALSE),
+		  (carnivorous(uasmon) && !herbivorous(uasmon)) ?
+		  	"とても旨い" : "ひどい味だ");
 	}
 
 	/* delay is weight dependent */
@@ -1183,7 +1353,10 @@ start_eating(otmp)		/* called as you start to eat */
 	    return;
 	}
 
+/*JP
 	Sprintf(msgbuf, "eating %s", food_xname(otmp, TRUE));
+*/
+	Sprintf(msgbuf, "%sを食べる", food_xname(otmp, TRUE));
 	set_occupation(eatfood, msgbuf, 0);
 }
 
@@ -1196,15 +1369,23 @@ struct obj *otmp;
 
 	    case FOOD_RATION:
 		if(u.uhunger <= 200)
+/*JP
 		    if (Hallucination) pline("Oh wow, like, superior, man!");
 		    else	       pline("That food really hit the spot!");
 		else if(u.uhunger <= 700) pline("That satiated your stomach!");
+*/
+
+		    if (Hallucination) pline("まったりとして，それでいてしつこくない！これぞ究極のメニューだ！");
+		    else	       pline("この食べ物は本当に申し分ない！");
+		else if(u.uhunger <= 700) pline("満腹になった！");
 		break;
 	    case TRIPE_RATION:
 		if (carnivorous(uasmon) && !humanoid(uasmon))
-		    pline("That tripe ration was surprisingly good!");
+/*JP		    pline("That tripe ration was surprisingly good!");*/
+		    pline("このほし肉はおどろくほど旨い！");
 		else {
-		    pline("Yak - dog food!");
+/*JP		    pline("Yak - dog food!");*/
+		    pline("ウェー，ドッグフードだ！");
 		    more_experienced(1,0);
 		    flags.botl = 1;
 		}
@@ -1221,13 +1402,15 @@ struct obj *otmp;
 	    default:
 		if (otmp->otyp==SLIME_MOLD && !otmp->cursed
 			&& otmp->spe == current_fruit)
-		    pline("My, that was a %s %s!",
-			  Hallucination ? "primo" : "yummy",
+/*JP		    pline("My, that was a %s %s!",*/
+		    pline("おや，なんて%s%sだ！",
+/*JP			  Hallucination ? "primo" : "yummy",*/
+			  Hallucination ? "上品な" : "おいしい",
 			  singular(otmp, xname));
 		else
 #ifdef UNIX
 		if (otmp->otyp == APPLE || otmp->otyp == PEAR) {
-		    if (!Hallucination) pline("Core dumped.");
+		    if (!Hallucination) pline("Core dumped");
 		    else {
 /* This is based on an old Usenet joke, a fake a.out manual page */
 			int x = rnd(100);
@@ -1240,9 +1423,11 @@ struct obj *otmp;
 		} else
 #endif
 		if (otmp->otyp == EGG && stale_egg(otmp)) {
-		    pline("Ugh.  Rotten egg.");	/* perhaps others like it */
+/*JP		    pline("Ugh.  Rotten egg.");*//* perhaps others like it */
+		    pline("ウゲェー腐った卵だ．");
 		    make_vomiting(Vomiting+d(10,4), TRUE);
 		} else
+#if 0 /*JP*/
 		    pline("This %s is %s", singular(otmp, xname),
 		      otmp->cursed ? (Hallucination ? "grody!" : "terrible!") :
 		      (otmp->otyp == CRAM_RATION
@@ -1250,6 +1435,11 @@ struct obj *otmp;
 		      || otmp->otyp == C_RATION)
 		      ? "bland." :
 		      Hallucination ? "gnarly!" : "delicious!");
+#endif /*JP*/
+		    pline("この%sは%s", singular(otmp, xname),
+		      otmp->cursed ? (Hallucination ? "酒っぽい！" : "ひどい味だ！") :
+		      otmp->otyp == CRAM_RATION ? "さっぱりしている" :
+		      Hallucination ? "こぶこぶしている！" : "うまい！");
 		break;
 	}
 }
@@ -1271,8 +1461,10 @@ struct obj *otmp;
 	        if (!objects[typ].oc_oprop) break; /* should never happen */
 
 		if (!(u.uprops[objects[typ].oc_oprop].p_flgs & FROMOUTSIDE))
-		    pline("Magic spreads through your body as you digest the %s.",
-			  otmp->oclass == RING_CLASS ? "ring" : "amulet");
+/*JP		    pline("Magic spreads through your body as you digest the %s.",*/
+		    pline("あなたが%sを消化すると，その魔力が体にしみこんだ．",
+/*JP			  otmp->oclass == RING_CLASS ? "ring" : "amulet");*/
+			  otmp->oclass == RING_CLASS ? "指輪" : "魔除け");
 
 		u.uprops[objects[typ].oc_oprop].p_flgs |= FROMOUTSIDE;
 
@@ -1282,15 +1474,18 @@ struct obj *otmp;
 		    see_monsters();
 		    if (Invis && !oldprop && !perceives(uasmon) && !Blind) {
 			newsym(u.ux,u.uy);
-			pline("Suddenly you can see yourself.");
+/*JP			pline("Suddenly you can see yourself.");*/
+			pline("突然自分自身が見えるようになった．");
 			makeknown(typ);
 		    }
 		    break;
 		  case RIN_INVISIBILITY:
 		    if (!oldprop && !See_invisible && !Blind) {
 			newsym(u.ux,u.uy);
-			Your("body takes on a %s transparency...",
-				Hallucination ? "normal" : "strange");
+/*JP			Your("body takes on a %s transparency...",
+				Hallucination ? "normal" : "strange");*/
+			pline("%sあなたの体は透過性をもった．．．",
+				Hallucination ? "あたりまえなことだが" : "奇妙なことに");
 			makeknown(typ);
 		    }
 		    break;
@@ -1325,8 +1520,10 @@ struct obj *otmp;
 	    case AMULET_OF_CHANGE:
 		makeknown(typ);
 		change_sex();
-		You("are suddenly very %s!",
-		    flags.female ? "feminine" : "masculine");
+/*JP		You("are suddenly very %s!",
+		    flags.female ? "feminine" : "masculine");*/
+		You("突然%s！", 
+		    flags.female ? "女っぽくなった" : "筋肉質になった");
 		flags.botl = 1;
 		break;
 	    case AMULET_OF_STRANGULATION: /* bad idea! */
@@ -1375,17 +1572,22 @@ eatspecial() /* called after eating non-food */
 /* NOTE: the order of these words exactly corresponds to the
    order of oc_material values #define'd in objclass.h. */
 static const char *foodwords[] = {
-	"meal", "liquid", "wax", "food", "meat",
+/*JP	"meal", "liquid", "wax", "food", "meat",
 	"paper", "cloth", "leather", "wood", "bone", "scale",
 	"metal", "metal", "metal", "silver", "gold", "platinum", "mithril",
-	"plastic", "glass", "rich food", "stone"
+	"plastic", "glass", "rich food", "stone"*/
+	"肉", "液体", "油", "食料", "肉",
+	"紙", "服", "皮", "木", "骨", "鱗",
+	"金属", "金属", "金属", "銀", "金", "プラチナ", "ミスリル",
+	"プラスチック", "ガラス", "高級料理", "石"
 };
 
 static const char *
 foodword(otmp)
 register struct obj *otmp;
 {
-	if (otmp->oclass == FOOD_CLASS) return "food";
+/*JP	if (otmp->oclass == FOOD_CLASS) return "food";*/
+	if (otmp->oclass == FOOD_CLASS) return "食料";
 	if (otmp->oclass == GEM_CLASS &&
 	    objects[otmp->otyp].oc_material == GLASS &&
 	    otmp->dknown)
@@ -1426,8 +1628,9 @@ register struct obj *otmp;
 			u.uhp = u.uhpmax;
 		    } else if (u.uhp <= 0) {
 			killer_format = KILLED_BY_AN;
-			killer = "rotten lump of royal jelly";
-			done(POISONING);
+/*JP			killer = "rotten lump of royal jelly";*/
+			killer = "腐ったロイヤルゼリーを食べ食中毒で";
+			done(DIED);
 		    }
 		}
 		if(!otmp->cursed) heal_legs();
@@ -1438,7 +1641,8 @@ register struct obj *otmp;
 			!(poly_when_stoned(uasmon) && polymon(PM_STONE_GOLEM))) {
 			if (!Stoned) Stoned = 5;
 			killer_format = KILLED_BY_AN;
-			killer = "cockatrice egg";
+/*JP			killer = "cockatrice egg";*/
+			killer = "コカトリスの卵で";
 		    }
 		}
 		break;
@@ -1453,10 +1657,12 @@ doeat()		/* generic "eat" command funtion (see cmd.c) */
 	int basenutrit;			/* nutrition of full item */
 
 	if (Strangled) {
-		pline("If you can't breathe air, how can you consume solids?");
+/*JP		pline("If you can't breathe air, how can you consume solids?");*/
+		pline("息もできないのに，どうやって食べたらいいんだい？");
 		return 0;
 	}
-	if (!(otmp = floorfood("eat", 0))) return 0;
+/*JP	if (!(otmp = floorfood("eat", 0))) return 0;*/
+	if (!(otmp = floorfood("食べる", 0))) return 0;
 	if (check_capacity((char *)0)) return 0;
 
 	/* We have to make non-foods take 1 move to eat, unless we want to
@@ -1465,10 +1671,12 @@ doeat()		/* generic "eat" command funtion (see cmd.c) */
 	 * metallic meal, etc....
 	 */
 	if (!is_edible(otmp)) {
-	    You("cannot eat that!");
+/*JP	    You("cannot eat that!");*/
+	    You("それを食べられない！");
 	    return 0;
 	} else if ((otmp->owornmask & (W_ARMOR|W_TOOL|W_RING|W_AMUL)) != 0) {
-	    You_cant("eat %s you're wearing.", something);
+/*JP	    You_cant("eat %s you're wearing.", something);*/
+	    You("身につけている間は食べれない．");
 	    return 0;
 	}
 	if (is_metallic(otmp) &&
@@ -1480,11 +1688,13 @@ doeat()		/* generic "eat" command funtion (see cmd.c) */
 			else
 				otmp = splitobj(otmp, otmp->quan - 1L);
 		}
-		pline("Ulch - That %s was rustproofed!", xname(otmp));
+/*JP		pline("Ulch - That %s was rustproofed!", xname(otmp));*/
+		pline("ウゲェー！%sは防錆されている！", xname(otmp));
 		/* The regurgitated object's rustproofing is gone now */
 		otmp->oerodeproof = 0;
 		make_stunned(HStun + rn2(10), TRUE);
-		pline("You spit %s out onto the %s.", the(xname(otmp)),
+/*JP		pline("You spit %s out onto the %s.", the(xname(otmp)),*/
+		pline("あなたは%sを%sに吐き出した．", the(xname(otmp)),
 			surface(u.ux, u.uy));
 		if (carried(otmp)) {
 			freeinv(otmp);
@@ -1515,14 +1725,24 @@ doeat()		/* generic "eat" command funtion (see cmd.c) */
 		(void) rottenfood(otmp);
 
 	    if (otmp->oclass == WEAPON_CLASS && otmp->opoisoned) {
-		pline("Ecch - that must have been poisonous!");
+/*JP		pline("Ecch - that must have been poisonous!");*/
+		pline("ウゲェー，有毒だったに違いない！");  
 		if(!Poison_resistance) {
 		    losestr(rnd(4));
-		    losehp(rnd(15), xname(otmp), KILLED_BY_AN);
+/*JP*/
+/*JP		    losehp(rnd(15), xname(otmp), KILLED_BY_AN);*/
+		    {
+		      char jbuf[BUFSIZ];
+		      Strcpy(jbuf,xname(otmp));
+		      Strcat(jbuf,"で");
+		      losehp(rnd(15), jbuf, KILLED_BY_AN);
+		    }
 		} else
-		    You("seem unaffected by the poison.");
+/*JP		    You("seem unaffected by the poison.");*/
+		    You("毒の影響を受けないようだ．");
 	    } else if (!otmp->cursed)
-		pline("This %s is delicious!",
+/*JP		pline("This %s is delicious!",*/
+		pline("この%sは旨い！",
 		      otmp->oclass == GOLD_CLASS ? foodword(otmp) :
 		      singular(otmp, xname));
 	    eatspecial();
@@ -1540,7 +1760,8 @@ doeat()		/* generic "eat" command funtion (see cmd.c) */
 		if(victual.piece->quan > 1L)
 			(void) splitobj(victual.piece, 1L);
 	    }
-	    You("resume your meal.");
+/*JP	    You("resume your meal.");*/
+	    You("食事を再開した．");
 	    start_eating(victual.piece);
 	    return(1);
 	}
@@ -1699,7 +1920,7 @@ register int num;
 #endif
 	u.uhunger += num;
 	if(u.uhunger >= 2000) {
-	    if (!victual.eating || victual.canchoke)
+	    if (!victual.eating || victual.canchoke){
 		if (victual.eating) {
 			choke(victual.piece);
 			reset_eat();
@@ -1708,6 +1929,7 @@ register int num;
 			choke(tin.tin);
 		else
 			choke((struct obj *) 0);
+	    }
 		/* no reset_eat() */
 	} else {
 	    /* Have lesshungry() report when you're nearly full so all eating
@@ -1715,15 +1937,18 @@ register int num;
 	     */
 	    if (u.uhunger >= 1500) {
 		if (!victual.eating || (victual.eating && !victual.fullwarn)) {
-		    pline("You're having a hard time getting all of it down.");
-		    nomovemsg = "You're finally finished.";
+/*JP		    pline("You're having a hard time getting all of it down.");
+		    nomovemsg = "You're finally finished.";*/
+		    pline("全てを飲みこむには時間がかかる．");
+		    nomovemsg = "やっと食べ終えた．";
 		    if (!victual.eating)
 			multi = -2;
 		    else {
 			victual.fullwarn = TRUE;
 			if (victual.canchoke && victual.reqtime > 1) {
 			    /* a one-gulp food will not survive a stop */
-			    if (yn_function("Stop eating?",ynchars,'y')=='y') {
+/*JP			    if (yn_function("Stop eating?",ynchars,'y')=='y') {*/
+			    if (yn_function("食べるのを中断しますか？",ynchars,'y')=='y') {
 				reset_eat();
 				nomovemsg = (char *)0;
 			    }
@@ -1771,7 +1996,8 @@ sync_hunger()
 
 		flags.soundok = 0;
 		nomul(-10+(u.uhunger/10));
-		nomovemsg = "You regain consciousness.";
+/*JP		nomovemsg = "You regain consciousness.";*/
+		nomovemsg = "あなたは正気づいた．";
 		afternmv = unfaint;
 	}
 }
@@ -1833,21 +2059,31 @@ boolean incr;
 			if(!is_fainted() && multi >= 0 /* %% */) {
 				/* stop what you're doing, then faint */
 				stop_occupation();
-				You("faint from lack of food.");
+/*JP				You("faint from lack of food.");*/
+				You("腹が減って倒れた．");
 				flags.soundok = 0;
 				nomul(-10+(u.uhunger/10));
-				nomovemsg = "You regain consciousness.";
+/*JP				nomovemsg = "You regain consciousness.";*/
+				nomovemsg = "あなたは正気づいた．";
 				afternmv = unfaint;
 				newhs = FAINTED;
 			}
+#ifdef NEWBIE
+			if(!newbie.fainted){
+			     pline("ヒント: ピンチのときはM-pで祈るという手もある．祈りすぎに注意！");
+/*			     more();*/
+			     newbie.fainted = 1;
+			}
+#endif
 		} else
 		if(u.uhunger < -(int)(200 + 20*ACURR(A_CON))) {
 			u.uhs = STARVED;
 			flags.botl = 1;
 			bot();
-			You("die from starvation.");
+/*JP			You("die from starvation.");*/
+			You("餓死した．");
 			killer_format = KILLED_BY;
-			killer = "starvation";
+			killer = "食料不足で餓死した";
 			done(STARVING);
 			/* if we return, we lifesaved, and that calls newuhs */
 			return;
@@ -1863,12 +2099,17 @@ boolean incr;
 		case HUNGRY:
 			if (Hallucination) {
 			    pline((!incr) ?
-				"You now have a lesser case of the munchies." :
-				"You are getting the munchies.");
+/*JP				"You now have a lesser case of the munchies." :
+				"You are getting the munchies.");*/
+				"ハラヘリが減った．":
+				"ハラヘリヘリハラ．");
 			} else
-			    You((!incr) ? "only feel hungry now." :
+/*JP			    You((!incr) ? "only feel hungry now." :
 				  (u.uhunger < 145) ? "feel hungry." :
-				   "are beginning to feel hungry.");
+				   "are beginning to feel hungry.");*/
+			    You((!incr) ? "単に腹ペコ状態になった．" :
+				  (u.uhunger < 145) ? "空腹感を感じた．" :
+				   "空腹感をおぼえはじめた．");
 			if (incr && occupation &&
 			    (occupation != eatfood && occupation != opentin))
 			    stop_occupation();
@@ -1876,27 +2117,41 @@ boolean incr;
 		case WEAK:
 			if (Hallucination)
 			    pline((!incr) ?
-				  "You still have the munchies." :
-      "The munchies are interfering with your motor capabilities.");
+/*JP				  "You still have the munchies." :
+      "The munchies are interfering with your motor capabilities.");*/
+				  "ハラヘリが減らない．":
+				  "ハラヘリがモーター性能を妨害している．");
 			else if (incr &&
 				(Role_is('W') || Role_is('E') || Role_is('V')))
-			    pline("%s needs food, badly!", pl_character);
+/*JP			    pline("%s needs food, badly!", pl_character);*/
+			    pline("至急食料が必要だ！");
 			else
-			    You((!incr) ? "feel weak now." :
+/*JP			    You((!incr) ? "feel weak now." :
 				  (u.uhunger < 45) ? "feel weak." :
-				   "are beginning to feel weak.");
+				   "are beginning to feel weak.");*/
+			    You((!incr) ? "衰弱状態になった．":
+				  (u.uhunger < 45) ? "衰弱してきた．" :
+				   "弱くなってきたように感じた．");
 			if (incr && occupation &&
 			    (occupation != eatfood && occupation != opentin))
 			    stop_occupation();
+#ifdef NEWBIE
+			if(!newbie.eat){
+			     pline("ヒント: 'e'で食料を補給できる。落ちている死体も食うことができる．");
+/*			     more();*/
+			     newbie.eat = 1;
+			}
+#endif
 			break;
 		}
 		u.uhs = newhs;
 		flags.botl = 1;
 		bot();
 		if(u.uhp < 1) {
-			You("die from hunger and exhaustion.");
+/*JP			You("die from hunger and exhaustion.");*/
+			You("空腹と衰弱で死んだ．");
 			killer_format = KILLED_BY;
-			killer = "exhaustion";
+			killer = "衰弱で";
 			done(STARVING);
 			return;
 		}
@@ -1917,7 +2172,8 @@ floorfood(verb,corpsecheck)	/* get food from floor or pack */
 	register struct obj *otmp;
 	char qbuf[QBUFSZ];
 	char c;
-	boolean feeding = (!strcmp(verb, "eat"));
+/*JP	boolean feeding = (!strcmp(verb, "eat"));*/
+	boolean feeding = (!strcmp(verb, "食べる"));
 
 	if (feeding && metallivorous(uasmon)) {
 	    struct obj *gold;
@@ -1927,9 +2183,11 @@ floorfood(verb,corpsecheck)	/* get food from floor or pack */
 		/* If not already stuck in the trap, perhaps there should
 		   be a chance to becoming trapped?  Probably not, because
 		   then the trap would just get eaten on the _next_ turn... */
-		Sprintf(qbuf, "There is a bear trap here (%s); eat it?",
+/*JP		Sprintf(qbuf, "There is a bear trap here (%s); eat it?",*/
+		Sprintf(qbuf, "ここには熊の罠(%s)がある",
 			(u.utrap && u.utraptype == TT_BEARTRAP) ?
-				"holding you" : "armed");
+/*JP				"holding you" : "armed");*/
+				"あなたを掴まえている" : "掴まえている");
 		if ((c = yn_function(qbuf, ynqchars, 'n')) == 'y') {
 		    u.utrap = u.utraptype = 0;
 		    deltrap(ttmp);
@@ -1941,9 +2199,11 @@ floorfood(verb,corpsecheck)	/* get food from floor or pack */
 
 	    if ((gold = g_at(u.ux, u.uy)) != 0) {
 		if (gold->quan == 1L)
-		    Sprintf(qbuf, "There is 1 gold piece here; eat it?");
+/*JP		    Sprintf(qbuf, "There is 1 gold piece here; eat it?");*/
+		    Sprintf(qbuf, "ここには1ゴールドある．食べますか？");
 		else
-		    Sprintf(qbuf, "There are %ld gold pieces here; eat them?",
+/*JP		    Sprintf(qbuf, "There are %ld gold pieces here; eat them?",*/
+		    Sprintf(qbuf, "ここには%ldゴールドある．食べますか？",
 			    gold->quan);
 		if ((c = yn_function(qbuf, ynqchars, 'n')) == 'y') {
 		    obj_extract_self(gold);
@@ -1962,10 +2222,12 @@ floorfood(verb,corpsecheck)	/* get food from floor or pack */
 		(otmp->otyp==CORPSE && (corpsecheck == 1 || tinnable(otmp))) :
 		    feeding ? (otmp->oclass != GOLD_CLASS && is_edible(otmp)) :
 						otmp->oclass==FOOD_CLASS) {
-			Sprintf(qbuf, "There %s %s here; %s %s?",
+/*JP			Sprintf(qbuf, "There %s %s here; %s %s?",
 				(otmp->quan == 1L) ? "is" : "are",
 				doname(otmp), verb,
-				(otmp->quan == 1L) ? "it" : "one");
+				(otmp->quan == 1L) ? "it" : "one");*/
+			Sprintf(qbuf, "ここには%sがある．%s？",
+				doname(otmp), jconj(verb,"ますか"));
 			if((c = yn_function(qbuf,ynqchars,'n')) == 'y')
 				return(otmp);
 			else if(c == 'q')
@@ -1980,7 +2242,8 @@ floorfood(verb,corpsecheck)	/* get food from floor or pack */
 				(const char *)comestibles, verb);
 	if (corpsecheck && otmp)
 	    if (otmp->otyp != CORPSE || (corpsecheck == 2 && !tinnable(otmp))) {
-		You_cant("%s that!", verb);
+/*JP		You_cant("%s that!", verb);*/
+		You_cant("それを%sことはできない！", verb);
 		return (struct obj *)0;
 	    }
 	return otmp;

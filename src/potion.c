@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifdef OVLB
@@ -62,8 +69,10 @@ boolean talk;
 
 	if (!xtime && old) {
 		if (talk)
-		    You_feel("less %s now.",
-			Hallucination ? "trippy" : "confused");
+/*JP		    You_feel("less %s now.",
+			Hallucination ? "trippy" : "confused");*/
+		    You("%sがおさまった",
+			Hallucination ? "ヘロヘロ" : "混乱");
 	}
 	if ((xtime && !old) || (!xtime && old)) flags.botl = TRUE;
 
@@ -79,11 +88,14 @@ boolean talk;
 
 	if (!xtime && old) {
 		if (talk)
-		    You_feel("%s now.",
-			Hallucination ? "less wobbly" : "a bit steadier");
+/*JP		    You_feel("%s now.",
+			Hallucination ? "less wobbly" : "a bit steadier");*/
+		    You_feel("%s．",
+			Hallucination ? "へろりらがおさまった" : "だんだんしっかりしてきた");
 	}
 	if (xtime && !old) {
-		if (talk) You("stagger...");
+/*JP		if (talk) You("stagger...");*/
+		if (talk) You("くらくらした．．．");
 	}
 	if ((!xtime && old) || (xtime && !old)) flags.botl = TRUE;
 
@@ -103,11 +115,14 @@ int type;
 	    if (u.usym == S_FUNGUS) return;
 	    if (!old) {
 		/* newly sick */
-		You_feel("deathly sick.");
+/*JP		You_feel("deathly sick.");*/
+		You("病気で死にそうだ．");
 	    } else {
 		/* already sick */
-		if (talk) You_feel("%s worse.",
-			      xtime <= Sick/2L ? "much" : "even");
+/*JP		if (talk) You_feel("%s worse.",
+			      xtime <= Sick/2L ? "much" : "even");*/
+		if (talk) You("%s悪化したような気がする．",
+			      xtime <= Sick/2L ? "さらに" : "もっと");
 	    }
 	    set_itimeout(&Sick, xtime);
 	    u.usick_type |= type;
@@ -116,10 +131,12 @@ int type;
 	    /* was sick, now not */
 	    u.usick_type &= ~type;
 	    if (u.usick_type) { /* only partly cured */
-		if (talk) You_feel("somewhat better.");
+/*JP		if (talk) You_feel("somewhat better.");*/
+		if (talk) You("ちょっとよくなった．");
 		set_itimeout(&Sick, Sick * 2); /* approximation */
 	    } else {
-		if (talk) pline("What a relief!");
+/*JP		if (talk) pline("What a relief!");*/
+		if (talk) pline("ああこれでほっとした！");
 		Sick = 0L;		/* set_itimeout(&Sick, 0L) */
 	    }
 	    flags.botl = TRUE;
@@ -145,7 +162,8 @@ boolean talk;
 	long old = Vomiting;
 
 	if(!xtime && old)
-	    if(talk) You_feel("much less nauseous now.");
+/*JP	    if(talk) You_feel("much less nauseous now.");*/
+	    if(talk) You("吐き気がおさまった．");
 
 	set_itimeout(&Vomiting, xtime);
 }
@@ -164,17 +182,21 @@ boolean talk;
 	if (!xtime && old && !Blindfolded && haseyes(uasmon)) {
 	    if (talk) {
 		if (Hallucination)
-		    pline("Far out!  Everything is all cosmic again!");
-		else		   You("can see again.");
+/*JP		    pline("Far out!  Everything is all cosmic again!");*/
+		    pline("げ！なにもかもがまた虹色に見える！");
+/*JP		else		   You("can see again.");*/
+		else		   You("また見えるようになった．");
 	    }
 	    changed = TRUE;
 	}
 	if (xtime && !old && !Blindfolded && haseyes(uasmon)) {
 	    if (talk) {
 		if (Hallucination)
-			pline("Oh, bummer!  Everything is dark!  Help!");
+/*JP			pline("Oh, bummer!  Everything is dark!  Help!");*/
+			pline("暗いよー，狭いよー，恐いよー！");
 		else
-			pline("A cloud of darkness falls upon you.");
+/*JP			pline("A cloud of darkness falls upon you.");*/
+			pline("暗黒の雲があなたを覆った．");
 	    }
 	    changed = TRUE;
 
@@ -188,6 +210,24 @@ boolean talk;
 	    if (Telepat) see_monsters();
 	}
 }
+
+#ifdef	JPEXTENSION
+void
+make_totter(xtime, talk)
+long xtime;	/* nonzero if this is an attempt to turn on hallucination */
+boolean talk;
+{
+	const char *message = 0;
+
+	if (!xtime)
+	    message = "方向感覚が正常になった．";
+	else
+	    message = "方向感覚が麻痺した．";
+
+	set_itimeout(&Totter, xtime);
+	pline(message);
+}
+#endif
 
 void
 make_hallucinated(xtime, talk, mask)
@@ -203,9 +243,11 @@ long mask;	/* nonzero if resistance status should change by mask */
 #endif
 
 	if (!xtime)
-	    message = "Everything looks SO boring now.";
+/*JP	    message = "Everything looks SO boring now.";*/
+	    message = "何もかもが＊退屈＊に見える．";
 	else
-	    message = "Oh wow!  Everything seems so cosmic!";
+/*JP	    message = "Oh wow!  Everything seems so cosmic!";*/
+	    message = "ワーオ！何もかも虹色に見える！";
 
 	if (mask) {
 	    if (HHallucination) changed = TRUE;
@@ -237,19 +279,25 @@ ghost_from_bottle()
 	struct monst *mtmp = makemon(&mons[PM_GHOST], u.ux, u.uy, NO_MM_FLAGS);
 
 	if (!mtmp) {
-		pline("This bottle turns out to be empty.");
+/*JP		pline("This bottle turns out to be empty.");*/
+		pline("瓶は空っぽだった．");
 		return;
 	}
 	if (Blind) {
-		pline("As you open the bottle, %s emerges.", something);
+/*JP		pline("As you open the bottle, %s emerges.", something);*/
+		pline("瓶を開けると，何かが出てきた．");
 		return;
 	}
-	pline("As you open the bottle, an enormous %s emerges!",
-		Hallucination ? rndmonnam() : (const char *)"ghost");
+/*JP	pline("As you open the bottle, an enormous %s emerges!",
+		Hallucination ? rndmonnam() : (const char *)"ghost");*/
+	pline("瓶を開けると，巨大な%sが出てきた！",
+		Hallucination ? rndmonnam() : (const char *)"幽霊");
 	if(flags.verbose)
-	    You("are frightened to death, and unable to move.");
+/*JP	    You("are frightened to death, and unable to move.");*/
+	    You("まっさおになって驚き，動けなくなった．");
 	nomul(-3);
-	nomovemsg = "You regain your composure.";
+/*JP	nomovemsg = "You regain your composure.";*/
+	nomovemsg = "あなたは平静を取り戻した．";
 }
 
 int
@@ -258,12 +306,14 @@ dodrink() {
 	const char *potion_descr;
 
 	if (Strangled) {
-		pline("If you can't breathe air, how can you drink liquid?");
+/*JP		pline("If you can't breathe air, how can you drink liquid?");*/
+		pline("息もできないのに，どうやって液体を飲むんだい？");
 		return 0;
 	}
 	/* Is there a fountain to drink from here? */
 	if (IS_FOUNTAIN(levl[u.ux][u.uy].typ) && !Levitation) {
-		if(yn("Drink from the fountain?") == 'y') {
+/*JP		if(yn("Drink from the fountain?") == 'y') {*/
+		if(yn("泉の水を飲みますか？") == 'y') {
 			drinkfountain();
 			return 1;
 		}
@@ -271,7 +321,8 @@ dodrink() {
 #ifdef SINKS
 	/* Or a kitchen sink? */
 	if (IS_SINK(levl[u.ux][u.uy].typ)) {
-		if (yn("Drink from the sink?") == 'y') {
+/*JP		if (yn("Drink from the sink?") == 'y') {*/
+		if (yn("流し台の水を飲みますか？") == 'y') {
 			drinksink();
 			return 1;
 		}
@@ -280,13 +331,16 @@ dodrink() {
 
 	/* Or are you surrounded by water? */
 	if (Underwater) {
-		if (yn("Drink the water around you?") == 'y') {
-		    pline("Do you know what lives in this water!");
+/*JP		if (yn("Drink the water around you?") == 'y') {*/
+		if (yn("まわりの水を飲みますか？") == 'y') {
+/*JP		    pline("Do you know what lives in this water!");*/
+		    pline("この水中で何が生きているのか知ってるかい！");
 			return 1;
 		}
 	}
 
-	otmp = getobj(beverages, "drink");
+/*JP	otmp = getobj(beverages, "drink");*/
+	otmp = getobj(beverages, "飲む");
 	if(!otmp) return(0);
 #ifndef NO_SIGNAL
 	otmp->in_use = TRUE;		/* you've opened the stopper */
@@ -321,8 +375,11 @@ register struct obj *otmp;
 
 	if(nothing) {
 	    unkn++;
-	    You("have a %s feeling for a moment, then it passes.",
-		  Hallucination ? "normal" : "peculiar");
+/*JP	    You("have a %s feeling for a moment, then it passes.",
+		  Hallucination ? "normal" : "peculiar");*/
+
+	    You("%s気分におそわれたが，すぐに消えさった．",
+		  Hallucination ? "普通の" : "独特な");
 	}
 	if(otmp->dknown && !objects[otmp->otyp].oc_name_known) {
 		if(!unkn) {
@@ -346,11 +403,14 @@ peffects(otmp)
 	case SPE_RESTORE_ABILITY:
 		unkn++;
 		if(otmp->cursed) {
-		    pline("Ulch!  This makes you feel mediocre!");
+/*JP		    pline("Ulch!  This makes you feel mediocre!");*/
+		    pline("うーん、どうもさえないなあ．");
 		    break;
 		} else {
-		    pline("Wow!  This makes you feel %s!",
-			  (otmp->blessed) ? "great" : "good");
+/*JP		    pline("Wow!  This makes you feel %s!",
+			  (otmp->blessed) ? "great" : "good");*/
+		    pline("ワーオ！気分が%sなった！",
+			  (otmp->blessed) ? "とてもよく" : "よく");
 		    i = rn2(A_MAX);		/* start at a random point */
 		    for (ii = 0; ii < A_MAX; ii++) {
 			lim = AMAX(i);
@@ -373,7 +433,8 @@ peffects(otmp)
 		break;
 	case POT_WATER:
 		if(!otmp->blessed && !otmp->cursed) {
-			pline("This tastes like water.");
+/*JP			pline("This tastes like water.");*/
+			pline("水のような味がする");
 			u.uhunger += rnd(10);
 			newuhs(FALSE);
 			break;
@@ -382,25 +443,40 @@ peffects(otmp)
 		if(is_undead(uasmon) || is_demon(uasmon) ||
 				u.ualign.type == A_CHAOTIC) {
 		    if(otmp->blessed) {
+/*JP
 			pline("This burns like acid!");
+*/
+			pline("酸のように舌がひりひりする！");
 			exercise(A_CON, FALSE);
 			if (u.ulycn >= LOW_PM) {
+/*JP
 			    Your("affinity to %s disappears!",
+*/
+			    Your("%sへの親近感はなくなった！",
 				 makeplural(mons[u.ulycn].mname));
 			    if (uasmon == &mons[u.ulycn])
 				you_unwere(FALSE);
 			    u.ulycn = NON_PM;	/* cure lycanthropy */
 			}
+/*JP
 			losehp(d(2,6), "potion of holy water", KILLED_BY_AN);
+*/
+			losehp(d(2,6), "聖水で", KILLED_BY_AN);
 		    } else if(otmp->cursed) {
+/*JP
 			You_feel("quite proud of yourself.");
+*/
+			You("自尊心を感じた．");
 			healup(d(2,6),0,0,0);
 			if (u.ulycn >= LOW_PM && !Upolyd) you_were();
 			exercise(A_CON, TRUE);
 		    }
 		} else {
 		    if(otmp->blessed) {
+/*JP
 			You_feel("full of awe.");
+*/
+			You("畏怖の念にかられた．");
 			make_sick(0L, (char *) 0, TRUE, SICK_ALL);
 			exercise(A_WIS, TRUE);
 			exercise(A_CON, TRUE);
@@ -409,11 +485,18 @@ peffects(otmp)
 			/* make_confused(0L,TRUE); */
 		    } else {
 			if(u.ualign.type == A_LAWFUL) {
+/*JP
 			    pline("This burns like acid!");
 			    losehp(d(2,6), "potion of unholy water",
+*/
+			    pline("酸のように舌がひりひりする！");
+			    losehp(d(2,6), "不浄水で",
 				KILLED_BY_AN);
 			} else
+/*JP
 			    You_feel("full of dread.");
+*/
+			    You("恐怖の念にかられた．");
 			if (u.ulycn >= LOW_PM && !Upolyd) you_were();
 			exercise(A_CON, FALSE);
 		    }
@@ -421,9 +504,14 @@ peffects(otmp)
 		break;
 	case POT_BOOZE:
 		unkn++;
+/*JP
 		pline("Ooph!  This tastes like %s%s!",
 		      otmp->odiluted ? "watered down " : "",
 		      Hallucination ? "dandelion wine" : "liquid fire");
+*/
+		pline("うぇっぷ！これは%s%sのような味がする！",
+		      otmp->odiluted ? "水で薄めた" : "",
+		      Hallucination ? "タンポポワイン" : "燃料オイル");
 		if (!otmp->blessed)
 		    make_confused(itimeout_incr(HConfusion, d(3,8)), FALSE);
 		/* the whiskey makes us feel better */
@@ -432,25 +520,30 @@ peffects(otmp)
 		newuhs(FALSE);
 		exercise(A_WIS, FALSE);
 		if(otmp->cursed) {
-			You("pass out.");
+/*JP			You("pass out.");*/
+			You("気絶した");
 			multi = -rnd(15);
-			nomovemsg = "You awake with a headache.";
+/*JP			nomovemsg = "You awake with a headache.";*/
+			nomovemsg = "目がさめたが頭痛がする．";
 		}
 		break;
 	case POT_ENLIGHTENMENT:
 		if(otmp->cursed) {
 			unkn++;
-			You("have an uneasy feeling...");
+/*JP			You("have an uneasy feeling...");*/
+			You("不安な気持になった．．．");
 			exercise(A_WIS, FALSE);
 		} else {
 			if (otmp->blessed) {
 				(void) adjattrib(A_INT, 1, FALSE);
 				(void) adjattrib(A_WIS, 1, FALSE);
 			}
-			You_feel("self-knowledgeable...");
+/*JP			You_feel("self-knowledgeable...");*/
+			You("自分自身が判るような気がした．．．");
 			display_nhwindow(WIN_MESSAGE, FALSE);
 			enlightenment(0);
-			pline_The("feeling subsides.");
+/*JP			pline_The("feeling subsides.");*/
+			pline("その感じはなくなった．");
 			exercise(A_WIS, TRUE);
 		}
 		break;
@@ -460,19 +553,24 @@ peffects(otmp)
 		    nothing++;
 		} else if (Blind ||		/* current effect sensed */
 			(HInvis & I_BLOCKED)) {
-		    You_feel("rather airy."),  unkn++;
+/*JP		    You_feel("rather airy."),  unkn++;*/
+		    You("空気のようになった気がした．"), unkn++;
+
 		} else if (See_invisible) {	/* eyes override sensing */
 		    nothing++;
 		} else {			/* current effect seen */
 		    pline(Hallucination ?
-			 "Far out, man!  You can see right through yourself!" :
-			 "Gee!  All of a sudden, you can't see yourself.");
+/*JP			 "Far out, man!  You can see right through yourself!" :
+			 "Gee!  All of a sudden, you can't see yourself.");*/
+			 "なんてこったい！自分自身を通して真実が見えるようになった！":
+			 "げ！突然あなたの姿は見えなくなった．");
 		}
 		if (otmp->blessed) HInvis |= FROMOUTSIDE;
 		else incr_itimeout(&HInvis, rn1(15,31));
 		newsym(u.ux,u.uy);	/* update position */
 		if(otmp->cursed) {
-		    pline("For some reason, you feel your presence is known.");
+/*JP		    pline("For some reason, you feel your presence is known.");*/
+		    pline("なんらかの理由で，存在が知られているような気がした．");
 		    aggravate();
 		}
 		break;
@@ -481,12 +579,17 @@ peffects(otmp)
 	case POT_FRUIT_JUICE:
 		unkn++;
 		if (otmp->cursed)
-		    pline("Yecch!  This tastes %s.",
-			  Hallucination ? "overripe" : "rotten");
+/*JP		    pline("Yecch!  This tastes %s.",
+			  Hallucination ? "overripe" : "rotten");*/
+		    pline("オェー！これは%sジュースの味がする．",
+ 			  Hallucination ? "熟しすぎた" : "腐った");
 		else pline(Hallucination ?
-		"This tastes like 10%% real %s%s juice all-natural beverage." :
+/*JP		"This tastes like 10%% real %s%s juice all-natural beverage." :
 				"This tastes like %s%s juice.",
-			  otmp->odiluted ? "reconstituted " : "", pl_fruit);
+			  otmp->odiluted ? "reconstituted " : "", pl_fruit);*/
+			   "10%%%sの純自然飲料のような味がする．" :
+			   "%s%sジュースのような味がする．",
+			  otmp->odiluted ? "成分調整された" : "", pl_fruit);
 		if (otmp->otyp == POT_FRUIT_JUICE) {
 		    u.uhunger += (otmp->odiluted ? 5 : 10) * (2 + bcsign(otmp));
 		    newuhs(FALSE);
@@ -508,10 +611,12 @@ peffects(otmp)
 		break;
 	case POT_PARALYSIS:
 		if (Levitation || Is_airlevel(&u.uz) || Is_waterlevel(&u.uz))
-		    You("are motionlessly suspended.");
+/*JP		    You("are motionlessly suspended.");*/
+		    You("空中で動けなくなった．");
 		else
-		    Your("%s are frozen to the %s!",
-			 makeplural(body_part(FOOT)), surface(u.ux, u.uy));
+/*JP		    Your("%s are frozen to the %s!",
+			 makeplural(body_part(FOOT)), surface(u.ux, u.uy));*/
+		    You("動けなくなった！");
 		nomul(-(rn1(10, 25 - 12*bcsign(otmp))));
 		nomovemsg = You_can_move_again;
 		exercise(A_DEX, FALSE);
@@ -529,19 +634,24 @@ peffects(otmp)
 		exercise(A_WIS, TRUE);
 		break;
 	case POT_SICKNESS:
-		pline("Yecch!  This stuff tastes like poison.");
+/*JP		pline("Yecch!  This stuff tastes like poison.");*/
+		pline("ウェー！毒のような味がする．");
 		if (otmp->blessed) {
-		    pline("(But in fact it was mildly stale %s juice.)",
+/*JP		    pline("(But in fact it was mildly stale %s juice.)",*/
+		pline("(しかし実際それは腐りかけた%sジュースだ．)",
 			  pl_fruit);
 		    if (!Role_is('H'))
-			losehp(1, "mildly contaminated potion", KILLED_BY_AN);
+/*JP			losehp(1, "mildly contaminated potion", KILLED_BY_AN);*/
+			losehp(1, "病気に汚染された薬で", KILLED_BY_AN);
 		} else {
 		    if(Poison_resistance)
 			pline(
-		    "(But in fact it was biologically contaminated %s juice.)",
+/*JP		    "(But in fact it was biologically contaminated %s juice.)",*/
+		    "(しかし実際それは細菌に汚染された%sジュースだ．)",
 			      pl_fruit);
 		    if (Role_is('H'))
-			pline("Fortunately, you have been immunized.");
+/*JP			pline("Fortunately, you have been immunized.");*/
+			pline("幸運なことに，あなたは免疫がある．");
 		    else {
 			int typ = rn2(A_MAX);
 			poisontell(typ);
@@ -550,22 +660,26 @@ peffects(otmp)
 					TRUE);
 			if(!Poison_resistance)
 				losehp(rnd(10)+5*!!(otmp->cursed),
-				       "contaminated potion", KILLED_BY_AN);
+/*JP				       "contaminated potion", KILLED_BY_AN);*/
+				       "疫病に汚染された薬で", KILLED_BY_AN);
 			exercise(A_CON, FALSE);
 		    }
 		}
 		if(Hallucination) {
-			You("are shocked back to your senses!");
+/*JP			You("are shocked back to your senses!");*/
+			You("五感に衝撃を受けた！");
 			make_hallucinated(0L,FALSE,0L);
 		}
 		break;
 	case POT_CONFUSION:
 		if(!Confusion)
 		    if (Hallucination) {
-			pline("What a trippy feeling!");
+/*JP			pline("What a trippy feeling!");*/
+			pline("なんかヘロヘロする！");
 			unkn++;
 		    } else
-			pline("Huh, What?  Where am I?");
+/*JP			pline("Huh, What?  Where am I?");*/
+			pline("ほえ？私は誰？");
 		else	nothing++;
 		make_confused(itimeout_incr(HConfusion,
 					    rn1(7, 16 - 8 * bcsign(otmp))),
@@ -573,7 +687,8 @@ peffects(otmp)
 		break;
 	case POT_GAIN_ABILITY:
 		if(otmp->cursed) {
-		    pline("Ulch!  That potion tasted foul!");
+/*JP		    pline("Ulch!  That potion tasted foul!");*/
+		    pline("ウェ！悪臭がする！");
 		    unkn++;
 		} else {      /* If blessed, increase all; if not, try up to */
 		    int itmp; /* 6 times to find one which can be increased. */
@@ -596,10 +711,13 @@ peffects(otmp)
 		}		/* and fall through */
 	case SPE_HASTE_SELF:
 		if(!(Fast & ~INTRINSIC)) /* wwf@doe.carleton.ca */
-			You("are suddenly moving %sfaster.",
-				Fast ? "" : "much ");
+/*JP			You("are suddenly moving %sfaster.",
+				Fast ? "" : "much ");*/
+			You("突然%s速く移動できるようになった．",
+				Fast ? "" : "とても");
 		else {
-			Your("%s get new energy.",
+/*JP			Your("%s get new energy.",*/
+			pline("%sにエネルギーが注ぎこまれるような感じがした",
 				makeplural(body_part(LEG)));
 			unkn++;
 		}
@@ -618,7 +736,8 @@ peffects(otmp)
 			/* they went up a level */
 			if((ledger_no(&u.uz) == 1 && u.uhave.amulet) ||
 				Can_rise_up(u.ux, u.uy, &u.uz)) {
-			    const char *riseup ="rise up, through the %s!";
+/*JP			    const char *riseup ="rise up, through the %s!";*/
+			    const char *riseup ="%sを突き抜けた！";
 			    if(ledger_no(&u.uz) == 1) {
 			        You(riseup, ceiling(u.ux,u.uy));
 				goto_level(&earth_level, FALSE, FALSE, FALSE);
@@ -628,13 +747,15 @@ peffects(otmp)
 
 				get_level(&newlevel, newlev);
 				if(on_level(&newlevel, &u.uz)) {
-				    pline("It tasted bad.");
+/*JP				    pline("It tasted bad.");*/
+				    pline("とてもまずい．");
 				    break;
 				} else You(riseup, ceiling(u.ux,u.uy));
 				goto_level(&newlevel, FALSE, FALSE, FALSE);
 			    }
 			}
-			else You("have an uneasy feeling.");
+/*JP			else You("have an uneasy feeling.");*/
+			else You("不安な気持になった．");
 			break;
 		}
 		pluslvl();
@@ -645,13 +766,15 @@ peffects(otmp)
 			u.uexp = rndexp();
 		break;
 	case POT_HEALING:
-		You_feel("better.");
+/*JP		You_feel("better.");*/
+		You("気分がよくなった．");
 		healup(d(6 + 2 * bcsign(otmp), 4),
 		       !otmp->cursed ? 1 : 0, !!otmp->blessed, !otmp->cursed);
 		exercise(A_CON, TRUE);
 		break;
 	case POT_EXTRA_HEALING:
-		You_feel("much better.");
+/*JP		You_feel("much better.");*/
+		You("気分がとてもよくなった．");
 		healup(d(6 + 2 * bcsign(otmp), 8),
 		       otmp->blessed ? 5 : !otmp->cursed ? 2 : 0,
 		       !otmp->cursed, TRUE);
@@ -673,11 +796,17 @@ peffects(otmp)
 	   && (u.ux != sstairs.sx || u.uy != sstairs.sy || !sstairs.up)
 	   && (!xupladder || u.ux != xupladder || u.uy != yupladder)
 	) {
-					You("hit your %s on the %s.",
+/*JP					You("hit your %s on the %s.",
 						body_part(HEAD),
 						ceiling(u.ux,u.uy));
 					losehp(uarmh ? 1 : rnd(10),
 						"colliding with the ceiling",
+						KILLED_BY);*/
+					You("%sを%sにぶつけた．",
+						body_part(HEAD),
+						ceiling(u.ux,u.uy));
+					losehp(uarmh ? 1 : rnd(10),
+						"天井に頭をぶつけて",
 						KILLED_BY);
 				} else (void) doup();
 			}
@@ -691,9 +820,11 @@ peffects(otmp)
 	case POT_GAIN_ENERGY:			/* M. Stephenson */
 		{	register int num;
 			if(otmp->cursed)
-			    You_feel("lackluster.");
+/*JP			    You_feel("lackluster.");*/
+			    You("意気消沈した．");
 			else
-			    pline("Magical energies course through your body.");
+/*JP			    pline("Magical energies course through your body.");*/
+			    pline("魔法のエネルギーがあなたの体に満たされた．");
 			num = rnd(5) + 5 * otmp->blessed + 1;
 			u.uenmax += (otmp->cursed) ? -num : num;
 			u.uen += (otmp->cursed) ? -num : num;
@@ -709,17 +840,22 @@ peffects(otmp)
 
 			if (otmp->lamplit) {
 			    if (likes_fire(uasmon)) {
-				pline("Ahh, a refreshing drink.");
+/*JP				pline("Ahh, a refreshing drink.");*/
+				pline("わーお，生き返る．");
 				good_for_you = TRUE;
 			    } else {
-				You("burn your %s", body_part(FACE));
+/*JP				You("burn your %s", body_part(FACE));*/
+				Your("%sは黒焦げになった．", body_part(FACE));
 				losehp(d(Fire_resistance ? 1 : 3, 4),
-				       "burning potion of oil", KILLED_BY_AN);
+/*JP				       "burning potion of oil", KILLED_BY_AN);*/
+				       "燃えている油を飲んで", KILLED_BY_AN);
 			    }
 			} else if(otmp->cursed)
-			    pline("This tastes like castor oil.");
+/*JP			    pline("This tastes like castor oil.");*/
+			    pline("ビーバー香のような味がする．");
 			else
-			    pline("That was smooth!");
+/*JP			    pline("That was smooth!");*/
+			    pline("口あたりがよい！");
 			exercise(A_WIS, good_for_you);
 		}
 		break;
@@ -756,8 +892,10 @@ register struct obj *obj;
 register const char *txt;
 {
 	if(flags.beginner)
-		You("have a %s feeling for a moment, then it passes.",
-		Hallucination ? "normal" : "strange");
+/*JP		You("have a %s feeling for a moment, then it passes.",
+		Hallucination ? "normal" : "strange");*/
+		You("%s気分におそわれたが，すぐに消えさった．",
+		Hallucination ? "普通の" : "奇妙な");
 	else
 		pline(txt);
 
@@ -771,7 +909,8 @@ register const char *txt;
 }
 
 const char *bottlenames[] = {
-	"bottle", "phial", "flagon", "carafe", "flask", "jar", "vial"
+/*JP	"bottle", "phial", "flagon", "carafe", "flask", "jar", "vial"*/
+	"瓶","薬瓶","一升瓶","水差し","フラスコ","壷","ガラス瓶"
 };
 
 void
@@ -785,25 +924,31 @@ register struct obj *obj;
 
 	if(isyou) {
 		distance = 0;
-		pline_The("%s crashes on your %s and breaks into shards.",
+/*JP		pline_The("%s crashes on your %s and breaks into shards.",*/
+		pline("%sがあなたの%sの上で壊れ破片となった．",
 			botlnam, body_part(HEAD));
-		losehp(rnd(2), "thrown potion", KILLED_BY_AN);
+/*JP		losehp(rnd(2), "thrown potion", KILLED_BY_AN);*/
+		losehp(rnd(2), "投げられた薬で", KILLED_BY_AN);
 	} else {
 		distance = distu(mon->mx,mon->my);
 		if (mon->msleep) mon->msleep = 0;
-		if (!cansee(mon->mx,mon->my)) pline("Crash!");
+/*JP		if (!cansee(mon->mx,mon->my)) pline("Crash!");*/
+		if (!cansee(mon->mx,mon->my)) pline("ガシャン！");
 		else {
 		    char *mnam = mon_nam(mon);
 		    char buf[BUFSZ];
 
 		    if(has_head(mon->data)) {
-			Sprintf(buf, "%s %s",
+/*JP			Sprintf(buf, "%s %s",*/
+			Sprintf(buf, "%sの%s",
 				s_suffix(mnam),
-				(notonhead ? "body" : "head"));
+/*JP				(notonhead ? "body" : "head"));*/
+				(notonhead ? "体" : "頭"));
 		    } else {
 			Strcpy(buf, mnam);
 		    }
-		    pline_The("%s crashes on %s and breaks into shards.",
+/*JP		    pline_The("%s crashes on %s and breaks into shards.",*/
+		    pline("%sが%sの上で壊れ破片となった．",
 			   botlnam, buf);
 		}
 		if(rn2(5) && mon->mhp > 1)
@@ -812,7 +957,8 @@ register struct obj *obj;
 
 	/* oil doesn't instantly evaporate */
 	if (obj->otyp != POT_OIL && cansee(mon->mx,mon->my))
-		pline("%s evaporates.", The(xname(obj)));
+/*JP		pline("%s evaporates.", The(xname(obj)));*/
+		pline("%sは蒸発した．", The(xname(obj)));
 
 	if (isyou) switch (obj->otyp) {
 	    case POT_OIL:
@@ -829,7 +975,8 @@ register struct obj *obj;
 		if(mon->mhp < mon->mhpmax) {
 		    mon->mhp = mon->mhpmax;
 		    if (canseemon(mon))
-			pline("%s looks sound and hale again.", Monnam(mon));
+/*JP			pline("%s looks sound and hale again.", Monnam(mon));*/
+			pline("%sは元気になったように見える．", Monnam(mon));
 		}
 		break;
 	case POT_SICKNESS:
@@ -839,7 +986,8 @@ register struct obj *obj;
 			mon->mhp /= 2;
 		if (mon->mhp > mon->mhpmax) mon->mhp = mon->mhpmax;
 		if (canseemon(mon))
-		    pline("%s looks rather ill.", Monnam(mon));
+/*JP		    pline("%s looks rather ill.", Monnam(mon));*/
+		    pline("%sは病気っぽく見える．", Monnam(mon));
 		break;
 	case POT_CONFUSION:
 	case POT_BOOZE:
@@ -874,14 +1022,20 @@ register struct obj *obj;
 		if (is_undead(mon->data) || is_demon(mon->data) ||
 			is_were(mon->data)) {
 		    if (obj->blessed) {
+/*JP
 			pline("%s shrieks in pain!", Monnam(mon));
+*/
+			pline("%sは苦痛の叫び声をあげた！", Monnam(mon));
 			mon->mhp -= d(2,6);
 			if (mon->mhp < 1) killed(mon);
 			else if (is_were(mon->data) && !is_human(mon->data))
 			    new_were(mon);	/* revert to human */
 		    } else if (obj->cursed) {
 			if (canseemon(mon))
+/*JP
 			    pline("%s looks healthier.", Monnam(mon));
+*/
+			    pline("%sはより元気になったように見える．", Monnam(mon));
 			mon->mhp += d(2,6);
 			if (mon->mhp > mon->mhpmax) mon->mhp = mon->mhpmax;
 			if (is_were(mon->data) && is_human(mon->data) &&
@@ -894,7 +1048,8 @@ register struct obj *obj;
 		    if (mtmp2) {
 			mtmp2->mhpmax = (mon->mhpmax /= 2);
 			if (canseemon(mon))
-			    pline("%s multiplies.", Monnam(mon));
+/*JP			    pline("%s multiplies.", Monnam(mon));*/
+			    pline("%sは分裂した．", Monnam(mon));
 		    }
 		}
 		break;
@@ -942,7 +1097,8 @@ register struct obj *obj;
 	case POT_RESTORE_ABILITY:
 	case POT_GAIN_ABILITY:
 		if(obj->cursed) {
-		    pline("Ulch!  That potion smells terrible!");
+/*JP		    pline("Ulch!  That potion smells terrible!");*/
+		    pline("ウゲェ！薬はものすごい匂いがする！");
 		    break;
 		} else {
 		    i = rn2(A_MAX);		/* start at a random point */
@@ -978,34 +1134,40 @@ register struct obj *obj;
 		}
 		break;
 	case POT_HALLUCINATION:
-		You("have a momentary vision.");
+/*JP		You("have a momentary vision.");*/
+		You("一瞬幻影につつまれた．");
 		break;
 	case POT_CONFUSION:
 	case POT_BOOZE:
 		if(!Confusion)
-			You_feel("somewhat dizzy.");
+/*JP			You_feel("somewhat dizzy.");*/
+			You("めまいを感じた．");
 		make_confused(itimeout_incr(HConfusion, rnd(5)), FALSE);
 		break;
 	case POT_INVISIBILITY:
 		if (!See_invisible && !Invis)
-			pline("For an instant you could see through yourself!");
+/*JP			pline("For an instant you could see through yourself!");*/
+			pline("一瞬自分自身が見えなくなった！");
 		break;
 	case POT_PARALYSIS:
 		kn++;
-		pline("%s seems to be holding you.", Something);
+/*JP		pline("%s seems to be holding you.", Something);*/
+		pline("%sがあなたをつかまえているような気がした．", Something);
 		nomul(-rnd(5));
 		nomovemsg = You_can_move_again;
 		exercise(A_DEX, FALSE);
 		break;
 	case POT_SPEED:
-		if (!Fast) Your("knees seem more flexible now.");
+/*JP		if (!Fast) Your("knees seem more flexible now.");*/
+		if (!Fast) Your("膝はより敏速に動くようになった．");
 		incr_itimeout(&Fast, rnd(5));
 		exercise(A_DEX, TRUE);
 		break;
 	case POT_BLINDNESS:
 		if (!Blind && !u.usleep) {
 		    kn++;
-		    pline("It suddenly gets dark.");
+/*JP		    pline("It suddenly gets dark.");*/
+		    pline("突然暗くなった．");
 		}
 		make_blinded(itimeout_incr(Blinded, rnd(5)), FALSE);
 		break;
@@ -1014,7 +1176,8 @@ register struct obj *obj;
 		    struct monst *mtmp;
 		    if ((mtmp = cloneu()) != 0) {
 			mtmp->mhpmax = (u.mhmax /= 2);
-			You("multiply.");
+/*JP			You("multiply.");*/
+			You("分裂した．");
 		    }
 		} else if (u.ulycn >= LOW_PM) {
 		    /* vapor from [un]holy water will trigger
@@ -1035,12 +1198,13 @@ register struct obj *obj;
 		break;
 	}
 	/* note: no obfree() */
-	if (obj->dknown)
+	if (obj->dknown){
 	    if (kn)
 		makeknown(obj->otyp);
 	    else if (!objects[obj->otyp].oc_name_known &&
 						!objects[obj->otyp].oc_uname)
 		docall(obj);
+	}
 }
 
 static short
@@ -1151,16 +1315,24 @@ register struct obj *obj;
 	    case WEAPON_CLASS:
 		if (!obj->oerodeproof && is_rustprone(obj) &&
 		    (obj->oeroded < MAX_ERODE) && !rn2(10)) {
+/*JP
 			pline("%s %s some%s.",
 			      Your_buf, aobjnam(obj, "rust"),
 			      obj->oeroded ? " more" : "what");
+*/
+			pline("%s%sは%s錆びた", Your_buf, xname(obj),
+			      obj->oeroded ? "さらに" : "");
 			obj->oeroded++;
 			return TRUE;
 		} else break;
 	    case POTION_CLASS:
 		if (obj->otyp == POT_WATER) return FALSE;
+/*JP
 		pline("%s %s%s.", Your_buf, aobjnam(obj,"dilute"),
 		      obj->odiluted ? " further" : "");
+*/
+		pline("%s%sは%s薄まった．", Your_buf, xname(obj),
+		      obj->odiluted ? "さらに" : "");
 		if (obj->odiluted) {
 			obj->odiluted = 0;
 #ifdef UNIXPC
@@ -1179,14 +1351,16 @@ register struct obj *obj;
 #endif
 		    ) {
 			if (!Blind) {
-				boolean oq1 = obj->quan == 1L;
-				pline_The("scroll%s fade%s.",
+/*JP				boolean oq1 = obj->quan == 1L;*/
+/*JP				pline_The("scroll%s fade%s.",
 					oq1 ? "" : "s",
-					oq1 ? "s" : "");
+					oq1 ? "s" : "");*/
+				pline("巻物の文字は薄れた．");
 			}
 			if(obj->unpaid) {
 			    subfrombill(obj, shop_keeper(*u.ushops));
-			    You("erase it, you pay for it.");
+/*JP			    You("erase it, you pay for it.");*/
+			    You("文字を消してしまった，賠償せねばならない．");
 			    bill_dummy_object(obj);
 			}
 			obj->otyp = SCR_BLANK_PAPER;
@@ -1197,17 +1371,20 @@ register struct obj *obj;
 		if (obj->otyp != SPE_BLANK_PAPER) {
 
 			if (obj->otyp == SPE_BOOK_OF_THE_DEAD) {
-	pline("%s suddenly heats up; steam rises and it remains dry.",
+/*JP	pline("%s suddenly heats up; steam rises and it remains dry.",*/
+	pline("%sは突然熱くなり，蒸気がたちこめ，乾いてしまった．",
 				The(xname(obj)));
 			} else {
 			    if (!Blind) {
-				    boolean oq1 = obj->quan == 1L;
-				    pline_The("spellbook%s fade%s.",
-					oq1 ? "" : "s", oq1 ? "s" : "");
+/*JP				    boolean oq1 = obj->quan == 1L;*/
+/*JP				    pline_The("spellbook%s fade%s.",
+					oq1 ? "" : "s", oq1 ? "s" : "");*/
+				    pline("魔法書の文字は薄れた．");
 			    }
 			    if(obj->unpaid) {
 			        subfrombill(obj, shop_keeper(*u.ushops));
-			        You("erase it, you pay for it.");
+/*JP			        You("erase it, you pay for it.");*/
+			        You("文字を消してしまった，賠償せねばならない．");
 			        bill_dummy_object(obj);
 			    }
 			    obj->otyp = SPE_BLANK_PAPER;
@@ -1215,7 +1392,10 @@ register struct obj *obj;
 			return TRUE;
 		}
 	}
+/*JP
 	pline("%s %s wet.", Your_buf, aobjnam(obj,"get"));
+*/
+	pline("%s%sは濡れた", Your_buf, xname(obj));
 	return FALSE;
 }
 
@@ -1230,19 +1410,23 @@ dodip()
 	char qbuf[QBUFSZ], Your_buf[BUFSZ];
 
 	allowall[0] = ALL_CLASSES; allowall[1] = '\0';
-	if(!(obj = getobj(allowall, "dip")))
+/*JP	if(!(obj = getobj(allowall, "dip")))*/
+	if(!(obj = getobj(allowall, "浸す")))
 		return(0);
 
 	here = levl[u.ux][u.uy].typ;
 	/* Is there a fountain to dip into here? */
 	if (IS_FOUNTAIN(here)) {
-		if(yn("Dip it into the fountain?") == 'y') {
+/*JP		if(yn("Dip it into the fountain?") == 'y') {*/
+		if(yn("泉に浸しますか？") == 'y') {
 			dipfountain(obj);
 			return(1);
 		}
 	} else if (is_pool(u.ux,u.uy)) {
-		tmp = (here == POOL) ? "pool" : "moat";
-		Sprintf(qbuf, "Dip it into the %s?", tmp);
+/*JP		tmp = (here == POOL) ? "pool" : "moat";*/
+		tmp = (here == POOL) ? "水たまり" : "堀";
+/*JP		Sprintf(qbuf, "Dip it into the %s?", tmp);*/
+		Sprintf(qbuf, "%sに浸しますか？", tmp);
 		if (yn(qbuf) == 'y') {
 		    if (Levitation)
 			floating_above(tmp);
@@ -1252,10 +1436,16 @@ dodip()
 		}
 	}
 
+/*JP
 	if(!(potion = getobj(beverages, "dip into")))
+*/
+	if(!(potion = getobj(beverages, "に浸す")))
 		return(0);
 	if (potion == obj && potion->quan == 1L) {
+/*JP
 		pline("That is a potion bottle, not a Klein bottle!");
+*/
+		pline("これは薬瓶だ！クラインの壷じゃない！");
 		return 0;
 	}
 	if(potion->otyp == POT_WATER) {
@@ -1264,10 +1454,16 @@ dodip()
 		if (potion->blessed) {
 			if (obj->cursed) {
 				if (useeit)
+/*JP
 				    pline("%s %s %s.",
 					  Your_buf,
 					  aobjnam(obj, "softly glow"),
 					  hcolor(amber));
+*/
+				    pline("%s%sはうっすらと%s輝いた．",
+					  Your_buf,
+					  xname(obj),
+					  jconj_adj(hcolor("琥珀色の")));
 				uncurse(obj);
 				obj->bknown=1;
 	poof:
@@ -1279,10 +1475,14 @@ dodip()
 			} else if(!obj->blessed) {
 				if (useeit) {
 				    tmp = hcolor(light_blue);
+/*JP
 				    pline("%s %s with a%s %s aura.",
 					  Your_buf,
 					  aobjnam(obj, "softly glow"),
 					  index(vowels, *tmp) ? "n" : "", tmp);
+*/
+				    pline("%s%sはぼんやりとした%sオーラにつつまれた",
+					  Your_buf, xname(obj), tmp);
 				}
 				bless(obj);
 				obj->bknown=1;
@@ -1291,20 +1491,29 @@ dodip()
 		} else if (potion->cursed) {
 			if (obj->blessed) {
 				if (useeit)
+/*JP
 				    pline("%s %s %s.",
 					  Your_buf,
 					  aobjnam(obj, "glow"),
 					  hcolor((const char *)"brown"));
+*/
+				    pline("%s%sは%s輝いた",
+					  Your_buf, xname(obj),
+					  jconj_adj(hcolor((const char *)"茶色の")));
 				unbless(obj);
 				obj->bknown=1;
 				goto poof;
 			} else if(!obj->cursed) {
 				if (useeit) {
 				    tmp = hcolor(Black);
+/*JP
 				    pline("%s %s with a%s %s aura.",
 					  Your_buf,
 					  aobjnam(obj, "glow"),
 					  index(vowels, *tmp) ? "n" : "", tmp);
+*/
+				    pline("%s%sは%sオーラにつつまれた．",
+					  Your_buf, xname(obj),tmp);
 				}
 				curse(obj);
 				obj->bknown=1;
@@ -1316,14 +1525,17 @@ dodip()
 	}
 	else if(obj->oclass == POTION_CLASS && obj->otyp != potion->otyp) {
 		/* Mixing potions is dangerous... */
-		pline_The("potions mix...");
+/*JP		pline_The("potions mix...");*/
+		pline("薬は調合された．．．");
 		if (obj->cursed || !rn2(10)) {
-			pline("BOOM!  They explode!");
+/*JP			pline("BOOM!  They explode!");*/
+			pline("バーン！爆発した！");
 			exercise(A_STR, FALSE);
 			potionbreathe(obj);
 			useup(obj);
 			useup(potion);
-			losehp(rnd(10), "alchemic blast", KILLED_BY_AN);
+/*JP			losehp(rnd(10), "alchemic blast", KILLED_BY_AN);*/
+			losehp(rnd(10), "調合の失敗で", KILLED_BY_AN);
 			return(1);
 		}
 
@@ -1351,7 +1563,8 @@ dodip()
 				break;
 			default:
 				if (!Blind)
-			  pline_The("mixture glows brightly and evaporates.");
+/*JP			  pline_The("mixture glows brightly and evaporates.");*/
+				  pline("混ぜると薬は明るく輝き蒸発した．");
 				useup(obj);
 				useup(potion);
 				return(1);
@@ -1362,11 +1575,15 @@ dodip()
 		obj->odiluted = (obj->otyp != POT_WATER);
 
 		if (obj->otyp == POT_WATER && !Hallucination) {
-			pline_The("mixture bubbles%s.",
-				Blind ? "" : ", then clears");
+/*JP			pline_The("mixture bubbles%s.",
+				Blind ? "" : ", then clears");*/
+			pline("薬を混ぜると%s泡だった．",
+				Blind ? "" : "しばらく");
 		} else if (!Blind) {
-			pline_The("mixture looks %s.",
-				hcolor(OBJ_DESCR(objects[obj->otyp])));
+/*JP			pline_The("mixture looks %s.",
+				hcolor(OBJ_DESCR(objects[obj->otyp])));*/
+			pline("混ぜた薬は%sに見える．",
+				jtrns_obj('!',OBJ_DESCR(objects[obj->otyp])));
 		}
 
 		useup(potion);
@@ -1377,14 +1594,17 @@ dodip()
 	    if(potion->otyp == POT_SICKNESS && !obj->opoisoned) {
 		char buf[BUFSZ];
 		Strcpy(buf, The(xname(potion)));
-		pline("%s form%s a coating on %s.",
-			buf, potion->quan == 1L ? "s" : "", the(xname(obj)));
+/*JP		pline("%s form%s a coating on %s.",
+			buf, potion->quan == 1L ? "s" : "", the(xname(obj)));*/
+		pline("%sが%sに染みこんだ．",
+			buf, the(xname(obj)));
 		obj->opoisoned = TRUE;
 		goto poof;
 	    } else if(obj->opoisoned &&
 		      (potion->otyp == POT_HEALING ||
 		       potion->otyp == POT_EXTRA_HEALING)) {
-		pline("A coating wears off %s.", the(xname(obj)));
+/*JP		pline("A coating wears off %s.", the(xname(obj)));*/
+		pline("毒が%sから剥げおちた．", the(xname(obj)));
 		obj->opoisoned = 0;
 		goto poof;
 	    }
@@ -1398,14 +1618,22 @@ dodip()
 		if (obj->oerodeproof || obj_resists(obj, 5, 95) ||
 			/* `METAL' should not be confused with is_metallic() */
 			omat == METAL || omat == MITHRIL || omat == BONE) {
+/*JP
 		    pline("%s seem%s to burn for a moment.",
 			  Yname2(obj),
 			  (obj->quan > 1L) ? "" : "s");
+*/
+		    pline("%sはしばらくの間燃えた．", Yname2(obj));
 		} else {
 		    if (omat == PLASTIC) obj->oeroded = MAX_ERODE;
+/*JP
 		    pline_The("burning oil %s %s.",
 			    obj->oeroded == MAX_ERODE ? "destroys" : "damages",
 			    yname(obj));
+*/
+		    pline("%sは燃えている油によって%s．",
+			    yname(obj),
+			    obj->oeroded == MAX_ERODE ? "破壊された" : "傷つけられた");
 		    if (obj->oeroded == MAX_ERODE) {
 			obj_extract_self(obj);
 			obfree(obj, (struct obj *)0);
@@ -1420,19 +1648,30 @@ dodip()
 		    /* arrows,&c are classed as metallic due to arrowhead
 		       material, but dipping in oil shouldn't repair them */
 		    objects[obj->otyp].oc_wepcat == WEP_AMMO) {
+/*JP
 		pline_The("potion spills and covers your %s with oil.",
 			  makeplural(body_part(FINGER)));
+*/
+		pline("油は飛び散りあなたの%sにかかった．",
+  		       makeplural(body_part(FINGER)));
 		incr_itimeout(&Glib, d(2,10));
 	    } else if (!obj->oeroded) {
 		/* uses up potion, doesn't set obj->greased */
+/*JP
 		pline("%s gleam%s with an oily sheen.",
 		      Yname2(obj),
 		      (obj->quan > 1L) ? "" : "s");
+*/
+		pline("%sは油の光沢できらりと光った．",
+		      Yname2(obj));
 	    } else {
+/*JP
 		pline("%s %s less %s.",
 		      Yname2(obj),
 		      (obj->quan > 1L) ? "are" : "is",
 		      is_corrodeable(obj) ? "corroded" : "rusty");
+*/
+		pline("%sの錆が取れた．", Yname2(obj));
 		obj->oeroded--;
 		wisx = TRUE;
 	    }
@@ -1458,9 +1697,15 @@ dodip()
 		obj->age = 0;
 	    }
 	    if (obj->age > 1000L) {
+/*JP
 		pline("%s is full.", Yname2(obj));
+*/
+		pline("%sには沢山入っている．", Yname2(obj));
 	    } else {
+/*JP
 		You("fill %s with oil.", yname(obj));
+*/
+		You("%sに油を入れた．", yname(obj));
 		check_unpaid(potion);	/* surcharge for using unpaid item */
 		obj->age += 2*potion->age;	/* burns more efficiently */
 		if (obj->age > 1500L) obj->age = 1500L;
@@ -1476,7 +1721,7 @@ dodip()
 	    (mixture = mixtype(obj, potion)) != 0) {
 		/* with multiple merged potions, we should split off one and
 		   just clear it, but clearing them all together is easier */
-		boolean more_than_one = potion->quan > 1L;
+/*JP		boolean more_than_one = potion->quan > 1L;*/
 		potion->otyp = mixture;
 		potion->blessed = 0;
 		if (mixture == POT_WATER)
@@ -1493,19 +1738,23 @@ dodip()
 #else
 			    (potion->dknown = !Hallucination) != 0)
 #endif
-				pline_The("potion%s clear%s.",
+/*JP				pline_The("potion%s clear%s.",
 					more_than_one ? "s" : "",
-					more_than_one ? "" : "s");
+					more_than_one ? "" : "s");*/
+				pline("薬は透明になった．");
 			else
-				pline_The("potion%s turn%s %s.",
+/*JP				pline_The("potion%s turn%s %s.",
 					more_than_one ? "s" : "",
 					more_than_one ? "" : "s",
-					hcolor(OBJ_DESCR(objects[mixture])));
+					hcolor(OBJ_DESCR(objects[mixture])));*/
+				pline("薬は%sになった．",
+					jconj_adj(jtrns_obj('!', hcolor(OBJ_DESCR(objects[mixture])))));
 		}
 		return(1);
 	}
 
-	pline("Interesting...");
+/*JP	pline("Interesting...");*/
+	pline("面白い．．．");
 	return(1);
 }
 
@@ -1518,16 +1767,21 @@ register struct obj *obj;
 	int chance;
 
 	if(!(mtmp = makemon(&mons[PM_DJINNI], u.ux, u.uy, NO_MM_FLAGS))){
-		pline("It turns out to be empty.");
+/*JP		pline("It turns out to be empty.");*/
+		pline("薬は空っぽだった．");
 		return;
 	}
 
 	if (!Blind) {
-		pline("In a cloud of smoke, %s emerges!", a_monnam(mtmp));
-		pline("%s speaks.", Monnam(mtmp));
+/*JP		pline("In a cloud of smoke, %s emerges!", a_monnam(mtmp));
+		pline("%s speaks.", Monnam(mtmp));*/
+		pline("煙の中から，%sが現われた！", a_monnam(mtmp));
+		pline("%sは話した．", Monnam(mtmp));
 	} else {
-		You("smell acrid fumes.");
-		pline("%s speaks.", Something);
+/*JP		You("smell acrid fumes.");
+		pline("%s speaks.", Something);*/
+		You("ツンとする匂いがした．");
+		pline("%sが話しかけた．", Something);
 	}
 
 	chance = rn2(5);
@@ -1536,22 +1790,28 @@ register struct obj *obj;
 	/* 0,1,2,3,4:  b=80%,5,5,5,5; nc=20%,20,20,20,20; c=5%,5,5,5,80 */
 
 	switch (chance) {
-	case 0 : verbalize("I am in your debt.  I will grant one wish!");
+/*JP	case 0 : verbalize("I am in your debt.  I will grant one wish!");*/
+	case 0 : verbalize("お前には借りができた．１つ願いをかなえてやろう！");
 		makewish();
 		mongone(mtmp);
 		break;
-	case 1 : verbalize("Thank you for freeing me!");
+/*JP	case 1 : verbalize("Thank you for freeing me!");*/
+	case 1 : verbalize("私を助けてくれたことを感謝する！");
 		(void) tamedog(mtmp, (struct obj *)0);
 		break;
-	case 2 : verbalize("You freed me!");
+/*JP	case 2 : verbalize("You freed me!");*/
+	case 2 : verbalize("解放してくれたのはお前か！");
 		mtmp->mpeaceful = TRUE;
 		set_malign(mtmp);
 		break;
-	case 3 : verbalize("It is about time!");
-		pline("%s vanishes.", Monnam(mtmp));
+/*JP	case 3 : verbalize("It is about time!");*/
+	case 3 : verbalize("さらばだ！");
+/*JP		pline("%s vanishes.", Monnam(mtmp));*/
+		pline("%sは消えた．", Monnam(mtmp));
 		mongone(mtmp);
 		break;
-	default: verbalize("You disturbed me, fool!");
+/*JP	default: verbalize("You disturbed me, fool!");*/
+	default: verbalize("おまえは私の眠りの邪魔をした．おろかものめ！");
 		break;
 	}
 }

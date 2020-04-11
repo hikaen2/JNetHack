@@ -2,6 +2,13 @@
 /*	Copyright 1991, M. Stephenson		  */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 /*  quest dungeon branch routines. */
@@ -143,14 +150,19 @@ boolean talk;
 #ifdef WIZARD
     if (wizard && talk) {
 	if (u.ualign.type != original_alignment) {
-	    You("are currently %s instead of %s.",
-		align_str(u.ualign.type), align_str(original_alignment));
+/*JP	    You("are currently %s instead of %s.",*/
+	    You("%sではなく%sの属性である．",
+/*JP		align_str(u.ualign.type), align_str(original_alignment));*/
+		align_str(original_alignment), align_str(u.ualign.type));
 	} else if (u.ualignbase[0] != original_alignment) {
-	    You("have converted.");
+/*JP	    You("have converted.");*/
+	    You("変更されている．");
 	} else if (u.ualign.record < MIN_QUEST_ALIGN) {
-	    You("are currently %d and require %d.",
+/*JP	    You("are currently %d and require %d.",*/
+	    Your("属性値は現在%dで%d必要だ．",
 		u.ualign.record, MIN_QUEST_ALIGN);
-	    if (yn_function("adjust?", (char *)0, 'y') == 'y')
+/*JP	    if (yn_function("adjust?", (char *)0, 'y') == 'y')*/
+	    if (yn_function("直しますか？", (char *)0, 'y') == 'y')
 		u.ualign.record = MIN_QUEST_ALIGN;
 	}
     }

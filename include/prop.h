@@ -54,6 +54,11 @@
 #define MAGICAL_BREATHING	47
 #define HALF_SPDAM		48
 #define HALF_PHDAM		49
+#ifdef JPEXTENSION
+#define TOTTER			50
+#define LAST_PROP		(TOTTER)		/* the last property */
+#else
 #define LAST_PROP		(HALF_PHDAM)		/* the last property */
+#endif
 
 #endif /* PROP_H */

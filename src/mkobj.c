@@ -16,7 +16,7 @@ static void FDECL(check_contained, (struct obj *,const char *));
 #endif
 #endif /* OVL1 */
 
-/*#define DEBUG_EFFECTS		/* show some messages for debugging */
+/*#define DEBUG_EFFECTS*/	/* show some messages for debugging */
 
 struct icp {
     int  iprob;		/* probability of an item type */
@@ -659,12 +659,13 @@ register int chance;
 {
 	if(otmp->blessed || otmp->cursed) return;
 
-	if(!rn2(chance))
+	if(!rn2(chance)){
 	    if(!rn2(2)) {
 		curse(otmp);
 	    } else {
 		bless(otmp);
 	    }
+	}
 	return;
 }
 

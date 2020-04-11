@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 STATIC_PTR int NDECL(stealarm);
@@ -16,13 +23,19 @@ register struct obj *otmp;
 {
 	return (
 #ifdef TOURIST
-		(otmp == uarmu) ? "shirt" :
+/*JP		(otmp == uarmu) ? "shirt" :*/
+		(otmp == uarmu) ? "シャツ" :
 #endif
-		(otmp == uarmf) ? "boots" :
+/*JP		(otmp == uarmf) ? "boots" :
 		(otmp == uarms) ? "shield" :
 		(otmp == uarmg) ? "gloves" :
 		(otmp == uarmc) ? "cloak" :
-		(otmp == uarmh) ? "helmet" : "armor");
+		(otmp == uarmh) ? "helmet" : "armor");*/
+		(otmp == uarmf) ? "靴" :
+		(otmp == uarms) ? "盾" :
+		(otmp == uarmg) ? "小手" :
+		(otmp == uarmc) ? "クローク" :
+		(otmp == uarmh) ? "兜" : "鎧");
 }
 
 long		/* actually returns something that fits in an int */
@@ -47,7 +60,8 @@ register struct monst *mtmp;
 	    mtmp->mgold += gold->quan;
 	    delobj(gold);
 	    newsym(u.ux, u.uy);
-	    pline("%s quickly snatches some gold from between your %s!",
+/*JP	    pline("%s quickly snatches some gold from between your %s!",*/
+	    pline("%sは素早くあなたの%s元から金をひったくった！",
 		    Monnam(mtmp), makeplural(body_part(FOOT)));
 	    if(!u.ugold || !rn2(5)) {
 		if (!tele_restrict(mtmp)) rloc(mtmp);
@@ -55,7 +69,8 @@ register struct monst *mtmp;
 	    }
 	} else if(u.ugold) {
 	    u.ugold -= (tmp = somegold());
-	    Your("purse feels lighter.");
+/*JP	    Your("purse feels lighter.");*/
+	    Your("財布は軽くなった．");
 	    mtmp->mgold += tmp;
 	    if (!tele_restrict(mtmp)) rloc(mtmp);
 	    mtmp->mflee = 1;
@@ -82,7 +97,8 @@ stealarm()
 			if(otmp->unpaid)
 			    subfrombill(otmp, shop_keeper(*u.ushops));
 			freeinv(otmp);
-			pline("%s steals %s!", Monnam(mtmp), doname(otmp));
+/*JP			pline("%s steals %s!", Monnam(mtmp), doname(otmp));*/
+			pline("%sは%sを盗んだ！", Monnam(mtmp), doname(otmp));
 			mpickobj(mtmp,otmp);
 			mtmp->mflee = 1;
 			if (!tele_restrict(mtmp)) rloc(mtmp);
@@ -150,9 +166,11 @@ struct monst *mtmp;
 	if (!invent || (inv_cnt() == 1 && uskin)) {
 	    /* Not even a thousand men in armor can strip a naked man. */
 	    if(Blind)
-	      pline("Somebody tries to rob you, but finds nothing to steal.");
+/*JP	      pline("Somebody tries to rob you, but finds nothing to steal.");*/
+	      pline("誰かがあなたから盗もうとしたが，盗むものがないことに気がついた．");
 	    else
-	      pline("%s tries to rob you, but she finds nothing to steal!",
+/*JP	      pline("%s tries to rob you, but she finds nothing to steal!",*/
+	      pline("%sはあなたから盗もうとしたが，盗むものがないことに気がついた！",
 		Monnam(mtmp));
 	    return(1);	/* let her flee */
 	}
@@ -211,16 +229,24 @@ gotobj:
 			otmp->cursed = 0;
 			stop_occupation();
 			if(flags.female)
-			    pline("%s charms you.  You gladly %s your %s.",
+/*JP			    pline("%s charms you.  You gladly %s your %s.",
 				  Blind ? "She" : Monnam(mtmp),
 				  curssv ? "let her take" : "hand over",
-				  equipname(otmp));
+				  equipname(otmp));*/
+			    pline("%sはあなたを魅了した．あなたはよろこんで%sを%s．",
+				  Blind ? "彼女" : Monnam(mtmp),
+				  equipname(otmp),
+				  curssv ? "あげた" : "手渡した");
 			else
-			    pline("%s seduces you and %s off your %s.",
+/*JP			    pline("%s seduces you and %s off your %s.",
 				  Blind ? "It" : Adjmonnam(mtmp, "beautiful"),
 				  curssv ? "helps you to take" :
 	(objects[otmp->otyp].oc_delay > 1) ? "you start taking" : "you take",
-				  equipname(otmp));
+				  equipname(otmp));*/
+			    pline("%sはあなたを誘惑した．あなたは%sを%s．",
+				  Blind ? "何者か" : Adjmonnam(mtmp, "美しい"),
+				  equipname(otmp),
+				  (objects[otmp->otyp].oc_delay > 1) ? "はずし始めた" : "はずした");
 			named++;
 			/* the following is to set multi for later on */
 			nomul(-objects[otmp->otyp].oc_delay);
@@ -248,7 +274,8 @@ gotobj:
 	if(otmp == uball) unpunish();
 
 	freeinv(otmp);
-	pline("%s stole %s.", named ? "She" : Monnam(mtmp), doname(otmp));
+/*JP	pline("%s stole %s.", named ? "She" : Monnam(mtmp), doname(otmp));*/
+	pline("%sは%sを盗んだ．", named ? "彼女" : Monnam(mtmp), doname(otmp));
 	mpickobj(mtmp,otmp);
 	if (otmp->otyp == CORPSE && otmp->corpsenm == PM_COCKATRICE &&
 		!(mtmp->misc_worn_check & W_ARMG)) {
@@ -279,8 +306,9 @@ register struct obj *otmp;
 		attacktype(mtmp->data, AT_ENGL)) {
 	    /* this is probably a burning object that you dropped or threw */
 	    if (u.uswallow && mtmp == u.ustuck && !Blind)
-		pline("%s go%s out.", The(xname(otmp)),
-		      otmp->quan == 1L ? "es" : "");
+/*JP		pline("%s go%s out.", The(xname(otmp)),
+		      otmp->quan == 1L ? "es" : "");*/
+		pline("%sは飛びだした．", The(xname(otmp)));
 	    snuff_otmp = TRUE;
 	}
 	/* add_to_minv() might free otmp [if merged with something else],
@@ -329,7 +357,8 @@ snatch_it:
 		    lose_worn_item(otmp);
 		freeinv(otmp);
 		mpickobj(mtmp,otmp);
-		pline("%s stole %s!", Monnam(mtmp), doname(otmp));
+/*JP		pline("%s stole %s!", Monnam(mtmp), doname(otmp));*/
+		pline("%sは%sを盗んだ！", Monnam(mtmp), doname(otmp));
 		if (can_teleport(mtmp->data) && !tele_restrict(mtmp))
 			rloc(mtmp);
 		return;
@@ -378,9 +407,11 @@ boolean is_pet;		/* If true, pet should keep wielded/worn items */
 			otmp->owornmask = 0L;
 		}
 		if (is_pet && cansee(omx, omy) && flags.verbose)
-			pline("%s drops %s.", Monnam(mtmp),
+/*JP			pline("%s drops %s.", Monnam(mtmp),*/
+			pline("%sは%sを置いた．", Monnam(mtmp),
 					distant_name(otmp, doname));
-		if (flooreffects(otmp, omx, omy, "fall")) continue;
+/*JP		if (flooreffects(otmp, omx, omy, "fall")) continue;*/
+		if (flooreffects(otmp, omx, omy, "落ちる")) continue;
 		place_object(otmp, omx, omy);
 		stackobj(otmp);
 	}
@@ -394,8 +425,9 @@ boolean is_pet;		/* If true, pet should keep wielded/worn items */
 		register long g = mtmp->mgold;
 		mkgold(g, omx, omy);
 		if (is_pet && cansee(omx, omy) && flags.verbose)
-			pline("%s drops %ld gold piece%s.", Monnam(mtmp),
-				g, plur(g));
+/*JP			pline("%s drops %ld gold piece%s.", Monnam(mtmp),
+				g, plur(g));*/
+			pline("%sは%ldの金塊を置いた．", Monnam(mtmp),g);
 		mtmp->mgold = 0L;
 	}
 	if (show & cansee(omx, omy))

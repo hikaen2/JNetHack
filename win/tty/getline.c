@@ -30,6 +30,7 @@ extern char erase_char, kill_char;	/* from appropriate tty.c file */
  * Reading can be interrupted by an escape ('\033') - now the
  * resulting string is "\033".
  */
+
 void
 tty_getlin(query, bufp)
 const char *query;
@@ -39,15 +40,23 @@ register char *bufp;
 }
 
 STATIC_OVL void
-hooked_tty_getlin(query, bufp, hook)
+hooked_tty_getlin(query, bfp, hook)
 const char *query;
-register char *bufp;
+register char *bfp;
 getlin_hook_proc hook;
 {
+/*JP*/
+	char tmp[BUFSZ];
+	char *bufp = tmp;
 	register char *obufp = bufp;
-	register int c;
+/*JP	register int c;*/
+	int c;
 	struct WinDesc *cw = wins[WIN_MESSAGE];
 	boolean doprev = 0;
+/*JP
+Thu Jul 21 22:36:34 JST 1994 by ISSEI
+*/
+	unsigned int uc;
 
 	if(ttyDisplay->toplin == 1 && !(cw->flags & WIN_STOP)) more();
 	cw->flags &= ~WIN_STOP;
@@ -62,6 +71,11 @@ getlin_hook_proc hook;
 			*bufp = 0;
 			break;
 		}
+/*JP
+Thu Jul 21 22:36:34 JST 1994 by ISSEI
+*/
+		uc = (*((unsigned int *)&c));
+		uc &= 0377;
 		if(c == '\033') {
 			*obufp = c;
 			obufp[1] = 0;
@@ -87,10 +101,14 @@ getlin_hook_proc hook;
 		    addtopl(obufp);
 		}
 		if(c == erase_char || c == '\b') {
+		moreback:
 			if(bufp != obufp) {
 				bufp--;
 				putsyms("\b \b");/* putsym converts \b */
 			} else	tty_nhbell();
+/*JP*/
+			if(is_kanji2(tmp, bufp-tmp))
+			  goto moreback;
 #if defined(apollo)
 		} else if(c == '\n' || c == '\r') {
 #else
@@ -98,16 +116,21 @@ getlin_hook_proc hook;
 #endif
 			*bufp = 0;
 			break;
+/*JP
 		} else if(' ' <= c && c < '\177' &&
+*/
+		} else if(' ' <= uc && uc < '\377' &&
 			    (bufp-obufp < BUFSZ-1 && bufp-obufp < COLNO)) {
 				/* avoid isprint() - some people don't have it
 				   ' ' is not always a printing char */
 			*bufp = c;
 			bufp[1] = 0;
-			putsyms(bufp);
+/*JP			putsyms(bufp);*/
+			raw_putsyms(bufp);
 			bufp++;
 			if (hook && (*hook)(obufp)) {
-			    putsyms(bufp);
+/*JP			    putsyms(bufp);*/
+			    raw_putsyms(bufp);
 			    bufp = eos(bufp);
 			}
 		} else if(c == kill_char || c == '\177') { /* Robert Viduya */
@@ -122,6 +145,10 @@ getlin_hook_proc hook;
 	ttyDisplay->toplin = 2;		/* nonempty, no --More-- required */
 	ttyDisplay->inread--;
 	clear_nhwindow(WIN_MESSAGE);	/* clean up after ourselves */
+/*JP
+Fri Aug 26 19:30:56 JST 1994 by ISSEI
+*/
+	Strcpy(bfp, str2ic(tmp));
 }
 
 void
@@ -167,11 +194,12 @@ ext_cmd_getlin_hook(base)
 
 	com_index = -1;
 	for (oindex = 0; extcmdlist[oindex].ef_txt != (char *)0; oindex++) {
-		if (!strncmpi(base, extcmdlist[oindex].ef_txt, strlen(base)))
+	    if (!strncmpi(base, extcmdlist[oindex].ef_txt, strlen(base))){
 			if (com_index == -1)	/* no matches yet */
 			    com_index = oindex;
 			else			/* more than 1 match */
 			    return FALSE;
+	    }
 	}
 	if (com_index >= 0) {
 		Strcpy(base, extcmdlist[com_index].ef_txt);
@@ -200,7 +228,10 @@ tty_get_ext_cmd()
 		if (!strcmpi(buf, extcmdlist[i].ef_txt)) break;
 
 	if (extcmdlist[i].ef_txt == (char *)0) {
+/*JP
 		pline("%s: unknown extended command.", buf);
+*/
+		pline("%s:拡張コマンドエラー", buf);
 		i = -1;
 	}
 

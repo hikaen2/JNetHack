@@ -6,7 +6,7 @@
 #include "..\include\nhwin32.h"
 #include "..\include\patchlevel.h"
 
-NHIcon ICON NetHack_.ico
+NHIcon ICON JNetHack_.ico
 
 NHMenu MENU
 BEGIN

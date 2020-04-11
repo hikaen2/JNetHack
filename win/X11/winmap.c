@@ -25,7 +25,9 @@
 #include <X11/Xaw/Cardinals.h>
 #include <X11/Xaw/Scrollbar.h>
 #include <X11/Xaw/Viewport.h>
+#include <X11/Xaw/Label.h>
 #include <X11/Xatom.h>
+#include <X11/keysym.h>
 
 #ifdef PRESERVE_NO_SYSV
 # ifdef SYSV
@@ -50,9 +52,9 @@ extern short glyph2tile[];
 extern int total_tiles_used;
 
 /* Define these if you really want a lot of junk on your screen. */
-/* #define VERBOSE		/* print various info & events as they happen */
-/* #define VERBOSE_UPDATE	/* print screen update bounds */
-/* #define VERBOSE_INPUT	/* print input events */
+/* #define VERBOSE*/		/* print various info & events as they happen */
+/* #define VERBOSE_UPDATE*/	/* print screen update bounds */
+/* #define VERBOSE_INPUT*/	/* print input events */
 
 
 #define USE_WHITE	/* almost always use white as a tile cursor border */
@@ -69,9 +71,74 @@ static void FDECL(get_text_gc, (struct xwindow *,Font));
 static void FDECL(get_char_info, (struct xwindow *));
 static void FDECL(display_cursor, (struct xwindow *));
 
+#ifdef RADAR
+
+#define RADAR_WIDTH	(80 * 4)
+#define RADAR_HEIGHT	(24 * 4)
+
+#define USE_RADAR	(map_info->is_tile)
+static int	radar_is_popuped;
+static int	radar_is_initialized;
+
+static Widget	radar;
+static int	radar_x, radar_y;
+static int	radar_w, radar_h;
+
+static Widget	radar_popup;
+static Window	radar_window;
+static Pixmap	radar_pixmap;
+static Pixmap	radar_pixmap2;
+static GC	radar_gc_black;
+static GC	radar_gc_white;
+static GC	radar_gc[16];
+
+static XColor	radar_color[16] = {
+  {0, 0x0000, 0x0000, 0x0000,},	/* black */
+  {0, 0xffff, 0xffff, 0xffff,},	/* white */
+  {0, 0xffff, 0x0000, 0x0000,},	/* red */
+  {0, 0x0000, 0xffff, 0x0000,},	/* green */
+  {0, 0x0000, 0x0000, 0xffff,},	/* blue */
+  {0, 0xffff, 0xffff, 0x0000,},	/* yellow */
+  {0, 0xffff, 0x0000, 0xffff,},	/* magenta */
+  {0, 0x8000, 0x8000, 0x8000,},	/* gray */
+  {0, 0xffff, 0x8000, 0x0000,},	/* orange */
+  {0, 0x0000, 0x8000, 0x0000,},	/* dark green */
+  {0, 0x0000, 0xffff, 0xffff,},	/* cyan */
+};
+enum {
+  RADAR_BLACK,
+  RADAR_WHITE,
+  RADAR_RED,
+  RADAR_GREEN,
+  RADAR_BLUE,
+  RADAR_YELLOW,
+  RADAR_MAGENTA,
+  RADAR_GRAY,
+  RADAR_ORANGE,
+  RADAR_DARKGREEN,
+  RADAR_CYAN,
+};
+
+#endif
+
+/*ITA*/
+struct pxm_slot_t {
+    int fg;
+    int bg;
+    int age;
+    Pixmap pixmap;
+};
+#define MAX_PXM_SLOTS 100
+    struct pxm_slot_t pxm_slot[MAX_PXM_SLOTS]; 
+/*ITA*/
+
+
 /* Global functions ======================================================== */
 
 void
+/*JP
+X11_print_glyph(window, x, y, glyph)
+*/
 X11_print_glyph(window, x, y, glyph)
     winid window;
     xchar x, y;
@@ -89,15 +156,14 @@ X11_print_glyph(window, x, y, glyph)
 
     if (map_info->is_tile) {
 	unsigned short *t_ptr;
-
 	t_ptr = &map_info->mtype.tile_map->glyphs[y][x];
 
 	if (*t_ptr != glyph) {
 	    *t_ptr = glyph;
 	    update_bbox = TRUE;
-	} else
-	    update_bbox = FALSE;
-
+	}
+	else
+	  update_bbox = FALSE;
     } else {
 	uchar			ch;
 	register int		offset;
@@ -202,10 +268,19 @@ void X11_cliparound(x, y) int x, y; { }
  * or just keep it on a per-window basis.
  */
 Pixmap tile_pixmap = None;
+Pixmap tile_clipmask = None;
+GC     tile_gc;
+XpmImage tile_image;
+
+#define	TILE_WIDTH	appResources.tile_width
+#define	TILE_HEIGHT	appResources.tile_height
+int	TILE_PER_COL;
+/*
+#define TILE_PER_COL	32
 static int tile_width;
 static int tile_height;
 static int tile_count;
-static XImage *tile_image = 0;
+*/
 
 /*
  * This structure is used for small bitmaps that are used for annotating
@@ -252,28 +327,44 @@ void
 post_process_tiles()
 {
     Display *dpy = XtDisplay(toplevel);
-    unsigned int width, height;
+/*    unsigned int width, height;*/
+    Colormap cmap;
+    XpmAttributes attributes;
+/*    int errorcode;*/
+    Arg args[16];
+    XGCValues val;
 
-    height = tile_height * tile_count;
-    width  = tile_width;
+#ifdef USE_XPM
+    if(tile_image.data){
+      XtSetArg(args[0], XtNcolormap, &cmap);
+      XtGetValues(toplevel, args, ONE);
+      
+      attributes.valuemask = XpmCloseness | XpmColormap;
+      attributes.colormap = cmap;
+      attributes.closeness = 25000;
 
-    if (tile_image == 0) return;	/* no tiles */
+      XpmCreatePixmapFromXpmImage(
+		dpy,
+		XtWindow(toplevel),
+		&tile_image,
+		&tile_pixmap,
+		&tile_clipmask,
+		&attributes
+		);
 
-    tile_pixmap = XCreatePixmap(dpy, XtWindow(toplevel),
-			width,
-    			height,
-			DefaultDepth(dpy, DefaultScreen(dpy)));
+      val.function = GXcopy;
+      val.clip_mask = tile_clipmask;
 
-    XPutImage(dpy, tile_pixmap,
-	DefaultGC(dpy, DefaultScreen(dpy)),
-	tile_image,
-	0,0, 0,0,		/* src, dest top left */
-	width,
-	height);
-
-    XDestroyImage(tile_image);	/* data bytes free'd also */
-    tile_image = 0;
-
+      tile_gc = XCreateGC(
+		dpy,
+		XtWindow(toplevel),
+		GCFunction | GCClipMask,
+		&val
+		);
+		
+      XpmFreeXpmImage(&tile_image);
+    }
+#endif
     init_annotation(&pet_annotation,
 	appResources.pet_mark_bitmap, appResources.pet_mark_color);
 }
@@ -318,25 +409,19 @@ init_tiles(wp)
 
 #ifdef USE_XPM
     {
-	char buf[BUFSIZ];
-	XpmAttributes attributes;
 	int errorcode;
+	char buf[BUFSIZ];
 
-	attributes.valuemask = XpmCloseness;
-	attributes.closeness = 25000;
-
-	errorcode=XpmReadFileToImage(dpy,appResources.tile_file,&tile_image,0,&attributes);
-
-	if (errorcode == XpmColorFailed) {
-	    Sprintf(buf, "Insufficient colors available to load %s.",appResources.tile_file);
-	    X11_raw_print(buf);
-	    X11_raw_print("Try closing other colorful applications and restart.");
-	    X11_raw_print("Attempting to load with inferior colors.");
-	    attributes.closeness = 50000;
-	    errorcode=XpmReadFileToImage(dpy,appResources.tile_file,&tile_image,0,&attributes);
-	}
+        errorcode = XpmReadFileToXpmImage(
+		    appResources.tile_file,
+		    &tile_image,
+		    NULL
+		    );
 
 	if (errorcode!=XpmSuccess) {
+#ifdef RADAR
+	    USE_RADAR = 0;
+#endif
 	    if (errorcode == XpmColorFailed) {
 		Sprintf(buf, "Insufficient colors available to load %s.",appResources.tile_file);
 		X11_raw_print(buf);
@@ -349,7 +434,8 @@ init_tiles(wp)
 	    X11_raw_print("Switching to text-based mode.");
 	    goto tiledone;
 	}
-
+	TILE_PER_COL = tile_image.width / TILE_WIDTH;
+#if 0
 	if (tile_image->height%total_tiles_used != 0) {
 	    char buf[BUFSIZ];
 	    Sprintf(buf,
@@ -366,6 +452,7 @@ init_tiles(wp)
 	tile_count=total_tiles_used;
 	tile_width=tile_image->width;
 	tile_height=tile_image->height/tile_count;
+#endif
     }
 #else
     /* any less than 16 colours makes tiles useless */
@@ -540,7 +627,9 @@ init_tiles(wp)
     values.graphics_exposures = False;
 #if 1
     values.foreground = WhitePixelOfScreen(screen) ^
-	XGetPixel(tile_image, 0, tile_height*glyph2tile[cmap_to_glyph(S_corr)]);
+	XGetPixel(tile_image, 
+                tile_width*(glyph2tile[cmap_to_glyph(S_corr)]%TILE_PER_COL),
+                tile_height*(glyph2tile[cmap_to_glyph(S_corr)]/TILE_PER_COL));
 #else
     values.foreground = ~((unsigned long) 0);
 #endif
@@ -559,11 +648,19 @@ tiledone:
     if (colormap) free((genericptr_t)colormap);
     if (tile_bytes) free((genericptr_t)tile_bytes);
     if (colors) free((genericptr_t)colors);
+/*ITA*/
+    {int i; for(i=0;i<MAX_PXM_SLOTS;i++){ pxm_slot[i].age=0;
+     pxm_slot[i].bg=pxm_slot[i].fg=-99;pxm_slot[i].pixmap=0;} }
+/*ITA*/
 #endif
 
     if (result) {				/* succeeded */
+#if 0
 	map_info->square_height = tile_height;
 	map_info->square_width = tile_width;
+#endif
+	map_info->square_height = TILE_HEIGHT;
+	map_info->square_width = TILE_WIDTH;
 	map_info->square_ascent = 0;
 	map_info->square_lbearing = 0;
     } else {
@@ -574,6 +671,34 @@ tiledone:
     return result;
 }
 
+#ifdef RADAR
+void
+check_sb(struct xwindow *wp)
+{
+    Arg arg[2];
+    Widget viewport, horiz_sb, vert_sb;
+    float top, shown;
+
+    viewport = XtParent(wp->w);
+    horiz_sb = XtNameToWidget(viewport, "horizontal");
+    vert_sb  = XtNameToWidget(viewport, "vertical");
+
+    if (horiz_sb) {
+	XtSetArg(arg[0], XtNshown,	&shown);
+	XtSetArg(arg[1], XtNtopOfThumb, &top);
+	XtGetValues(horiz_sb, arg, TWO);
+	radar_x = top * RADAR_WIDTH;
+	radar_w = shown * RADAR_WIDTH;
+    }
+    if (vert_sb) {
+	XtSetArg(arg[0], XtNshown,      &shown);
+	XtSetArg(arg[1], XtNtopOfThumb, &top);
+	XtGetValues(vert_sb, arg, TWO);
+	radar_y = top * RADAR_HEIGHT;
+	radar_h = shown * RADAR_HEIGHT;
+    }
+}
+#endif
 
 /*
  * Make sure the map's cursor is always visible.
@@ -606,6 +731,10 @@ check_cursor_visibility(wp)
 	XtSetArg(arg[0], XtNshown,	&shown);
 	XtSetArg(arg[1], XtNtopOfThumb, &top);
 	XtGetValues(horiz_sb, arg, TWO);
+#ifdef RADAR
+	radar_x = top * RADAR_WIDTH;
+	radar_w = shown * RADAR_WIDTH;
+#endif
 
 	cursor_middle = (((float) wp->cursx) + 0.5) / (float) COLNO;
 	do_call = True;
@@ -652,6 +781,10 @@ check_cursor_visibility(wp)
 	XtSetArg(arg[0], XtNshown,      &shown);
 	XtSetArg(arg[1], XtNtopOfThumb, &top);
 	XtGetValues(vert_sb, arg, TWO);
+#ifdef RADAR
+	radar_y = top * RADAR_HEIGHT;
+	radar_h = shown * RADAR_HEIGHT;
+#endif
 
 	cursor_middle = (((float) wp->cursy) + 0.5) / (float) ROWNO;
 	do_call = True;
@@ -877,8 +1010,7 @@ struct map_info_t *map_info;
 
     for (sp = (unsigned short *) map_info->mtype.tile_map->glyphs, i = 0;
 	i < ROWNO*COLNO; sp++, i++)
-
-    *sp = stone;
+      *sp = stone;
 }
 
 /*
@@ -979,6 +1111,8 @@ map_input(w, event, params, num_params)
     Cardinal in_nparams = (num_params ? *num_params : 0);
     char c;
     char keystring[MAX_KEY_STRING];
+    /* JP */
+    KeySym keysym = 0;
 
     switch (event->type) {
 	case ButtonPress:
@@ -1014,6 +1148,7 @@ map_input(w, event, params, num_params)
 	     * Don't use key_event_to_char() because we want to be able
 	     * to allow keys mapped to multiple characters.
 	     */
+
 	    key = (XKeyEvent *) event;
 	    if (in_nparams > 0 &&
 		(nbytes = strlen(params[0])) < MAX_KEY_STRING) {
@@ -1024,9 +1159,55 @@ map_input(w, event, params, num_params)
 		 */
 		meta = !!(key->state & Mod1Mask);
 		nbytes =
+		  /*JP
 		    XLookupString(key, keystring, MAX_KEY_STRING,
 				  (KeySym *)0, (XComposeStatus *)0);
+		  */
+		    XLookupString(key, keystring, MAX_KEY_STRING,
+				  &keysym, (XComposeStatus *)0);
 	    }
+	    /*
+	      強引に
+	     */
+	    if(!iflags.num_pad){
+	      if(keysym == XK_KP_1 || keysym == XK_KP_End){
+		keystring[0] = 'b';
+		nbytes = 1;
+	      }
+	      else if(keysym == XK_KP_2 || keysym == XK_KP_Down){
+		keystring[0] = 'j';
+		nbytes = 1;
+	      }
+	      else if(keysym == XK_KP_3 || keysym == XK_KP_Page_Down){
+		keystring[0] = 'n';
+		nbytes = 1;
+	      }
+	      else if(keysym == XK_KP_4 || keysym == XK_KP_Left){
+		keystring[0] = 'h';
+		nbytes = 1;
+	      }
+	      else if(keysym == XK_KP_5 || keysym == XK_KP_Begin){
+		keystring[0] = '.';
+		nbytes = 1;
+	      }
+	      else if(keysym == XK_KP_6 || keysym == XK_KP_Right){
+		keystring[0] = 'l';
+		nbytes = 1;
+	      }
+	      else if(keysym == XK_KP_7 || keysym == XK_KP_Home){
+		keystring[0] = 'y';
+		nbytes = 1;
+	      }
+	      else if(keysym == XK_KP_8 || keysym == XK_KP_Up){
+		keystring[0] = 'k';
+		nbytes = 1;
+	      }
+	      else if(keysym == XK_KP_9 || keysym == XK_KP_Page_Up){
+		keystring[0] = 'u';
+		nbytes = 1;
+	      }
+	    }
+
 	key_events:
 	    /* Modifier keys return a zero length string when pressed. */
 	    if (nbytes) {
@@ -1182,6 +1363,74 @@ map_update(wp, start_row, stop_row, start_col, stop_col, inverted)
     int row;
     register int count;
 
+#ifdef RADAR
+    Arg args[16];
+    Cardinal num_args;
+    Dimension width, height;
+    int depth;
+    Display *dpy;
+    XGCValues gcval;
+    Colormap cmap;
+
+    dpy = XtDisplay(radar);
+
+    if(USE_RADAR){
+      int i;
+    
+      if(flags.radar && !radar_is_popuped){
+	  XtPopup(radar_popup, XtGrabNone);
+	  radar_is_popuped = TRUE;
+      }
+      if(!flags.radar && radar_is_popuped){
+	  XtPopdown(radar_popup);
+	  radar_is_popuped = FALSE;
+      }
+
+      if(!radar_is_initialized){
+	  radar_is_initialized = TRUE;
+
+	  XtRealizeWidget(radar_popup);
+
+	  num_args = 0;
+	  XtSetArg(args[num_args], XtNwidth, &width); ++num_args;
+	  XtSetArg(args[num_args], XtNheight, &height); ++num_args;
+
+	  XtGetValues(radar, args, num_args);
+	  depth = DefaultDepth(dpy, DefaultScreen(dpy));
+	  radar_window = XtWindow(radar);
+	  radar_pixmap = XCreatePixmap(dpy, radar_window,
+				       width, height, depth);
+	  radar_pixmap2 = XCreatePixmap(dpy, radar_window,
+					width, height, depth);
+	  
+	  num_args = 0;
+	  XtSetArg(args[num_args], XtNbackgroundPixmap, radar_pixmap); num_args++;
+	  XtSetValues(radar, args, num_args);
+	  
+	  num_args = 0;
+	  XtSetArg(args[num_args], XtNcolormap, &cmap); num_args++;
+	  XtGetValues(radar, args, num_args);
+	  
+	  gcval.function = GXcopy;
+	  for(i=0 ; i<16 ; ++i){
+	      XAllocColor(dpy, cmap, &radar_color[i]);
+	      
+	      gcval.foreground = radar_color[i].pixel;
+	      radar_gc[i] = XCreateGC(dpy, radar_window, 
+				      GCFunction | GCForeground,
+				      &gcval);
+	  }
+	  radar_gc_black = radar_gc[RADAR_BLACK];
+	  radar_gc_white = radar_gc[RADAR_WHITE];
+
+	  XFillRectangle(dpy, radar_pixmap,
+			 radar_gc_black, 0, 0, width, height);
+	  XFillRectangle(dpy, radar_pixmap2,
+			 radar_gc_black, 0, 0, width, height);
+      }
+    }
+#endif
+
     if (start_row < 0 || stop_row >= ROWNO) {
 	impossible("map_update:  bad row range %d-%d\n", start_row, stop_row);
 	return;
@@ -1203,21 +1452,153 @@ map_update(wp, start_row, stop_row, start_col, stop_col, inverted)
 	int cur_col;
 	Display* dpy=XtDisplay(wp->w);
 	Screen* screen=DefaultScreenOfDisplay(dpy);
-
+/*ITA*/
+         /* each slots ages */
+        {
+	     int i; 
+	     
+	     for(i=0 ; i<MAX_PXM_SLOTS ; i++)
+		  pxm_slot[i].age++;
+	}
+/*ITA*/
 	for (row = start_row; row <= stop_row; row++) {
 	    for (cur_col = start_col; cur_col <= stop_col; cur_col++) {
+		struct rm *lev = &levl[cur_col][row];
 		int glyph = tile_map->glyphs[row][cur_col];
-		int tile = glyph2tile[glyph];
-		int dest_x = cur_col * map_info->square_width;
-		int dest_y = row * map_info->square_height;
+		int bg = back_to_glyph(cur_col, row);
+		int tile = 0;
+		int bgtile = 0;
+		int dest_x = 0;
+		int dest_y = 0;
+		int src_x;
+		int src_y;
+		int bgsrc_x;
+		int bgsrc_y;
+		
+		if(tile_pixmap){
+		  if(Blind || (viz_array && !cansee(cur_col, row)))
+		      bg = lev->glyph;
 
-		XCopyArea(dpy, tile_pixmap, XtWindow(wp->w),
-			tile_map->black_gc,	/* no grapics_expose */
-			0,
-			tile * map_info->square_height,
-			tile_width, tile_height,
-			dest_x,dest_y);
+		  bgtile = glyph2tile[bg];
+		  tile = glyph2tile[glyph];
+		  dest_x = cur_col * map_info->square_width;
+		  dest_y = row * map_info->square_height;
+		  bgsrc_x = (bgtile % TILE_PER_COL) * TILE_WIDTH;
+		  bgsrc_y = (bgtile / TILE_PER_COL) * TILE_HEIGHT;
+		  src_x = (tile % TILE_PER_COL) * TILE_WIDTH;
+		  src_y = (tile / TILE_PER_COL) * TILE_HEIGHT;
+/*ITA*/
+   {
+     int i, match;
+     int maxage = 0;
 
+     if(bgtile != -1){
+       match = -1;
+       for(i=0 ; i<MAX_PXM_SLOTS ; i++){
+	 if(tile== pxm_slot[i].fg && bgtile== pxm_slot[i].bg){
+	   match = i;
+	   break;
+	 }
+       }
+       if(match == -1){
+           /* no match found:dispose the oldest slot and compose pixmap */
+	 for(i=0 ; i<MAX_PXM_SLOTS ; i++)
+           if(maxage < pxm_slot[i].age){
+	     match = i;
+	     maxage = pxm_slot[i].age;
+	   }
+           if(!pxm_slot[match].pixmap) 
+	     pxm_slot[match].pixmap = XCreatePixmap(
+		 dpy, XtWindow(toplevel),
+		 TILE_WIDTH, TILE_HEIGHT, DefaultDepth(dpy, DefaultScreen(dpy)));
+           XCopyArea(dpy, tile_pixmap, pxm_slot[match].pixmap,
+		     tile_map->black_gc,
+		     bgsrc_x, bgsrc_y,
+		     TILE_WIDTH, TILE_HEIGHT,
+		     0,0);
+
+           XSetClipOrigin(dpy,tile_gc, 0 - src_x, 0 - src_y);
+
+           XCopyArea(dpy, tile_pixmap, pxm_slot[match].pixmap,
+                              tile_gc,
+                              src_x, src_y,
+                              TILE_WIDTH, TILE_HEIGHT,
+                              0,0);
+           pxm_slot[match].fg=tile;
+           pxm_slot[match].bg=bgtile;
+       }
+    /* slot ready */
+       pxm_slot[match].age=0;
+       XCopyArea(dpy, pxm_slot[match].pixmap, XtWindow(wp->w),
+		 tile_map->black_gc,
+		 0,0,
+		 TILE_WIDTH, TILE_HEIGHT,
+		 dest_x,dest_y);
+     }
+     else
+    /* no clip mask */
+	 XCopyArea(dpy, tile_pixmap, XtWindow(wp->w),
+		   tile_map->black_gc,
+		   src_x, src_y,
+		   TILE_WIDTH, TILE_HEIGHT,
+		   dest_x,dest_y);
+}
+/*ITA*/
+}
+#ifdef RADAR
+		if(tile_pixmap && USE_RADAR){
+#define RADAR_MONSTER	RADAR_YELLOW
+#define RADAR_HUMAN	RADAR_WHITE
+#define RADAR_OBJECT	RADAR_BLUE
+
+#define RADAR_WALL	RADAR_GRAY
+#define RADAR_FLOOR	RADAR_DARKGREEN
+#define RADAR_DOOR	RADAR_ORANGE
+#define RADAR_LADDER	RADAR_MAGENTA
+#define RADAR_WATER	RADAR_BLUE
+#define RADAR_TRAP	RADAR_RED
+
+		  int c;
+		  c = RADAR_BLACK;
+		  if(tile < 290)
+		    c = RADAR_MONSTER;
+		  else if(tile < 345)
+		    c = RADAR_HUMAN;
+		  else if(tile < 345 + 394)
+		    c = RADAR_OBJECT;
+		  else if(tile < 345 + 394 + 1)
+		    ;
+		  else if(tile < 345 + 394 + 12)
+		    c = RADAR_WALL;
+		  else if(tile < 345 + 394 + 15)
+		    c = RADAR_FLOOR;
+		  else if(tile < 345 + 394 + 17)
+		    c = RADAR_DOOR;
+		  else if(tile < 345 + 394 + 20)
+		    c = RADAR_FLOOR;
+		  else if(tile < 345 + 394 + 24)
+		    c = RADAR_LADDER;
+		  else if(tile < 345 + 394 + 29)
+		    c = RADAR_WATER;
+		  else if(tile < 345 + 394 + 30)
+		    c = RADAR_GRAY;
+		  else if(tile < 345 + 394 + 31)
+		    c = RADAR_ORANGE;
+		  else if(tile < 345 + 394 + 35)
+		    c = RADAR_ORANGE;
+		  else if(tile < 345 + 394 + 38)
+		    c = RADAR_CYAN;
+		  else if(tile < 345 + 394 + 60)
+		    c = RADAR_TRAP;
+		  else if(tile < 345 + 394 + 121)
+		    c = RADAR_YELLOW;
+		  else
+		    c = RADAR_WALL;
+
+		  XFillRectangle(dpy, radar_pixmap2, radar_gc[c],
+				 cur_col * 4, row * 4, 4, 4);
+		}
+#endif
 		if (glyph_is_pet(glyph)
 #ifdef TEXTCOLOR
 			&& iflags.hilite_pet
@@ -1259,6 +1640,19 @@ map_update(wp, start_row, stop_row, start_col, stop_col, inverted)
 		map_info->square_width-1,
 		map_info->square_height-1);
 	}
+#ifdef RADAR
+	if(USE_RADAR){
+	  XCopyArea(dpy, radar_pixmap2, radar_pixmap, radar_gc_black,
+		    0, 0, RADAR_WIDTH, RADAR_HEIGHT, 0, 0);
+	  check_sb(wp);
+	  XDrawRectangle(dpy, radar_pixmap, radar_gc_white,
+			 radar_x, radar_y,
+			 radar_w, radar_h);
+	  XCopyArea(dpy, radar_pixmap, radar_window, radar_gc_black,
+		    0, 0, RADAR_WIDTH, RADAR_HEIGHT, 0, 0);
+	  XRaiseWindow(dpy, XtWindow(radar_popup));
+	}
+#endif
     } else {
 	struct text_map_info_t *text_map = map_info->mtype.text_map;
 
@@ -1319,6 +1713,7 @@ map_update(wp, start_row, stop_row, start_col, stop_col, inverted)
     }
 }
 
+
 /* Adjust the number of rows and columns on the given map window */
 void
 set_map_size(wp, cols, rows)
@@ -1369,6 +1764,28 @@ static char map_translations[] =
  <Key>:		input()	\
 ";
 
+#ifdef RADAR
+static char radar_translations[] =
+"#override\n\
+ <Key>Left: scroll(4)\n\
+ <Key>Right: scroll(6)\n\
+ <Key>Up: scroll(8)\n\
+ <Key>Down: scroll(2)\n\
+ <Key>Escape: dismiss_radar()\n\
+ <Key>: input()\
+";
+#endif
+
+#ifdef RADAR
+void
+dismiss_radar(Widget w, XEvent*ev , String *s, Cardinal*n)
+{
+    XtPopdown(radar_popup);
+    flags.radar = FALSE;
+    radar_is_popuped = FALSE;
+}
+#endif
+
 /*
  * The map window creation routine.
  */
@@ -1387,6 +1804,33 @@ create_map_window(wp, create_popup, parent)
     int screen_width, screen_height;
 #endif
 
+#ifdef RADAR
+    num_args = 0;
+    XtSetArg(args[num_args], XtNwidth, RADAR_WIDTH); num_args++;
+    XtSetArg(args[num_args], XtNheight, RADAR_HEIGHT); num_args++;
+
+    radar_popup = XtCreatePopupShell("radar",
+				     /*
+				     trainsientShellWidgetClass,
+				     */
+				     topLevelShellWidgetClass,
+				     toplevel, args, num_args);
+
+    num_args = 0;
+    /*
+    XtSetArg(args[num_args], XtNsensitive, False); num_args++;
+    */
+    XtSetArg(args[num_args], XtNlabel, ""); num_args++;
+    XtSetArg(args[num_args], XtNtranslations,
+	     XtParseTranslationTable(radar_translations));	num_args++;
+
+    radar = XtCreateManagedWidget("radar",
+				  labelWidgetClass,
+				  radar_popup,		
+				  args,			
+				  num_args);
+#endif
+
     wp->type = NHW_MAP;
 
     if (create_popup) {
@@ -1396,7 +1840,7 @@ create_map_window(wp, create_popup, parent)
 	num_args = 0;
 	XtSetArg(args[num_args], XtNinput, False);            num_args++;
 
-	wp->popup = parent = XtCreatePopupShell("nethack",
+	wp->popup = parent = XtCreatePopupShell("jnethack",
 					topLevelShellWidgetClass,
 				       toplevel, args, num_args);
 	/*
@@ -1502,7 +1946,6 @@ create_map_window(wp, create_popup, parent)
 #endif
 
     set_map_size(wp, columns, rows);
-
 
     /*
      * If we have created our own popup, then realize it so that the

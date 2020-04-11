@@ -11,7 +11,7 @@
 
 #include "hack.h"
 #include "dlb.h"
-/* #define DEBUG	/* uncomment to enable code debugging */
+/* #define DEBUG	*//* uncomment to enable code debugging */
 
 #ifdef DEBUG
 # ifdef WIZARD
@@ -942,12 +942,12 @@ struct mkroom	*croom;
 
 	/* assume we wouldn't be given an egg corpsenm unless it was
 	   hatchable */
-	if (otmp->otyp == EGG && otmp->corpsenm != NON_PM)
+	if (otmp->otyp == EGG && otmp->corpsenm != NON_PM){
 	    if (dead_species(otmp->otyp, TRUE))
 		kill_egg(otmp);	/* make sure nothing hatches */
 	    else
 		attach_egg_hatch_timeout(otmp);	/* attach new hatch timeout */
-
+	}
 	if (o->name.str) {	/* Give a name to that object */
 	    otmp = oname(otmp, o->name.str);
 	}
@@ -1346,7 +1346,7 @@ schar ftyp, btyp;
 static void
 fix_stair_rooms()
 {
-    register i;
+    register int i;
     register struct mkroom *croom;
 
     if(xdnstair &&
@@ -1843,8 +1843,8 @@ dlb *fd;
 		if ((n = r->ndoor) != 0)
 		    r->doors = NewTab(room_door, n);
 		while(n--) {
-			r->doors[n] = New(room_door);
-			Fread((genericptr_t) r->doors[n], 1,
+			r->doors[(int)n] = New(room_door);
+			Fread((genericptr_t) r->doors[(int)n], 1,
 				sizeof(room_door), fd);
 		}
 
@@ -1853,8 +1853,8 @@ dlb *fd;
 		if ((n = r->nstair) != 0)
 		    r->stairs = NewTab(stair, n);
 		while (n--) {
-			r->stairs[n] = New(stair);
-			Fread((genericptr_t) r->stairs[n], 1,
+			r->stairs[(int)n] = New(stair);
+			Fread((genericptr_t) r->stairs[(int)n], 1,
 				sizeof(stair), fd);
 		}
 
@@ -1863,8 +1863,8 @@ dlb *fd;
 		if ((n = r->naltar) != 0)
 		    r->altars = NewTab(altar, n);
 		while (n--) {
-			r->altars[n] = New(altar);
-			Fread((genericptr_t) r->altars[n], 1,
+			r->altars[(int)n] = New(altar);
+			Fread((genericptr_t) r->altars[(int)n], 1,
 				sizeof(altar), fd);
 		}
 
@@ -1874,8 +1874,8 @@ dlb *fd;
 		if ((n = r->nfountain) != 0)
 		    r->fountains = NewTab(fountain, n);
 		while (n--) {
-			r->fountains[n] = New(fountain);
-			Fread((genericptr_t) r->fountains[n], 1,
+			r->fountains[(int)n] = New(fountain);
+			Fread((genericptr_t) r->fountains[(int)n], 1,
 				sizeof(fountain), fd);
 		}
 
@@ -1884,8 +1884,8 @@ dlb *fd;
 		if ((n = r->nsink) != 0)
 		    r->sinks = NewTab(sink, n);
 		while (n--) {
-			r->sinks[n] = New(sink);
-			Fread((genericptr_t) r->sinks[n], 1, sizeof(sink), fd);
+			r->sinks[(int)n] = New(sink);
+			Fread((genericptr_t) r->sinks[(int)n], 1, sizeof(sink), fd);
 		}
 
 		/* read the pools */
@@ -1893,8 +1893,8 @@ dlb *fd;
 		if ((n = r->npool) != 0)
 		    r->pools = NewTab(pool,n);
 		while (n--) {
-			r->pools[n] = New(pool);
-			Fread((genericptr_t) r->pools[n], 1, sizeof(pool), fd);
+			r->pools[(int)n] = New(pool);
+			Fread((genericptr_t) r->pools[(int)n], 1, sizeof(pool), fd);
 		}
 
 		/* read the traps */
@@ -1902,8 +1902,8 @@ dlb *fd;
 		if ((n = r->ntrap) != 0)
 		    r->traps = NewTab(trap, n);
 		while(n--) {
-			r->traps[n] = New(trap);
-			Fread((genericptr_t) r->traps[n], 1, sizeof(trap), fd);
+			r->traps[(int)n] = New(trap);
+			Fread((genericptr_t) r->traps[(int)n], 1, sizeof(trap), fd);
 		}
 
 		/* read the monsters */
@@ -1911,8 +1911,8 @@ dlb *fd;
 		if ((n = r->nmonster) != 0) {
 		    r->monsters = NewTab(monster, n);
 		    while(n--) {
-			r->monsters[n] = New(monster);
-			load_one_monster(fd, r->monsters[n]);
+			r->monsters[(int)n] = New(monster);
+			load_one_monster(fd, r->monsters[(int)n]);
 		    }
 		} else
 		    r->monsters = 0;
@@ -1922,8 +1922,8 @@ dlb *fd;
 		if ((n = r->nobject) != 0) {
 		    r->objects = NewTab(object, n);
 		    while (n--) {
-			r->objects[n] = New(object);
-			load_one_object(fd, r->objects[n]);
+			r->objects[(int)n] = New(object);
+			load_one_object(fd, r->objects[(int)n]);
 		    }
 		} else
 		    r->objects = 0;
@@ -1933,8 +1933,8 @@ dlb *fd;
 		if ((n = r->ngold) != 0)
 		    r->golds = NewTab(gold, n);
 		while (n--) {
-			r->golds[n] = New(gold);
-			Fread((genericptr_t) r->golds[n], 1, sizeof(gold), fd);
+			r->golds[(int)n] = New(gold);
+			Fread((genericptr_t) r->golds[(int)n], 1, sizeof(gold), fd);
 		}
 
 		/* read the engravings */
@@ -1943,8 +1943,8 @@ dlb *fd;
 		if ((n = r->nengraving) != 0) {
 		    r->engravings = NewTab(engraving,n);
 		    while (n--) {
-			r->engravings[n] = New(engraving);
-			load_one_engraving(fd, r->engravings[n]);
+			r->engravings[(int)n] = New(engraving);
+			load_one_engraving(fd, r->engravings[(int)n]);
 		    }
 		} else
 		    r->engravings = 0;
@@ -2061,7 +2061,7 @@ dlb *fd;
 
     /* Initialize map */
     Fread((genericptr_t) &filling, 1, sizeof(filling), fd);
-    if(!init_lev.init_present) /* don't init if mkmap() has been called */
+    if(!init_lev.init_present) /* don't init if mkmap() has been called */{
       for(x = 2; x <= x_maze_max; x++)
 	for(y = 0; y <= y_maze_max; y++)
 	    if (filling == -1) {
@@ -2074,7 +2074,7 @@ dlb *fd;
 	    } else {
 		    levl[x][y].typ = filling;
 	    }
-
+    }
     /* Start reading the file */
     Fread((genericptr_t) &numpart, 1, sizeof(numpart), fd);
 						/* Number of parts */
@@ -2202,7 +2202,7 @@ dlb *fd;
 		get_location(&tmplregion.delarea.x2, &tmplregion.delarea.y2,
 								DRY|WET);
 	    }
-	    lregions[n] = tmplregion;
+	    lregions[(int)n] = tmplregion;
 	}
 
 	Fread((genericptr_t) &n, 1, sizeof(n), fd);
@@ -2516,11 +2516,12 @@ dlb *fd;
 		levl[x][y].flags = 0;
 	    }
 
-	    if (!(y % 2))
+	    if (!(y % 2)){
 		if (dir == W_SOUTH)
 		    y++;
 		else
 		    y--;
+	    }
 
 	    walkfrom(x, y);
     }

@@ -17,9 +17,9 @@ echo "Copying Makefile.NT to ..\..\src\Makefile"
 copy makefile.NT ..\..\src\Makefile >nul
 echo Makefile copied ok.
 
-if exist .\nethack.ico goto hasicon
+if exist .\jnethack.ico goto hasicon
 if exist .\nhico.uu uudecode nhico.uu >nul
-if NOT exist .\nethack.ico goto err_nouu
+if NOT exist .\jnethack.ico goto err_nouu
 :hasicon
 echo NetHack icon exists ok.
 echo done!
@@ -29,7 +29,7 @@ echo.
 goto done
 :err_nouu
 echo Apparently you have no UUDECODE utility in your path.  You need a UUDECODE
-echo utility in order to turn "nhico.uu" into "nethack.ico".
+echo utility in order to turn "nhico.uu" into "jnethack.ico".
 echo Check "Install.nt" for a list of the steps required to build NetHack.
 goto done
 :err_plev

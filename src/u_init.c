@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/7/22)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 struct trobj {
@@ -28,12 +35,17 @@ const char *roles[] = {	/* also used in options.c and winxxx.c */
 			/* roles[2] and [6] are changed for females */
 			/* in all cases, the corresponding male and female */
 			/* roles must start with the same letter */
-	"Archeologist", "Barbarian", "Caveman", "Elf", "Healer", "Knight",
+	"Archeologist", "Barbarian", "Caveman", "Elf", 
+#ifdef FIGHTER
+	"Fighter",
+#endif
+	"Healer", "Knight",
 	"Priest", "Rogue", "Samurai",
 #ifdef TOURIST
 	"Tourist",
 #endif
-	"Valkyrie", "Wizard", 0
+	"Valkyrie", "Wizard", 
+	0
 };
 
 /*
@@ -78,6 +90,15 @@ static struct trobj Elf[] = {
 	{ LEMBAS_WAFER, 0, FOOD_CLASS, 2, 0 },
 	{ 0, 0, 0, 0, 0 }
 };
+#ifdef FIGHTER
+static struct trobj Fighter[] = {
+	{ SHORT_SWORD, 2, WEAPON_CLASS, 1, 1 },
+	{ SAILOR_BLOUSE, 1, ARMOR_CLASS, 1, UNDEF_BLESS },
+	{ WAN_POLYMORPH, UNDEF_SPE, WAND_CLASS, 1, UNDEF_BLESS },
+	{ UNDEF_TYP, UNDEF_SPE, SCROLL_CLASS, 3, UNDEF_BLESS },
+	{ 0, 0, 0, 0, 0 }
+};
+#endif /* FIGHTER */
 static struct trobj Healer[] = {
 	{ SCALPEL, 0, WEAPON_CLASS, 1, UNDEF_BLESS },
 	{ LEATHER_GLOVES, 1, ARMOR_CLASS, 1, UNDEF_BLESS },
@@ -257,6 +278,20 @@ static struct def_skill Skill_E[] = {
     { P_NO_TYPE, 0 }
 };
 
+#ifdef FIGHTER
+static struct def_skill Skill_F[] = {
+    { P_DAGGER, P_EXPERT },		{ P_KNIFE, P_SKILLED },
+    { P_SHORT_SWORD, P_EXPERT },	{ P_BROAD_SWORD, P_EXPERT },
+    { P_LONG_SWORD, P_SKILLED },	{ P_TWO_HANDED_SWORD, P_BASIC },
+    { P_SCIMITAR, P_SKILLED },		{ P_SABER, P_SKILLED },
+    { P_SPEAR, P_EXPERT },		{ P_JAVELIN, P_BASIC },
+    { P_BOW, P_EXPERT },		{ P_SLING, P_BASIC },
+    { P_CROSSBOW, P_BASIC },		{ P_SHURIKEN, P_BASIC },
+    { P_TWO_WEAPON_COMBAT, P_EXPERT },	{ P_MARTIAL_ARTS, 3 },
+    { P_NO_TYPE, 0 }
+};
+#endif /* FIGHTER */
+
 static struct def_skill Skill_H[] = {
     { P_DAGGER, P_SKILLED },		{ P_KNIFE, P_EXPERT },
     { P_SHORT_SWORD, P_SKILLED },	{ P_SCIMITAR, P_BASIC },
@@ -426,7 +461,8 @@ u_init()
 	}
 	i = role_index(pc);
 	if (random_role) {
-	    pline("This game you will be %s.", an(roles[i]));
+/*JP	    pline("This game you will be %s.", an(roles[i]));*/
+	    pline("このゲームではあなたは%sです．", jtrns_mon(roles[i], -1));
 	    display_nhwindow(WIN_MESSAGE, TRUE);
 	}
 
@@ -574,6 +610,19 @@ u_init()
 		skill_init(Skill_E);
 #endif /* WEAPON_SKILLS */
 		break;
+#ifdef FIGHTER
+	case 'F':
+		u.umonster = PM_FIGHTER;
+		u.uen = u.uenmax += rn1(4, 1);
+		flags.female = TRUE;
+		ini_inv(Fighter);
+		knows_class(WEAPON_CLASS);
+		knows_class(ARMOR_CLASS);
+#ifdef WEAPON_SKILLS
+		skill_init(Skill_F);
+#endif /* WEAPON_SKILLS */
+		break;
+#endif /* FIGHTER */
 	case 'H':
 		u.umonster = PM_HEALER;
 		u.uen = u.uenmax += rn1(4, 1);

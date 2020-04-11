@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "sp_lev.h"
 #include "lev.h"	/* save & restore info */
@@ -1059,7 +1066,8 @@ water_friction()
 		u.dx = dx;
 		eff = TRUE;
 	}
-	if (eff) pline("Water turbulence affects your movements.");
+/*JP	if (eff) pline("Water turbulence affects your movements.");*/
+	if (eff) pline("水の流れがあなたの動きに影響を与えた．");
 }
 
 void

@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "lev.h"	/* save & restore info */
 
@@ -363,7 +370,8 @@ dodiscovered()				/* free after Robert Viduya */
     winid tmpwin;
 
     tmpwin = create_nhwindow(NHW_MENU);
-    putstr(tmpwin, 0, "Discoveries");
+/*JP    putstr(tmpwin, 0, "Discoveries");*/
+    putstr(tmpwin, 0, "発見物一覧");
     putstr(tmpwin, 0, "");
 
     /* several classes are omitted from packorder; one is of interest here */
@@ -385,12 +393,16 @@ dodiscovered()				/* free after Robert Viduya */
 		    putstr(tmpwin, ATR_INVERSE, let_to_name(oclass, FALSE));
 		    prev_class = oclass;
 		}
+/*JP
 		putstr(tmpwin, 0, typename(dis));
+*/
+		putstr(tmpwin, 0, jtypename(dis));
 	    }
 	}
     }
     if (ct == 0) {
-	You("haven't discovered anything yet...");
+/*JP	You("haven't discovered anything yet...");*/
+	You("まだ何も発見していない．．．");
     } else
 	display_nhwindow(tmpwin, TRUE);
     destroy_nhwindow(tmpwin);

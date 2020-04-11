@@ -1298,7 +1298,7 @@ glyph_at(x, y)
 /* ------------------------------------------------------------------------- */
 /* Wall Angle -------------------------------------------------------------- */
 
-/*#define WA_VERBOSE	/* give (x,y) locations for all "bad" spots */
+/*#define WA_VERBOSE	*//* give (x,y) locations for all "bad" spots */
 
 #ifdef WA_VERBOSE
 

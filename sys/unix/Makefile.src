@@ -50,6 +50,14 @@ SYSOBJ = ioctl.o unixmain.o unixtty.o unixunix.o
 #SYSSRC = ../sys/be/bemain.c ../sys/share/unixtty.c ../sys/share/ioctl.c
 #SYSOBJ = bemain.o unixtty.o ioctl.o
 
+#JP by issei(93/11/10)
+JSRC = ../japanese/jconj.c ../japanese/jtrns.c ../japanese/jlib.c
+JOBJ = jconj.o jtrns.o jlib.o
+
+#NH extension by issei(99/11/10)
+EXTSRC = ../extension/nhbuf.c ../extension/nhinet.c \
+	../extension/extension.c
+EXTOBJ = nhbuf.o nhinet.o extension.o
 
 # if you are using gcc as your compiler:
 #	uncomment the CC definition below if it's not in your environment
@@ -64,7 +72,7 @@ SYSOBJ = ioctl.o unixmain.o unixtty.o unixunix.o
 # 
 #	If you are using GCC 2.2.2 or higher on a DPX/2, just use:
 #
-# CC = gcc -ansi
+CC = gcc
 #
 # if you're debugging and want gcc to check as much as possible, use:
 # CC = gcc -W -Wimplicit -Wreturn-type -Wunused -Wformat -Wswitch -Wshadow -Wcast-qual -Wwrite-strings -DGCC_WARN
@@ -124,9 +132,11 @@ SYSOBJ = ioctl.o unixmain.o unixtty.o unixunix.o
 # flags for debugging:
 # CFLAGS = -g -I../include
 
-CFLAGS = -O -I../include
-LFLAGS = 
+#CFLAGS = -O -I../include
+#LFLAGS = -O
 
+CFLAGS = -O3 -Wall -I../include -I/usr/X11R6/include `gtk-config --cflags`
+LFLAGS = -O3 -L/usr/X11R6/lib `gtk-config --libs`
 
 # Set the WINSRC, WINOBJ, and WINLIB lines to correspond to your desired
 # combination of windowing systems.  Also set windowing systems in config.h.
@@ -144,10 +154,17 @@ WINX11SRC = ../win/X11/Window.c ../win/X11/dialogs.c ../win/X11/winX.c \
 	../win/X11/winval.c ../src/./tile.c
 WINX11OBJ = Window.o dialogs.o winX.o winmap.o winmenu.o winmesg.o \
 	winmisc.o winstat.o wintext.o winval.o tile.o
+
+WINGTKSRC = ../win/gtk/gtk.c ../win/gtk/gtkgetlin.c ../win/gtk/gtkstatus.c \
+	../win/gtk/gtkmenu.c ../win/gtk/gtkyn.c ../win/gtk/gtkmap.c \
+	../win/gtk/gtkmessage.c ../win/gtk/gtkmisc.c ../win/gtk/xshmmap.c \
+	../win/gtk/xshm.c
+WINGTKOBJ = gtk.o gtkgetlin.o gtkstatus.o gtkmenu.o gtkyn.o gtkmap.o \
+	gtkmessage.o gtkmisc.o xshmmap.o xshm.o
 #
 # 
-WINSRC = $(WINTTYSRC)
-WINOBJ = $(WINTTYOBJ)
+WINSRC = $(WINTTYSRC) $(WINX11SRC) $(WINGTKSRC)
+WINOBJ = $(WINTTYOBJ) $(WINX11OBJ) $(WINGTKOBJ)
 
 # on some systems the termcap library is in -ltermcap or -lcurses
 # on 386 Xenix, the -ltermlib tputs() seems not to work; use -lcurses instead
@@ -167,13 +184,15 @@ WINTTYLIB = -ltermlib
 #
 # libraries for X11
 # If USE_XPM is defined in config.h, you will also need -lXpm here.
-WINX11LIB = -lXaw -lXmu -lXext -lXt -lX11
+# WINX11LIB = -lXaw -lXmu -lXext -lXt -lX11
 # WINX11LIB = -lXaw -lXmu -lXt -lX11
 # WINX11LIB = -lXaw -lXmu -lXext -lXt -lXpm -lX11 -lm
+# WINX11LIB = -lXaw -lXmu -lXext -lXt -lXpm -lX11 -lm -lxpg4 
+WINX11LIB = -lXaw -lXmu -lXext -lXt -lXpm -lX11 -lm -lSM -lICE -lxpg4 
 # WINX11LIB = -lXaw -lXmu -lXpm -lXext -lXt -lX11 -lSM -lICE -lm # BSD/OS 2.0
 #
 #
-WINLIB = $(WINTTYLIB)
+WINLIB = $(WINTTYLIB) $(WINX11LIB) $(WINGTKLIB)
 
 # any other strange libraries your system needs (for Sysunix only -- the more
 # specialized targets should already be right)
@@ -197,10 +216,16 @@ WINLIB = $(WINTTYLIB)
 # IRIX 4.0.x needs -lsun if NIS (YP) is being used for passwd file lookup
 # LIBS = -lsun
 #
+# FreeBSD-2.2 needs -lxpg4 to use locale
+#
+# LIBS = -lxpg4
+#
 LIBS =
 
 # make NetHack
-GAME     = nethack
+#JP by issei(96/5/27)
+#GAME     = nethack
+GAME     = jnethack
 
 # if you defined RANDOM in unixconf.h/tosconf.h since your system did not come
 # with a reasonable random number generator
@@ -245,10 +270,10 @@ SYSCSRC = ../sys/atari/tos.c ../sys/share/pcmain.c ../sys/share/pcsys.c \
 WINCSRC = $(WINTTYSRC) $(WINX11SRC)
 
 # .c files for this version (for date.h)
-VERSOURCES = $(HACKCSRC) $(SYSSRC) $(WINSRC) monstr.c vis_tab.c
+VERSOURCES = $(HACKCSRC) $(JSRC) $(EXTSRC) $(SYSSRC) $(WINSRC) monstr.c vis_tab.c
 
 # .c files for all UNIX versions (for lint and tags)
-CSOURCES = $(HACKCSRC) $(SYSSRC) $(WINCSRC) monstr.c vis_tab.c
+CSOURCES = $(HACKCSRC) $(JSRC) $$(EXTSRC) (SYSSRC) $(WINCSRC) monstr.c vis_tab.c
 
 
 # all .h files except date.h, onames.h, pm.h, and vis_tab.h which would
@@ -285,7 +310,7 @@ HOBJ = $(FIRSTOBJ) allmain.o alloc.o apply.o artifact.o attrib.o ball.o \
 	teleport.o timeout.o topten.o track.o trap.o u_init.o uhitm.o \
 	vault.o vision.o vis_tab.o weapon.o were.o wield.o windows.o \
 	wizard.o worm.o worn.o write.o zap.o \
-	$(RANDOBJ) $(SYSOBJ) $(WINOBJ) version.o
+	$(RANDOBJ) $(EXTOBJ) $(JOBJ) $(SYSOBJ) $(WINOBJ) version.o
 # the .o files from the HACKCSRC, SYSSRC, and WINSRC lists
 
 $(GAME):	$(SYSTEM)
@@ -293,7 +318,7 @@ $(GAME):	$(SYSTEM)
 
 Sysunix:	$(HOBJ) Makefile
 	@echo "Loading ..."
-	@$(CC) $(LFLAGS) -o $(GAME) $(HOBJ) $(WINLIB) $(LIBS)
+	$(CC) $(LFLAGS) -o $(GAME) $(HOBJ) $(WINLIB) $(LIBS)
 	@touch Sysunix
 
 Sys3B2:	$(HOBJ) Makefile
@@ -377,6 +402,9 @@ vis_tab.c: $(MAKEDEFS)
 	@( cd ../util ; $(MAKE) ../src/vis_tab.c )
 ../src/./tile.c: ../win/share/tilemap.c ../include/hack.h
 	@( cd ../util ; $(MAKE) ../src/tile.c )
+#JP by issei(94/07/13)
+../include/jdata.h: $(MAKEDEFS) ../dat/jtrnsobj.dat ../dat/jtrnsmon.dat
+	@( cd ../util ; $(MAKE) ../include/jdata.h )
 
 #	date.h should be remade any time any of the source or include code
 #	is modified.  Unfortunately, this would make the contents of this
@@ -407,11 +435,15 @@ tags: $(CSOURCES)
 
 clean:
 	-rm -f *.o
+#JP by issei(93/11/26)
+	-rm -f ../japanese/*.o
 
 spotless: clean
 	-rm -f a.out core $(GAME) Sys*
 	-rm -f ../include/date.h ../include/onames.h ../include/pm.h
 	-rm -f monstr.c ../include/vis_tab.h vis_tab.c tile.c
+#JP by issei(93/7/13)
+	-rm -f ../include/jdata.h
 
 
 depend:
@@ -453,6 +485,34 @@ depend:
 			-e '$$g' -e '$$s/\n/ /g' \
 			-e '$$s;.*;'$$i': '$$i'&;' \
 			-e '$$s;\.\./[^/]*/[^/]*/\([^.]*\)\.c;\1.o;' \
+			-e '$$s;.*;&\
+		$$(CC) $$(CFLAGS) -c '$$i';p' \
+			>> makedep); done
+#/*JP*/
+	for i in ${JSRC}; do\
+		( echo '#include ""' | cat - $$i | \
+		/bin/grep '^#[ 	]*include[ 	]*"' | sed -n \
+			-e 's/[^"]*"\([^"]*\)".*/\1/' \
+			-e 's/patchlev.h//' \
+			-e 's/.*\.h/..\/include\/&/' \
+			-e H \
+			-e '$$g' -e '$$s/\n/ /g' \
+			-e '$$s;.*;'$$i': '$$i'&;' \
+			-e '$$s;\.\./[^/]*/\([^.]*\)\.c;\1.o;' \
+			-e '$$s;.*;&\
+		$$(CC) $$(CFLAGS) -c '$$i';p' \
+			>> makedep); done
+#/*EXT*/
+	for i in ${EXTSRC}; do\
+		( echo '#include ""' | cat - $$i | \
+		/bin/grep '^#[ 	]*include[ 	]*"' | sed -n \
+			-e 's/[^"]*"\([^"]*\)".*/\1/' \
+			-e 's/patchlev.h//' \
+			-e 's/.*\.h/..\/include\/&/' \
+			-e H \
+			-e '$$g' -e '$$s/\n/ /g' \
+			-e '$$s;.*;'$$i': '$$i'&;' \
+			-e '$$s;\.\./[^/]*/\([^.]*\)\.c;\1.o;' \
 			-e '$$s;.*;&\
 		$$(CC) $$(CFLAGS) -c '$$i';p' \
 			>> makedep); done
@@ -553,6 +613,40 @@ winval.o: ../win/X11/winval.c  ../include/hack.h ../include/winX.h
 	$(CC) $(CFLAGS) -c ../win/X11/winval.c
 tile.o: ../src/./tile.c  ../include/hack.h
 	$(CC) $(CFLAGS) -c ../src/./tile.c
+jconj.o: ../japanese/jconj.c  ../include/hack.h
+	$(CC) $(CFLAGS) -c ../japanese/jconj.c
+jtrns.o: ../japanese/jtrns.c  ../include/hack.h ../include/jdata.h
+	$(CC) $(CFLAGS) -c ../japanese/jtrns.c
+jlib.o: ../japanese/jlib.c  ../include/hack.h
+	$(CC) $(CFLAGS) -c ../japanese/jlib.c
+#report.o: ../japanese/report.c  ../include/hack.h
+#	$(CC) $(CFLAGS) -c ../japanese/report.c
+nhbuf.o: ../extension/nhbuf.c  ../include/hack.h
+	$(CC) $(CFLAGS) -c ../extension/nhbuf.c
+nhinet.o: ../extension/nhinet.c  ../include/hack.h
+	$(CC) $(CFLAGS) -c ../extension/nhinet.c
+extension.o: ../extension/extension.c  ../include/hack.h
+	$(CC) $(CFLAGS) -c ../extension/extension.c
+gtk.o: ../win/gtk/gtk.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtk.c
+gtkgetlin.o: ../win/gtk/gtkgetlin.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkgetlin.c
+gtkstatus.o: ../win/gtk/gtkstatus.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkstatus.c
+gtkmenu.o: ../win/gtk/gtkmenu.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkmenu.c
+gtkyn.o: ../win/gtk/gtkyn.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkyn.c
+gtkmap.o: ../win/gtk/gtkmap.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkmap.c
+gtkmessage.o: ../win/gtk/gtkmessage.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkmessage.c
+gtkmisc.o: ../win/gtk/gtkmisc.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/gtkmisc.c
+xshmmap.o: ../win/gtk/xshmmap.c ../include/hack.h ../include/winGTK.h
+	$(CC) $(CFLAGS) -c ../win/gtk/xshmmap.c
+xshm.o: ../win/gtk/xshm.c ../include/hack.h ../include/xshm.h
+	$(CC) $(CFLAGS) -c ../win/gtk/xshm.c
 allmain.o:  ../include/hack.h
 alloc.o:  ../include/config.h
 apply.o:  ../include/hack.h ../include/edog.h
@@ -576,7 +670,7 @@ dogmove.o:  ../include/hack.h ../include/mfndpos.h ../include/edog.h
 dokick.o:  ../include/hack.h ../include/eshk.h
 dothrow.o:  ../include/hack.h
 drawing.o:  ../include/hack.h ../include/termcap.h
-dungeon.o:  ../include/hack.h ../include/dgn_file.h ../include/dlb.h
+dungeon.o:  ../include/hack.h ../include/dgn_file.h ../include/dlb.h ../include/../japanese/emalloc.h
 eat.o:  ../include/hack.h
 end.o:  ../include/hack.h ../include/eshk.h ../include/dlb.h
 engrave.o:  ../include/hack.h ../include/lev.h
@@ -651,7 +745,7 @@ trap.o:  ../include/hack.h
 u_init.o:  ../include/hack.h
 uhitm.o:  ../include/hack.h
 vault.o:  ../include/hack.h ../include/vault.h
-version.o:  ../include/hack.h ../include/date.h  ../include/patchlevel.h
+version.o:  ../include/hack.h ../include/date.h ../include/patchlevel.h ../include/../japanese/jpatchlevel.h
 vision.o:  ../include/hack.h ../include/vis_tab.h
 weapon.o:  ../include/hack.h
 were.o:  ../include/hack.h
@@ -666,9 +760,7 @@ zap.o:  ../include/hack.h
 	touch ../include/amiconf.h
 ../include/config.h:  ../include/tradstdc.h ../include/global.h
 	touch ../include/config.h
-../include/decl.h:  ../include/quest.h ../include/spell.h ../include/color.h \
-		../include/obj.h ../include/you.h ../include/onames.h \
-		../include/pm.h
+../include/decl.h:  ../include/quest.h ../include/spell.h ../include/color.h ../include/obj.h ../include/you.h ../include/onames.h ../include/pm.h
 	touch ../include/decl.h
 ../include/display.h:  ../include/vision.h ../include/mondata.h
 	touch ../include/display.h
@@ -703,8 +795,7 @@ zap.o:  ../include/hack.h
 	touch ../include/os2conf.h
 ../include/pcconf.h:  ../include/micro.h ../include/system.h
 	touch ../include/pcconf.h
-../include/permonst.h:  ../include/monattk.h ../include/monflag.h \
-		../include/align.h
+../include/permonst.h:  ../include/monattk.h ../include/monflag.h ../include/align.h
 	touch ../include/permonst.h
 ../include/rm.h:  ../include/align.h
 	touch ../include/rm.h

@@ -310,6 +310,7 @@ E struct tc_gbl_data {	/* also declared in termcap.h */
 E const char *monexplain[], *objexplain[], *oclass_names[];
 
 E const char *pl_classes;
+E const char *roles[];
 
 #undef E
 

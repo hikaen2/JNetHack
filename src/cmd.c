@@ -2,9 +2,16 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "func_tab.h"
-/* #define DEBUG	/* uncomment for debugging */
+/* #define DEBUG	*//* uncomment for debugging */
 
 /*
  * Some systems may have getchar() return EOF for various reasons, and
@@ -283,9 +290,15 @@ doextlist()	/* here after #? - now list all full-word commands */
 
 	datawin = create_nhwindow(NHW_TEXT);
 	putstr(datawin, 0, "");
+/*JP
 	putstr(datawin, 0, "            Extended Commands List");
+*/
+	putstr(datawin, 0, "            拡張コマンド一覧");
 	putstr(datawin, 0, "");
+/*JP
 	putstr(datawin, 0, "    Press '#', then type:");
+*/
+	putstr(datawin, 0, "    '#'を押したあとタイプせよ:");
 	putstr(datawin, 0, "");
 
 	for(efp = extcmdlist; efp->ef_txt; efp++) {
@@ -312,23 +325,29 @@ domonability()
 		struct monst *mtmp;
 		if ((mtmp = cloneu()) != 0) {
 			mtmp->mhpmax = (u.mhmax /= 2);
-			You("multiply.");
+/*JP			You("multiply.");*/
+			You("分裂した．");
 			dryup(u.ux,u.uy);
 		}
-	    } else pline("There is no fountain here.");
+/*JP	    } else pline("There is no fountain here.");*/
+	    } else pline("ここには泉はない．");
 	}
 	else if (u.usym == S_UNICORN) {
 	    use_unicorn_horn((struct obj *)0);
 	    return 1;
 	} else if (u.umonnum == PM_MIND_FLAYER) return domindblast();
 	else if (uasmon->msound == MS_SHRIEK) {
-	    You("shriek.");
+/*JP	    You("shriek.");*/
+	    You("金切り声をあげた．");
 	    if(u.uburied)
-		pline("Unfortunately sound does not carry well through rock.");
+/*JP		pline("Unfortunately sound does not carry well through rock.");*/
+		pline("不幸にも音は岩をうまく伝わらない．");
 	    else aggravate();
 	} else if (Upolyd)
-		pline("Any special ability you may have is purely reflexive.");
-	else You("don't have a special ability!");
+/*JP		pline("Any special ability you may have is purely reflexive.");*/
+		pline("あなたの持っている特殊能力はどれも受動的だ．");
+/*JP	else You("don't have a special ability!");*/
+	else You("特殊能力を持っていない！");
 	return 0;
 }
 
@@ -336,15 +355,19 @@ STATIC_PTR int
 enter_explore_mode()
 {
 	if(!discover && !wizard) {
-		pline("Beware!  From explore mode there will be no return to normal game.");
-		if (yn("Do you want to enter explore mode?") == 'y') {
+/*JP		pline("Beware!  From explore mode there will be no return to normal game.");*/
+		pline("警告！発見モードに入ったら通常モードには戻れない．");
+/*JP		if (yn("Do you want to enter explore mode?") == 'y') {*/
+		if (yn("発見モードに移りますか？") == 'y') {
 			clear_nhwindow(WIN_MESSAGE);
-			You("are now in non-scoring explore mode.");
+/*JP			You("are now in non-scoring explore mode.");*/
+			You("スコアがのらない発見モードに移行した．");
 			discover = TRUE;
 		}
 		else {
 			clear_nhwindow(WIN_MESSAGE);
-			pline("Resuming normal game.");
+/*JP			pline("Resuming normal game.");*/
+			pline("通常モードを再開．");
 		}
 	}
 	return 0;
@@ -362,7 +385,8 @@ wiz_wish()	/* Unlimited wishes for debug mode by Paul Polderman */
 	    flags.verbose = save_verbose;
 	    (void) encumber_msg();
 	} else
-	    pline("Unavailable command '^W'.");
+/*JP	    pline("Unavailable command '^W'.");*/
+	    pline("'^W'コマンドは使えない．");
 	return 0;
 }
 
@@ -370,7 +394,8 @@ STATIC_PTR int
 wiz_identify()
 {
 	if (wizard)	identify_pack(0);
-	else		pline("Unavailable command '^I'.");
+/*JP	else		pline("Unavailable command '^I'.");*/
+	else		pline("'^I'コマンドは使えない．");
 	return 0;
 }
 
@@ -378,7 +403,8 @@ STATIC_PTR int
 wiz_map()
 {
 	if (wizard)	do_mapping();
-	else		pline("Unavailable command '^F'.");
+/*JP	else		pline("Unavailable command '^F'.");*/
+	else		pline("'^F'コマンドは使えない．");
 	return 0;
 }
 
@@ -386,7 +412,8 @@ STATIC_PTR int
 wiz_genesis()
 {
 	if (wizard)	(void) create_particular();
-	else		pline("Unavailable command '^G'.");
+/*JP	else		pline("Unavailable command '^G'.");*/
+	else		pline("'^G'コマンドは使えない．");
 	return 0;
 }
 
@@ -394,7 +421,8 @@ STATIC_PTR int
 wiz_where()
 {
 	if (wizard) print_dungeon();
-	else	    pline("Unavailable command '^O'.");
+/*JP	else	    pline("Unavailable command '^O'.");*/
+	else	    pline("'^O'コマンドは使えない．");
 	return 0;
 }
 
@@ -402,7 +430,8 @@ STATIC_PTR int
 wiz_detect()
 {
 	if(wizard)  (void) findit();
-	else	    pline("Unavailable command '^E'.");
+/*JP	else	    pline("Unavailable command '^E'.");*/
+	else	    pline("'^E'コマンドは使えない．");
 	return 0;
 }
 
@@ -410,7 +439,8 @@ STATIC_PTR int
 wiz_level_tele()
 {
 	if (wizard)	level_tele();
-	else		pline("Unavailable command '^V'.");
+/*JP	else		pline("Unavailable command '^V'.");*/
+	else		pline("'^V'コマンドは使えない．");
 	return 0;
 }
 
@@ -527,13 +557,17 @@ wiz_show_wmodes()
 /* -enlightenment- */
 static winid en_win;
 static const char
-	*You_ = "You ",
+/*JP	*You_ = "You ",
 	*are  = "are ",  *were  = "were ",
 	*have = "have ", *had   = "had ",
-	*can  = "can ",  *could = "could ";
+	*can  = "can ",  *could = "could ";*/
+	*You_ = "あなたは",
+	*are  = "である",  *were  = "であった",
+	*have = "をもっている", *had   = "をもっていた",
+	*can  = "できる",  *could = "できた";
 
 #define enl_msg(prefix,present,past,suffix) \
-			enlght_line(prefix, final ? past : present, suffix)
+			enlght_line(prefix, suffix, final ? past : present)
 #define you_are(attr)	enl_msg(You_,are,were,attr)
 #define you_have(attr)	enl_msg(You_,have,had,attr)
 #define you_can(attr)	enl_msg(You_,can,could,attr)
@@ -544,7 +578,7 @@ const char *start, *middle, *end;
 {
 	char buf[BUFSZ];
 
-	Sprintf(buf, "%s%s%s.", start, middle, end);
+	Sprintf(buf, "%s%s%s．", start, middle, end);
 	putstr(en_win, 0, buf);
 }
 
@@ -556,21 +590,30 @@ int final;	/* 0 => still in progress; 1 => over, survived; 2 => dead */
 	char buf[BUFSZ];
 
 	en_win = create_nhwindow(NHW_MENU);
-	putstr(en_win, 0, final ? "Final Attributes:" : "Current Attributes:");
+/*JP	putstr(en_win, 0, final ? "Final Attributes:" : "Current Attributes:");*/
+	putstr(en_win, 0, final ? "最終属性：" : "現在の属性：");
 	putstr(en_win, 0, "");
 
 #ifdef ELBERETH
 	if (u.uevent.uhand_of_elbereth) {
 	    static const char *hofe_titles[3] = {
-				"the Hand of Elbereth",
+/*JP				"the Hand of Elbereth",
 				"the Envoy of Balance",
-				"the Glory of Arioch"
+				"the Glory of Arioch"*/
+				"エルベレスの御手",
+				"調和の使者",
+				"アリオッチの名誉"
 	    };
-	    you_are(hofe_titles[u.uevent.uhand_of_elbereth - 1]);
+/*JP*/
+	    if(u.uevent.uhand_of_elbereth == 2)
+	      you_are(hofe_titles[u.uevent.uhand_of_elbereth - 1]);
+	    else
+	      you_have(hofe_titles[u.uevent.uhand_of_elbereth - 1]);
 	}
 #endif
 
 	/* note: piousness 20 matches MIN_QUEST_ALIGN (quest.h) */
+#if 0 /*JP*/
 	if (u.ualign.record >= 20)	you_are("piously aligned");
 	else if (u.ualign.record > 13)	you_are("devoutly aligned");
 	else if (u.ualign.record > 8)	you_are("fervently aligned");
@@ -581,13 +624,191 @@ int final;	/* 0 => still in progress; 1 => over, survived; 2 => dead */
 	else if (u.ualign.record >= -3)	you_have("strayed");
 	else if (u.ualign.record >= -8)	you_have("sinned");
 	else you_have("transgressed");
+#endif /*JP*/
+	if (u.ualign.record >= 20)	you_are("敬虔な人間");
+	else if (u.ualign.record > 13)	you_are("信心深い人間");
+	else if (u.ualign.record > 8)	you_are("熱烈な人間");
+	else if (u.ualign.record > 3)	you_are("声のかん高い人間");
+	else if (u.ualign.record == 3)	you_are("普通の人間");
+	else if (u.ualign.record > 0)	you_are("どもりの人間");
+	else if (u.ualign.record == 0)	you_are("有名無実の人間");
+	else if (u.ualign.record >= -3)	you_are("迷惑な人間");
+	else if (u.ualign.record >= -8)	you_are("許しがたい罪を負った人間");
+	else you_are("逸脱した人間");
 #ifdef WIZARD
 	if (wizard) {
 		Sprintf(buf, " %d", u.ualign.record);
-		enl_msg("Your alignment ", "is", "was", buf);
+/*JP		enl_msg("Your alignment ", "is", "was", buf);*/
+		enl_msg("あなたの属性値は", "である", "であった",buf);
 	}
 #endif
+	if (Telepat) you_have("テレパシー能力");
+	if (Searching) you_have("探査能力");
+	if (Teleportation) you_can("瞬間移動");
+	if (Teleport_control) you_have("瞬間移動の制御能力");
+	if (See_invisible) enl_msg(You_, "見られる", "見られた", "見えないものを");
+	if (Invisible) you_are("透明");
+	else if (Invis) you_are("他人に対して透明");
+	else if ((HInvis & I_BLOCKED) != 0L &&
+		 ((HInvis & ~I_BLOCKED) != 0L || pm_invisible(uasmon)))
+	    you_are("まる見え");
+	if (Fast) you_have((Fast & ~INTRINSIC) ? "とても素早く行動する能力" : "素早く行動する能力");
+	if (Stealth) you_have("人目を盗む能力");
+	if (Regeneration) you_have("再生能力");
+	if (Hunger) enl_msg("あなたはすぐに", "腹が減る", "腹が減った", "");
+	if (Conflict) enl_msg("あなたは", "引き起こしている","引き起こしていた","闘争を");
+	if (Aggravate_monster) enl_msg("あなたは","反感をかっている","反感をかっていた","");		      
+	if (Poison_resistance) you_have("毒への耐性");
+	if (Fire_resistance) you_have("火への耐性");
+	if (Cold_resistance) you_have("寒さへの耐性");
+	if (Shock_resistance) you_have("ショックへの耐性");
+	if (Sleep_resistance) you_have("眠りへの耐性");
+	if (Disint_resistance) you_have("粉砕への耐性");
+  	if (Protection_from_shape_changers)
+		you_have("変化怪物への耐性");
+	if (Polymorph) enl_msg("あなたは","変化している","変化していた","");
+	if (Polymorph_control) you_have("変化の制御能力");
+  	if (HHalluc_resistance)
+		you_have("幻覚への耐性");
+  	if (final) {
+		if (Hallucination) you_are("幻覚状態");
+		if (Stunned) you_are("くらくら状態");
+		if (Confusion) you_are("混乱状態");
+		if (Sick) {
+			if (u.usick_type & SICK_VOMITABLE)
+				enl_msg("あなたは食中毒で気分が", "悪い", "悪かった", "");
+			if (u.usick_type & SICK_NONVOMITABLE)
+				enl_msg("あなたは病気で気分が", "悪い", "悪かった", "");
+		}
+		if (Blinded) you_are("盲目");
+	}
+	if (Wounded_legs) {
+		Sprintf(buf, "あなたは%sを負傷して", makeplural(body_part(LEG)));
+		enl_msg(buf,"いる","いた","");
+	}
+  	if (Glib) {
+		Sprintf(buf, "%sがぬるぬるして", makeplural(body_part(FINGER)));
+		enl_msg(buf,"いる","いた","");
+	}
+	if (Strangled) {
+		Sprintf(buf, "あなたは%s", (u.uburied) ? "窒息して" : "首を絞められて");
+		enl_msg(buf,"いる","いた","");
+	}
+	if (Stoned) you_are("石化状態");
+  	if (Lifesaved)
+		enl_msg("あなたの生命は","保存されている","保存されていた","");
+	if (Adornment) you_have("装飾品");
+	if (Warning) enl_msg("あなたは","警戒能力を持っている","警戒能力を持っていた","");
+	if (Protection) enl_msg("あなたは","守られている","守られていた","");
+	if (Reflecting) you_have("反射能力");
+	if ((HLevitation & (I_SPECIAL|W_ARTI)) != 0L &&
+	    (HLevitation & ~(I_SPECIAL|W_ARTI|TIMEOUT)) == 0L &&
+	    !is_floater(uasmon)) enl_msg("あなたは自分の意志で浮いて", "いる", "いた", "");
+	else if (Levitation) you_are("浮遊状態");
+	else if (is_flyer(uasmon)) you_can("飛行");
+	if (Fumbling) enl_msg("あなたはよく物を","落している","落した","");
+	if (Jumping) you_can("跳躍");
+	if (Wwalking) you_can("水上歩行");
+	if (passes_walls(uasmon)) you_can("壁を通りぬけることが");
+	if (Breathless) you_can("空気なしで生存することが");
+	else if (Amphibious) you_can("水中呼吸");
+	if (Antimagic) you_have("魔法防御能力");
+	if (Displaced) you_have("幻影能力");
+	if (Clairvoyant) you_have("千里眼能力");
+	if (u.ulycn >= LOW_PM) {
+		Strcpy(buf, jtrns_mon(mons[u.ulycn].mname, flags.female));
+		you_are(buf);
+	}
+	if (Upolyd) {
+	    if (u.ulycn >= LOW_PM) Strcpy(buf, "あなたは獣の姿をして");
+	    else Sprintf(buf, "あなたは%sに変化して", jtrns_mon(uasmon->mname, flags.female));
+#ifdef WIZARD
+	    if (wizard) Sprintf(eos(buf), " (%d)", u.mtimedone);
+#endif
+	    enl_msg(buf, "いる", "いた", "");
+	}
+	if (Luck) {
+	    ltmp = abs((int)Luck);
+	    Sprintf(buf, "%s%s",
+		    ltmp >= 10 ? "猛烈に" : ltmp >= 5 ? "とても" : "",
+		    Luck < 0 ? "不幸" : "幸福");
+#ifdef WIZARD
+	    if (wizard) Sprintf(eos(buf), "(%d)", Luck);
+#endif
+	    you_are(buf);
+	}
+#ifdef WIZARD
+ 	 else if (wizard) enl_msg("あなたの運はゼロ", "である", "であった", "");
+#endif
+ 	if (u.moreluck > 0) you_have("さらなる幸運");
+	else if (u.moreluck < 0) you_have("さらなる悪運");
+	if (carrying(LUCKSTONE) || stone_luck(TRUE)) {
+	    ltmp = stone_luck(FALSE);
+	    if (ltmp <= 0)
+		enl_msg("悪運は", "去っていない", "去っていなかった", "");
+	    if (ltmp >= 0)
+		enl_msg("幸運は", "去っていない", "去っていなかった", "");
+	}
 
+	if (u.ugangr) {
+	    Sprintf(buf, "%sは%s怒って", u_gname(),
+		    u.ugangr > 6 ? "猛烈に" : u.ugangr > 3 ? "とても" : "");
+	    if(final)
+	      Strcat(buf, "いた");
+	    else
+	      Strcat(buf, "いる");
+#ifdef WIZARD
+	    if (wizard) Sprintf(eos(buf), "(%d)", u.ugangr);
+#endif
+	    enl_msg("", buf, buf, "");
+	} else
+	    /*
+	     * We need to suppress this when the game is over, because death
+	     * can change the value calculated by can_pray(), potentially
+	     * resulting in a false claim that you could have prayed safely.
+	     */
+	  if (!final) {
+	    if(can_pray(FALSE))
+	      Sprintf(buf, "できる");
+	    else
+	      Sprintf(buf, "できない");
+#ifdef WIZARD
+	    if (wizard) Sprintf(eos(buf), "(%d)", u.ublesscnt);
+#endif
+
+	    enl_msg("あなたは", buf, buf, "安全に祈ることが");
+	}
+    {
+	const char *p;
+
+	buf[0] = '\0';
+	if (final < 2) {    /* still in progress, or quit/escaped/ascended */
+	    p = "死んだ後復活してた";
+	    switch (u.umortality) {
+	    case 0:  p = !final ? (char *)0 : "生き延びていた";  break;
+	    case 1:  Strcpy(buf, "一度");  break;
+	    case 2:  Strcpy(buf, "二度");  break;
+	    case 3:  Strcpy(buf, "三度");  break;
+	    default: Sprintf(buf, "%d回", u.umortality);
+		     break;
+	    }
+	} else {		/* game ended in character's death */
+	    p = "死んでいる";
+	    switch (u.umortality) {
+	    case 0:  impossible("dead without dying?");
+	    case 1:  break;			/* just "are dead" */
+	    default: Sprintf(buf, "(%d回！)", u.umortality);
+		     break;
+	    }
+	}
+	if (p) enl_msg(You_, "死んでいる", p, buf);
+    }
+
+	display_nhwindow(en_win, TRUE);
+	destroy_nhwindow(en_win);
+	return;
+
+#if 0 /*JP*/
 	if (Telepat) you_are("telepathic");
 	if (Searching) you_have("automatic searching");
 	if (Teleportation) you_can("teleport");
@@ -752,6 +973,7 @@ int final;	/* 0 => still in progress; 1 => over, survived; 2 => dead */
 	display_nhwindow(en_win, TRUE);
 	destroy_nhwindow(en_win);
 	return;
+#endif /*JP*/
 }
 
 STATIC_PTR int
@@ -760,7 +982,8 @@ wiz_attributes()
 	if (wizard || discover)
 		enlightenment(0);
 	else
-		pline("Unavailable command '^X'.");
+/*JP		pline("Unavailable command '^X'.");*/
+		pline("'^X'コマンドは使えない．");
 	return 0;
 }
 
@@ -849,7 +1072,8 @@ static const struct func_tab cmdlist[] = {
 	{'r', FALSE, doread},
 	{'R', FALSE, doremring},
 	{M('r'), FALSE, dorub},
-	{'s', TRUE, dosearch, "searching"},
+/*JP	{'s', TRUE, dosearch, "searching"},*/
+	{'s', TRUE, dosearch, "捜す"},
 	{'S', TRUE, dosave},
 	{M('s'), FALSE, dosit},
 	{'t', FALSE, dothrow},
@@ -878,14 +1102,18 @@ static const struct func_tab cmdlist[] = {
 #ifdef SHELL
 	{'!', TRUE, dosh},
 #endif
-	{'.', TRUE, donull, "waiting"},
-	{' ', TRUE, donull, "waiting"},
+/*JP	{'.', TRUE, donull, "waiting"},
+	{' ', TRUE, donull, "waiting"},*/
+	{'.', TRUE, donull, "休憩する"},
+	{' ', TRUE, donull, "休憩する"},
 	{',', FALSE, dopickup},
 	{':', TRUE, dolook},
 	{';', TRUE, doquickwhatis},
 	{'^', TRUE, doidtrap},
 	{'\\', TRUE, dodiscovered},		/* Robert Viduya */
 	{'@', TRUE, dotogglepickup},
+/*JP*/
+	{'`', TRUE, dotogglelang},
 	{WEAPON_SYM,  TRUE, doprwep},
 	{ARMOR_SYM,  TRUE, doprarm},
 	{RING_SYM,  TRUE, doprring},
@@ -898,6 +1126,7 @@ static const struct func_tab cmdlist[] = {
 };
 
 struct ext_func_tab extcmdlist[] = {
+#if 0 /*JP*/
 	{"adjust", "adjust inventory letters", doorganize, TRUE},
 	{"chat", "talk to someone", dotalk, TRUE},	/* converse? */
 	{"dip", "dip an object into something", dodip, FALSE},
@@ -921,6 +1150,30 @@ struct ext_func_tab extcmdlist[] = {
 		doextversion, TRUE},
 	{"wipe", "wipe off your face", dowipe, FALSE},
 	{"?", "get this list of extended commands", doextlist, TRUE},
+#endif /*JP*/
+
+	{"adjust", "持ち物一覧の調整", doorganize, TRUE},
+	{"chat", "誰かと話す", dotalk, TRUE},	/* converse? */
+	{"dip", "何かに物を浸す", dodip, FALSE},
+#ifdef WEAPON_SKILLS
+	{"enhance", "武器熟練度を高める", enhance_weapon_skill, TRUE},
+#endif /* WEAPON_SKILLS */
+	{"force", "鍵をこじあける", doforce, FALSE},
+	{"invoke", "物の特別な力を使う", doinvoke, TRUE},
+	{"jump", "他の位置に飛びうつる", dojump, FALSE},
+	{"loot", "床の上の箱を開ける", doloot, TRUE},
+	{"monster", "怪物の特別能力を使う", domonability, TRUE},
+	{"name", "アイテムや物に名前をつける", ddocall, TRUE},
+	{"offer", "神に供物を捧げる", dosacrifice, FALSE},
+	{"pray", "神に祈る", dopray, TRUE},
+	{"rub", "ランプをこする", dorub, FALSE},
+	{"sit", "座る", dosit, FALSE},
+	{"turn", "アンデットを土に返す", doturn, TRUE},
+	{"untrap", "罠をはずす", dountrap, FALSE},
+	{"version", "コンパイル時のオプションを表示する",
+		doextversion, TRUE},
+	{"wipe", "顔を拭う", dowipe, FALSE},
+	{"?", "この拡張コマンド一覧を表示する", doextlist, TRUE},
 #if defined(WIZARD)
 	/*
 	 * There must be a blank entry here for every entry in the table
@@ -1176,6 +1429,41 @@ register char *cmd;
 	boolean do_walk, do_rush, prefix_seen, bad_command,
 		firsttime = (cmd == 0);
 
+#ifdef NEWBIE
+	if(flags.newbie){
+	    if(!(moves % 256)){
+		if(!newbie.search){
+		    pline("ヒント: 's'で秘密の通路や扉を発見できる．");
+		    newbie.search = 1;
+		}
+		else if(!newbie.pickup){
+		    pline("ヒント: ','で通路に落ちている物体を拾うことができる．");
+		    newbie.pickup = 1;
+		}
+		else if(!newbie.open){
+		    pline("ヒント: 'o'で扉を開けることができる．");
+		    newbie.open = 1;
+		}
+		else if(!newbie.down){
+		    pline("ヒント: 下の階へ行くには'>'だ．");
+		    newbie.down = 1;
+		}
+		else if(!newbie.pray){
+		    pline("ヒント: ピンチのときに'M-p'で祈ると助かることがある．");
+		    newbie.pray = 1;
+		}
+		else if(!newbie.offer && newbie.found_altar && newbie.found_altar + 256 < moves){
+		    pline("ヒント: 祭壇に'M-o'で捧げものをしよう．いいことがあるかも．");
+		    newbie.offer = 1;
+		}
+		else if(!newbie.loot && newbie.found_chest  && newbie.found_chest + 256 < moves){
+		    pline("ヒント: 宝箱は'M-l'で中身の出し入れをすることができる．");
+		    newbie.loot = 1;
+		}
+	    }
+	}
+#endif
+
 	if (firsttime) {
 		flags.nopick = 0;
 		cmd = parse();
@@ -1279,7 +1567,8 @@ register char *cmd;
 		if ((*cmd & 0xff) != (tlist->f_char & 0xff)) continue;
 
 		if (u.uburied && !tlist->can_if_buried) {
-		    You_cant("do that while you are buried!");
+/*JP		    You_cant("do that while you are buried!");*/
+		    You("埋まっている時にそんなことはできない！");
 		    res = 0;
 		} else {
 		    /* we discard 'const' because some compilers seem to have
@@ -1316,7 +1605,8 @@ register char *cmd;
 		}
 	    }
 	    *cp = '\0';
-	    Norep("Unknown command '%s'.", expcmd);
+/*JP	    Norep("Unknown command '%s'.", expcmd);*/
+	    Norep("'%s'コマンド？", expcmd);
 	}
 	/* didn't move */
 	flags.move = FALSE;
@@ -1359,6 +1649,11 @@ char sym;
 	u.dx = xdir[dp-sdp];
 	u.dy = ydir[dp-sdp];
 	u.dz = zdir[dp-sdp];
+#ifdef JPEXTENSION
+	if(Totter){	/* mirror move */
+	    u.dx = -u.dx;
+	}
+#endif
 	if (u.dx && u.dy && u.umonnum == PM_GRID_BUG) {
 		u.dx = u.dy = 0;
 		return 0;
@@ -1377,7 +1672,8 @@ const char *s;
 	    dirsym = readchar();
 	else
 #endif
-	    dirsym = yn_function (s ? s : "In what direction?",
+/*JP	    dirsym = yn_function (s ? s : "In what direction?",*/
+	    dirsym = yn_function (s ? s : "どの方向？",
 					(char *)0, '\0');
 #ifdef REDO
 	savech(dirsym);
@@ -1386,7 +1682,8 @@ const char *s;
 		u.dx = u.dy = u.dz = 0;
 	else if(!movecmd(dirsym) && !u.dz) {
 		if(!index(quitchars, dirsym))
-			pline("What a strange direction!");
+/*JP			pline("What a strange direction!");*/
+			pline("ずいぶんと奇妙な方向だ！");
 		return 0;
 	}
 	if(!u.dz && (Stunned || (Confusion && !rn2(5)))) confdir();
@@ -1474,7 +1771,8 @@ parse()
 		    if (multi < 0 || multi >= LARGEST_INT) multi = LARGEST_INT;
 		    if (multi > 9) {
 			clear_nhwindow(WIN_MESSAGE);
-			Sprintf(in_line, "Count: %d", multi);
+/*JP			Sprintf(in_line, "Count: %d", multi);*/
+			Sprintf(in_line, "数: %d", multi);
 			pline(in_line);
 			mark_synch();
 		    }

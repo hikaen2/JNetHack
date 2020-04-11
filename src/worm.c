@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "lev.h"
 
@@ -115,7 +122,7 @@ initworm(worm, wseg_count)
     register struct wseg *seg, *new_tail = create_worm_tail(wseg_count);
     register int wnum = worm->wormno;
 
-/*  if (!wnum) return; /* bullet proofing */
+/*  if (!wnum) return;*//* bullet proofing */
 
     if (new_tail) {
 	wtails[wnum] = new_tail;
@@ -200,7 +207,7 @@ worm_move(worm)
     register int	 wnum = worm->wormno;	/* worm number */
 
 
-/*  if (!wnum) return; /* bullet proofing */
+/*  if (!wnum) return;*//* bullet proofing */
 
     /*
      *  Place a segment at the old worm head.  The head has already moved.
@@ -265,7 +272,7 @@ wormgone(worm)
 {
     register int wnum = worm->wormno;
 
-/*  if (!wnum) return; /* bullet proofing */
+/*  if (!wnum) return;*/ /* bullet proofing */
 
     worm->wormno = 0;
 
@@ -291,7 +298,7 @@ wormhitu(worm)
     register int wnum = worm->wormno;
     register struct wseg *seg;
 
-/*  if (!wnum) return; /* bullet proofing */
+/*  if (!wnum) return;*/ /* bullet proofing */
 
 /*  This does not work right now because mattacku() thinks that the head is
  *  out of range of the player.  We might try to kludge, and bring the head
@@ -368,7 +375,8 @@ cutworm(worm, x, y, weap)
 
     /* Sometimes the tail end dies. */
     if (rn2(3) || !(new_wnum = get_wormno())) {
-	You("cut part of the tail off of %s.", mon_nam(worm));
+/*JP	You("cut part of the tail off of %s.", mon_nam(worm));*/
+	You("%sの尻尾の一部分を切った．", mon_nam(worm));
 	toss_wsegs(new_tail, TRUE);
 	if (worm->mhp > 1) worm->mhp /= 2;
 	return;
@@ -425,7 +433,8 @@ cutworm(worm, x, y, weap)
 			 LS_MONSTER, (genericptr_t)new_worm);
 #endif
 
-    You("cut %s in half.", mon_nam(worm));
+/*JP    You("cut %s in half.", mon_nam(worm));*/
+    You("%sを真っぷたつにした．", mon_nam(worm));
 }
 
 
@@ -442,7 +451,7 @@ see_wsegs(worm)
 {
     struct wseg *curr = wtails[worm->wormno];
 
-/*  if (!mtmp->wormno) return; /* bullet proofing */
+/*  if (!mtmp->wormno) return;*/ /* bullet proofing */
 
     while (curr != wheads[worm->wormno]) {
 	newsym(curr->wx,curr->wy);
@@ -542,7 +551,7 @@ place_wsegs(worm)
 {
     struct wseg *curr = wtails[worm->wormno];
 
-/*  if (!mtmp->wormno) return; /* bullet proofing */
+/*  if (!mtmp->wormno) return;*/ /* bullet proofing */
 
     while (curr != wheads[worm->wormno]) {
 	place_worm_seg(worm,curr->wx,curr->wy);
@@ -564,7 +573,7 @@ remove_worm(worm)
 {
     register struct wseg *curr = wtails[worm->wormno];
 
-/*  if (!mtmp->wormno) return; /* bullet proofing */
+/*  if (!mtmp->wormno) return;*/ /* bullet proofing */
 
     while (curr) {
 	remove_monster(curr->wx, curr->wy);
@@ -592,7 +601,7 @@ place_worm_tail_randomly(worm, x, y)
     struct wseg *new_tail;
     register xchar ox = x, oy = y;
 
-/*  if (!wnum) return; /* bullet proofing */
+/*  if (!wnum) return;*/ /* bullet proofing */
 
     if (wnum && (!wtails[wnum] || !wheads[wnum]) ) {
 	impossible("place_worm_tail_randomly: wormno is set without a tail!");
@@ -681,7 +690,7 @@ count_wsegs(mtmp)
     register int i=0;
     register struct wseg *curr = (wtails[mtmp->wormno])->nseg;
 
-/*  if (!mtmp->wormno) return 0; /* bullet proofing */
+/*  if (!mtmp->wormno) return 0;*/ /* bullet proofing */
 
     while (curr) {
 	i++;

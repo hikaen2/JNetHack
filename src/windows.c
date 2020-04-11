@@ -28,6 +28,10 @@ extern void NDECL(ami_wininit_data);
 extern struct window_procs win32_procs;
 extern void NDECL(win_win32_init);
 #endif
+#ifdef GTK_GRAPHICS
+extern struct window_procs GTK_procs;
+extern void NDECL(win_GTK_init);
+#endif
 
 static void FDECL(def_raw_print, (const char *s));
 
@@ -56,6 +60,9 @@ struct win_choices {
 #endif
 #ifdef WIN32_GRAPHICS
     { &win32_procs, win_win32_init },
+#endif
+#ifdef GTK_GRAPHICS
+    { &GTK_procs, win_GTK_init },
 #endif
     { 0, 0 }		/* must be last */
 };

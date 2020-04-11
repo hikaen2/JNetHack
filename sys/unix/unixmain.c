@@ -4,6 +4,12 @@
 
 /* main.c - Unix NetHack */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994-1999
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "dlb.h"
 
@@ -97,7 +103,16 @@ char *argv[];
 #ifdef CHDIR
 		chdirx(dir,0);
 #endif
+/*JP*/
+#ifdef JNETHACK
+		setkcode('I');
+		initoptions();
+		init_jtrns();
 		prscore(argc, argv);
+		jputchar('\0'); /* reset */
+#else
+		prscore(argc, argv);
+#endif
 		exit(EXIT_SUCCESS);
 	    }
 	}
@@ -107,6 +122,7 @@ char *argv[];
 	 * so as to avoid restoring outdated savefiles.
 	 */
 	gethdate(hname);
+
 
 	/*
 	 * We cannot do chdir earlier, otherwise gethdate will fail.
@@ -120,8 +136,15 @@ char *argv[];
 #ifdef _M_UNIX
 	check_sco_console();
 #endif
+	/* Line like "OPTIONS=name:foo-@" may exist in config file.
+	 * In this case, need to select random class,
+	 * so must call setrandom() before initoptions().
+	 */
+	setrandom();
 	initoptions();
+
 	init_nhwindows(&argc,argv);
+
 	exact_username = whoami();
 #ifdef _M_UNIX
 	init_sco_cons();
@@ -130,11 +153,14 @@ char *argv[];
 	/*
 	 * It seems you really want to play.
 	 */
-	setrandom();
 	u.uhp = 1;	/* prevent RIP on early quits */
 	(void) signal(SIGHUP, (SIG_RET_TYPE) hangup);
 #ifdef SIGXCPU
 	(void) signal(SIGXCPU, (SIG_RET_TYPE) hangup);
+#endif
+/*JP*/
+#ifdef JNETHACK
+	init_jtrns();
 #endif
 
 	process_options(argc, argv);	/* command line options */
@@ -182,7 +208,7 @@ char *argv[];
 		Sprintf(lock, "%d%s", (int)getuid(), plname);
 		getlock();
 	}
-#endif /* WIZARD /**/
+#endif /* WIZARD */
 
 	dlb_init();	/* must be before newgame() */
 
@@ -220,14 +246,42 @@ char *argv[];
 		    iflags.news = FALSE; /* in case dorecover() fails */
 		}
 #endif
+/*JP*/
+#ifdef JNETHACK
+		pline("セーブファイルを復元中．．．");
+#else
 		pline("Restoring save file...");
+#endif
 		mark_synch();	/* flush output */
 		if(!dorecover(fd))
 			goto not_recovered;
 #ifdef WIZARD
 		if(!wizard && remember_wiz_mode) wizard = TRUE;
 #endif
-		pline("Hello %s, welcome back to NetHack!", plname);
+#ifdef	GTK_GRAPHICS
+		if(!strcmp(windowprocs.name, "gtk")){
+		    winid id;
+		    char buf[4096];
+/*JP*/
+#ifdef JNETHACK		    
+		    sprintf(buf, "ようこそ %s, またNetHackの世界へ！", plname);
+#else
+		    sprintf(buf, "Hello %s, welcome back to NetHack!", plname);
+#endif
+		    id = create_nhwindow(NHW_MENU);
+		    putstr(id, 0, buf);
+		    display_nhwindow(id, TRUE);
+		    destroy_nhwindow(id);
+		}
+		else
+#endif
+/*JP*/
+#ifdef	JNETHACK
+		    pline("ようこそ %s, またNetHackの世界へ！", plname);
+#else
+		    pline("Hello %s, welcome back to NetHack!", plname);
+#endif
+
 		check_special_room(FALSE);
 		wd_message();
 
@@ -243,9 +297,32 @@ char *argv[];
 	} else {
 not_recovered:
 		player_selection();
+
 		newgame();
 		/* give welcome message before pickup messages */
-		pline("Hello %s, welcome to NetHack!", plname);
+#ifdef	GTK_GRAPHICS
+		if(!strcmp(windowprocs.name, "gtk")){
+		    winid id;
+		    char buf[4096];
+/*JP*/
+#ifdef JNETHACK		    
+		    sprintf(buf, "ようこそ %s, NetHackの世界へ！", plname);
+#else
+	   	    sprintf(buf, "Hello %s, welcome to NetHack!", plname);
+#endif
+		    id = create_nhwindow(NHW_MENU);
+		    putstr(id, 0, buf);
+		    display_nhwindow(id, TRUE);
+		    destroy_nhwindow(id);
+		}
+		else
+#endif
+/*JP*/
+#ifdef JNETHACK
+		    pline("ようこそ %s, NetHackの世界へ！", plname);
+#else
+		    pline("Hello %s, welcome to NetHack!", plname);
+#endif
 		wd_message();
 
 		flags.move = 0;
@@ -253,6 +330,10 @@ not_recovered:
 		pickup(1);
 	}
 
+#ifdef	GTK_GRAPHICS
+	if(!strcmp(windowprocs.name, "gtk"))
+	    GTK_init_nhwindows2();
+#endif
 	moveloop();
 	exit(EXIT_SUCCESS);
 	/*NOTREACHED*/
@@ -295,6 +376,11 @@ char *argv[];
 			      }
 			  }
 			  if (pw && !strcmp(pw->pw_name,WIZARD)) {
+			      wizard = TRUE;
+			      break;
+			  }
+/*JP*/
+			  if(pw && !strcmp(pw->pw_name, "issei")){
 			      wizard = TRUE;
 			      break;
 			  }
@@ -380,7 +466,7 @@ boolean wr;
 	/* unfortunately the access system-call is worthless */
 	if (wr) check_recordfile(dir);
 }
-#endif /* CHDIR /**/
+#endif /* CHDIR */
 
 static boolean
 whoami() {
@@ -419,6 +505,26 @@ port_help()
 }
 #endif
 
+/*JP*/
+#ifdef JNETHACK
+static void
+wd_message()
+{
+#ifdef WIZARD
+	if (wiz_error_flag) {
+		pline("「%s」のみがデバッグ(wizard)モードを使用できる．",
+# ifndef KR1ED
+			WIZARD);
+# else
+			WIZARD_NAME);
+# endif
+		pline("かわりに発見モードへ移行する．");
+	} else
+#endif
+	if (discover)
+		You("スコアの載らない発見モードで起動した．");
+}
+#else
 static void
 wd_message()
 {
@@ -436,4 +542,5 @@ wd_message()
 	if (discover)
 		You("are in non-scoring discovery mode.");
 }
+#endif
 /*unixmain.c*/

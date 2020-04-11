@@ -377,10 +377,19 @@ ARMOR("ring mail", (char *)0,
 	1, 0, 0, 0,	75, 5, 250, 100,  7, 0, ARM_SUIT, IRON, HI_METAL),
 ARMOR("orcish ring mail", "crude ring mail",
 	0, 0, 0, 0,	20, 5, 250,  80,  8, 1, ARM_SUIT, IRON, CLR_BLACK),
+#ifdef FIGHTER
+ARMOR("leather armor", (char *)0,
+	1, 0, 0, 0,	73, 3, 150,   5,  8, 0, ARM_SUIT, LEATHER, HI_LEATHER),
+#else
 ARMOR("leather armor", (char *)0,
 	1, 0, 0, 0,	85, 3, 150,   5,  8, 0, ARM_SUIT, LEATHER, HI_LEATHER),
+#endif
 ARMOR("leather jacket", (char *)0,
 	1, 0, 0, 0,	12, 0,	30,  10,  9, 0, ARM_SUIT, LEATHER, CLR_BLACK),
+#ifdef FIGHTER
+ARMOR("sailor blouse", (char *)0,
+	1, 0, 0, 0,	12, 0,	30, 200,  7, 0, ARM_SUIT, CLOTH, CLR_WHITE),
+#endif
 
 #ifdef TOURIST
 /* shirts */
@@ -694,34 +703,50 @@ POTION("water", "clear",                0, 0,          95, 100, CLR_CYAN),
 #undef POTION
 
 /* scrolls ... */
+#ifdef JPEXTENSION
+#define FIXPROB	(-10)
+#else
+#define FIXPROB	0
+#endif
+
 #define SCROLL(name,text,mgc,prob,cost) OBJECT( \
 		OBJ(name,text), BITS(0,1,0,0,mgc,0,0,0,0,0,0,0,PAPER), 0, \
 		SCROLL_CLASS, prob, 0, 5, cost, 0, 0, 0, 0, 6, HI_PAPER )
-	SCROLL("enchant armor",         "ZELGO MER",            1,  63,  80),
+	SCROLL("enchant armor",         "ZELGO MER",            1,  63 + FIXPROB,  80),
 	SCROLL("destroy armor",         "JUYED AWK YACC",       1,  45, 100),
 	SCROLL("confuse monster",       "NR 9",                 1,  53, 100),
 	SCROLL("scare monster",         "XIXAXA XOXAXA XUXAXA", 1,  35, 100),
-	SCROLL("remove curse",          "PRATYAVAYAH",          1,  65,  80),
-	SCROLL("enchant weapon",        "DAIYEN FOOELS",        1,  85,  60),
+	SCROLL("remove curse",          "PRATYAVAYAH",          1,  65 + FIXPROB,  80),
+	SCROLL("enchant weapon",        "DAIYEN FOOELS",        1,  85 + FIXPROB,  60),
 	SCROLL("create monster",        "LEP GEX VEN ZEA",      1,  45, 200),
 	SCROLL("taming",                "PRIRUTSENIE",          1,  15, 200),
 	SCROLL("genocide",              "ELBIB YLOH",           1,  15, 300),
-	SCROLL("light",                 "VERR YED HORRE",       1,  95,  50),
-	SCROLL("teleportation",         "VENZAR BORGAVVE",      1,  55, 100),
+	SCROLL("light",                 "VERR YED HORRE",       1,  95 + FIXPROB,  50),
+	SCROLL("teleportation",         "VENZAR BORGAVVE",      1,  55 + FIXPROB, 100),
 	SCROLL("gold detection",        "THARR",                1,  33, 100),
 	SCROLL("food detection",        "YUM YUM",              1,  25, 100),
-	SCROLL("identify",              "KERNOD WEL",           1, 185,  20),
+	SCROLL("identify",              "KERNOD WEL",           1, 185 + FIXPROB,  20),
 	SCROLL("magic mapping",         "ELAM EBOW",            1,  45, 100),
 	SCROLL("amnesia",               "DUAM XNAHT",           1,  35, 200),
 	SCROLL("fire",                  "ANDOVA BEGARIN",       1,  48, 100),
 	SCROLL("punishment",            "VE FORBRYDERNE",       1,  15, 300),
 	SCROLL("charging",              "HACKEM MUCHE",         1,  15, 300),
+#undef FIXPROB
+#ifdef JPEXTENSION
+	SCROLL("create altar",		"VELOX NEB",            1,  10, 300),
+	SCROLL("create trap",		"FOOBIE BLETCH",        1,  10, 300),
+	SCROLL("create sink",		"TEMOV",                1,  10, 300),
+	SCROLL("symmetry",		"GARVEN DEH",           1,  10, 300),
+	SCROLL("create create scroll",	"READ ME",              1,  10, 100),
+	SCROLL("destroy weapon",	"KIRJE",                1,  10, 100),
+#else
 	SCROLL((char *)0,		"VELOX NEB",            1,   0, 100),
 	SCROLL((char *)0,		"FOOBIE BLETCH",        1,   0, 100),
 	SCROLL((char *)0,		"TEMOV",                1,   0, 100),
 	SCROLL((char *)0,		"GARVEN DEH",           1,   0, 100),
 	SCROLL((char *)0,		"READ ME",              1,   0, 100),
 	SCROLL((char *)0,		"KIRJE",                1,   0, 100),
+#endif
 	/* these must come last because they have special descriptions */
 #ifdef MAIL
 	SCROLL("mail",                  "stamped",          0,   0,   0),

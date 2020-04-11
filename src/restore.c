@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-2000
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "lev.h"
 #include "termcap.h" /* for TERMLIB and ASCIIGRAPH */
@@ -542,10 +549,14 @@ register int fd;
 	clear_nhwindow(WIN_MAP);
 # endif
 	clear_nhwindow(WIN_MESSAGE);
-	You("return to level %d in %s%s.",
+/*JP	You("return to level %d in %s%s.",
 		depth(&u.uz), dungeons[u.uz.dnum].dname,
 		flags.debug ? " while in debug mode" :
-		flags.explore ? " while in explore mode" : "");
+		flags.explore ? " while in explore mode" : "");*/
+	You("%s%sの地下%d階に戻ってきた．",
+	    flags.debug ? "ウィザードモード中の" :
+	    flags.explore ? "探索モード中の" : "",
+	    jtrns_obj('d',dungeons[u.uz.dnum].dname), depth(&u.uz));
 	curs(WIN_MAP, 1, 1);
 	dotcnt = 0;
 	putstr(WIN_MAP, 0, "Restoring:");
