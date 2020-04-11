@@ -25,15 +25,29 @@ extern char erase_char, kill_char;	/* from appropriate tty.c file */
  * Reading can be interrupted by an escape ('\033') - now the
  * resulting string is "\033".
  */
+/*JP
 void
 tty_getlin(query, bufp)
 const char *query;
-register char *bufp;
+regoister char *bufp;
+*/
+void
+tty_getlin(query, bfp)
+const char *query;
+register char *bfp;
 {
+/*JP*/
+	char tmp[BUFSZ];
+	char *bufp = tmp;
 	register char *obufp = bufp;
-	register int c;
+/*JP	register int c;*/
+	int c;
 	struct WinDesc *cw = wins[WIN_MESSAGE];
 	boolean doprev = 0;
+/*JP
+Thu Jul 21 22:36:34 JST 1994 by ISSEI
+*/
+	unsigned int uc;
 
 	if(ttyDisplay->toplin == 1 && !(cw->flags & WIN_STOP)) more();
 	cw->flags &= ~WIN_STOP;
@@ -46,6 +60,11 @@ register char *bufp;
 			*bufp = 0;
 			break;
 		}
+/*JP
+Thu Jul 21 22:36:34 JST 1994 by ISSEI
+*/
+		uc = (*((unsigned int *)&c));
+		uc &= 0377;
 		if(c == '\033') {
 			*obufp = c;
 			obufp[1] = 0;
@@ -55,6 +74,7 @@ register char *bufp;
 		    ttyDisplay->intr--;
 		    *bufp = 0;
 		    putsyms(obufp);
+		    raw_putsyms(obufp);
 		}
 		if(c == '\020') { /* ctrl-P */
 		    if(!doprev)
@@ -83,13 +103,18 @@ register char *bufp;
 #endif
 			*bufp = 0;
 			break;
+/*JP
+Thu Jul 21 22:36:34 JST 1994 by ISSEI
 		} else if(' ' <= c && c < '\177' && 
+*/
+		} else if(' ' <= uc && uc < '\377' && 
 			    (bufp-obufp < BUFSZ-1 && bufp-obufp < COLNO)) {
 				/* avoid isprint() - some people don't have it
 				   ' ' is not always a printing char */
 			*bufp = c;
 			bufp[1] = 0;
-			putsyms(bufp);
+/*JP			putsyms(bufp);*/
+			raw_putsyms(bufp);
 			bufp++;
 		} else if(c == kill_char || c == '\177') { /* Robert Viduya */
 				/* this test last - @ might be the kill_char */
@@ -103,6 +128,10 @@ register char *bufp;
 	ttyDisplay->toplin = 2;		/* nonempty, no --More-- required */
 	ttyDisplay->inread--;
 	clear_nhwindow(WIN_MESSAGE);	/* clean up after ourselves */
+/*JP
+Fri Aug 26 19:30:56 JST 1994 by ISSEI
+*/
+	Strcpy(bfp, str2ic(tmp));
 }
 
 void

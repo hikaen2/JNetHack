@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifdef VMS
@@ -63,8 +70,10 @@ static int FDECL(classmon, (CHAR_P,BOOLEAN_P));
 
 /* must fit with end.c */
 NEARDATA const char *killed_by_prefix[] = {
-	"killed by ", "choked on ", "poisoned by ", "", "drowned in ",
-	"", "crushed to death by ", "petrified by ", "",
+/*JP	"killed by ", "choked on ", "poisoned by ", "", "drowned in ",
+	"", "crushed to death by ", "petrified by ", "",*/
+	"に殺された", "で窒息した", "によって毒におかされた", "", "溺死した",
+	"焼死した", "押し潰された", "石化した", "死んだ", "虐殺された",
 	"", "",
 	"", "", "" };
 
@@ -170,14 +179,20 @@ int how;
 	switch (killer_format) {
 		default: impossible("bad killer format?");
 		case KILLED_BY_AN:
-			Strcat(t0->death, killed_by_prefix[how]);
+/*JP			Strcat(t0->death, killed_by_prefix[how]);
+			(void) strncat(t0->death, an(killer),
+						DTHSZ-strlen(t0->death));*/
 			(void) strncat(t0->death, an(killer),
 						DTHSZ-strlen(t0->death));
+			Strcat(t0->death, killed_by_prefix[how]);
 			break;
 		case KILLED_BY:
-			Strcat(t0->death, killed_by_prefix[how]);
+/*JP			Strcat(t0->death, killed_by_prefix[how]);
+			(void) strncat(t0->death, killer,
+						DTHSZ-strlen(t0->death));*/
 			(void) strncat(t0->death, killer,
 						DTHSZ-strlen(t0->death));
+			Strcat(t0->death, killed_by_prefix[how]);
 			break;
 		case NO_KILLER_PREFIX:
 			(void) strncat(t0->death, killer, DTHSZ);
@@ -206,8 +221,10 @@ int how;
 	    HUP {
 		raw_print("");
 		raw_printf(
-	      "Since you were in %s mode, the score list will not be checked.",
-		    wizard ? "wizard" : "discover");
+/*JP	      "Since you were in %s mode, the score list will not be checked.",
+		    wizard ? "wizard" : "discover");*/
+	      "%sモードでプレイしたのでスコアリストには載らない．",
+		    wizard ? "ウィザード" : "ディスカバリ");
 	    }
 	    return;
 	}
@@ -265,7 +282,8 @@ int how;
 			rank1 = rank;
 			HUP {
 			    raw_printf(
-			  "You didn't beat your previous score of %ld points.",
+/*JP			  "You didn't beat your previous score of %ld points.",*/
+			  "あなたは以前の%ldポイントのスコアに届かなかった．",
 				    t1->points);
 			    raw_print("");
 			}
@@ -298,11 +316,14 @@ int how;
 #endif	/* UPDATE_RECORD_IN_PLACE */
 		if(!done_stopprint) if(rank0 > 0){
 		    if(rank0 <= 10)
-			raw_print("You made the top ten list!");
+/*JP			raw_print("You made the top ten list!");*/
+			raw_print("あなたはトップ10リストに載った！");
 		    else {
 			raw_printf(
-			  "You reached the %d%s place on the top %d list.",
-				rank0, ordin(rank0), ENTRYMAX);
+/*JP			  "You reached the %d%s place on the top %d list.",
+				rank0, ordin(rank0), ENTRYMAX);*/
+			  "あなたは，トップ%dリストの%d位に載った！",
+				ENTRYMAX, rank0 );
 		    }
 		    raw_print("");
 		}
@@ -392,26 +413,53 @@ register int rank, so;
 	else Strcat(linebuf, "   ");
 
 	Sprintf(eos(linebuf), " %10ld  %.10s", t1->points, t1->name);
-	Sprintf(eos(linebuf), "-%c ", t1->plchar);
+/*JP	Sprintf(eos(linebuf), "-%c ", t1->plchar);*/
+	Sprintf(eos(linebuf), "-%cは", t1->plchar);
 	if(!strncmp("escaped", t1->death, 7)) {
 	  second_line = FALSE;
-	  if(!strcmp(" (with the Amulet)", t1->death+7))
-	    Strcat(linebuf, "escaped the dungeon with the Amulet");
+/*JP	  if(!strcmp(" (with the Amulet)", t1->death+7))*/
+	  if(!strncmp("魔除けを手に", t1->death,12))
+/*JP	    Strcat(linebuf, "escaped the dungeon with the Amulet");*/
+	    Strcat(linebuf, "魔除けとともに迷宮から脱出した");
 	  else
-	    Sprintf(eos(linebuf), "escaped the dungeon [max level %d]",
+/*JP	    Sprintf(eos(linebuf), "escaped the dungeon [max level %d]",*/
+	    Sprintf(eos(linebuf), "迷宮から脱出した[最大地下%d階]",
 	      t1->maxlvl);
 	} else if(!strncmp("ascended", t1->death, 8)) {
-	   Strcat(linebuf, "ascended to demigod");
-	   if (t1->sex == 'F') Strcat(linebuf, "dess");
-	   Strcat(linebuf, "-hood");
+/*JP	   Strcat(linebuf, "ascended to demigod");*/
+	   Strcat(linebuf, "昇天し");
+/*JP	   if (t1->sex == 'F') Strcat(linebuf, "dess");
+	   Strcat(linebuf, "-hood");*/
+	   if (t1->sex == 'F') Strcat(linebuf, "女");
+	   Strcat(linebuf, "神となった．");
 	   second_line = FALSE;
 	} else {
+	  if (t1->deathdnum == astral_level.dnum)
+		Strcat(linebuf, "最終試練にて");
+	  else
+		Sprintf(eos(linebuf), "%sの地下%d階にて",
+/*JP		    dungeons[t1->deathdnum].dname, t1->deathlev);*/
+		    jtrns_obj('d',dungeons[t1->deathdnum].dname), t1->deathlev);
+	  if(t1->deathlev != t1->maxlvl)
+		Sprintf(eos(linebuf), "[最大地下%d階]", t1->maxlvl);
+	  if(!strncmp(t1->death, "quit ", 5))
+		Strcat(linebuf3, t1->death + 4);
+/*JP*/
+	  if(!strncmp(t1->death,"魔除けを手にquit",16)){
+		Strcat(linebuf, "魔除けを手に抜けた．");
+		second_line = FALSE;
+	  }
 	  if(!strncmp(t1->death,"quit",4)) {
-		Strcat(linebuf, "quit");
+/*JP		Strcat(linebuf, "quit");*/
+		Strcat(linebuf, "抜けた．");
 		second_line = FALSE;
-	  } else if(!strncmp(t1->death,"starv",5)) {
-		Strcat(linebuf, "starved to death");
+	  } else if(!strncmp(t1->death,"starv",5)||!strcmp(t1->death+strlen(t1->death)-8,"餓死した")) { 
+/*JP		Strcat(linebuf, "starved to death");*/
+		Strcat(linebuf, "餓死した．");
 		second_line = FALSE;
+	  }
+/*JP*/
+#if 0
 	  } else if(!strncmp(t1->death,"choked",6)) {
 		Sprintf(eos(linebuf), "choked on h%s food",
 			(t1->sex == 'F') ? "er" : "is");
@@ -422,19 +470,20 @@ register int rank, so;
 	  } else if(!strncmp(t1->death, "petrified by ",13)) {
 		Strcat(linebuf, "turned to stone");
 	  } else Strcat(linebuf, "died");
+#endif
 
-	  if (t1->deathdnum == astral_level.dnum)
+/*JP	  if (t1->deathdnum == astral_level.dnum)
 		Strcpy(linebuf3, " in the endgame");
 	  else
 		Sprintf(linebuf3, " in %s on level %d",
-		    dungeons[t1->deathdnum].dname, t1->deathlev);
-	  if(t1->deathlev != t1->maxlvl)
-		Sprintf(eos(linebuf3), " [max %d]", t1->maxlvl);
+		    dungeons[t1->deathdnum].dname, t1->deathlev);*/
+/*JP	  if(t1->deathlev != t1->maxlvl)
+		Sprintf(eos(linebuf3), " [max %d]", t1->maxlvl);*/
 	  /* kludge for "quit while already on Charon's boat" */
-	  if(!strncmp(t1->death, "quit ", 5))
-		Strcat(linebuf3, t1->death + 4);
+/*JP	  if(!strncmp(t1->death, "quit ", 5))
+		Strcat(linebuf3, t1->death + 4);*/
 	}
-	Strcat(linebuf3, ".");
+/*JP	Strcat(linebuf3, ".");*/
 
 	if(t1->maxhp) {
 	  register char *bp;
@@ -475,7 +524,8 @@ register int rank, so;
 	if (second_line) {
 		Strcpy(linebuf2, t1->death);
 		*linebuf2 = highc(*linebuf2);
-		Strcat(linebuf2, ".");
+/*JP		Strcat(linebuf2, ".");*/
+		Strcat(linebuf2, "．");
 	}
 
 	if(so == 0) {

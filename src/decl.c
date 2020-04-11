@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include	"hack.h"
 
 int NDECL((*afternmv));
@@ -192,9 +199,14 @@ NEARDATA struct obj *billobjs = (struct obj *)0;
 NEARDATA struct obj zeroobj = DUMMY;
 
 /* monster pronouns, index is return value of gender(mtmp) */
+/*JP
 NEARDATA const char *he[3]  = { "he",  "she", "it" };
 NEARDATA const char *him[3] = { "him", "her", "it" };
 NEARDATA const char *his[3] = { "his", "her", "its" };
+*/
+NEARDATA const char *he[3]  = { "彼",  "彼女", "それ" };
+NEARDATA const char *him[3] = { "彼", "彼女", "それ" };
+NEARDATA const char *his[3] = { "彼", "彼女", "それ" };
 
 /* originally from dog.c */
 NEARDATA char dogname[63] = DUMMY;
@@ -205,16 +217,26 @@ NEARDATA struct monst *mydogs = (struct monst *)0;
 /* monsters that are moving to another dungeon level */
 NEARDATA struct monst *migrating_mons = (struct monst *)0;
 
+/*JP
 NEARDATA struct c_color_names c_color_names = {
 	"black", "amber", "golden",
 	"light blue", "red", "green",
 	"silver", "blue", "purple",
 	"white"
 };
+*/
+NEARDATA struct c_color_names c_color_names = {
+        "黒い","琥珀色の","金色の",
+	"水色の", "赤い", "緑色の",
+	"銀色の", "青い", "紫色の",
+	"白い"
+};
 
 struct c_common_strings c_common_strings = {
-	"Nothing happens.",		"That's enough tries!",
-	"That is a silly thing to %s.",	"shudder for a moment."
+/*JP	"Nothing happens.",		"That's enough tries!",
+	"That is a silly thing to %s.",	"shudder for a moment."*/
+	"何も起きなかった．",		"もういいよ！",
+	"%s？そりゃばかげている．",	"一瞬震えた．"
 };
 
 /* Vision */

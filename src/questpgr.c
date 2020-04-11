@@ -2,7 +2,19 @@
 /*	Copyright 1991, M. Stephenson		  */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
+
+#ifdef _MSC_VER
+#include "../japanese/emalloc.h"
+#define alloc(s) emalloc(s)
+#endif
 
 #ifdef MULDGN
 /*  quest-specific pager routines. */
@@ -151,83 +163,175 @@ static struct qt_matrix {
 	short	artinum;	/* index of quest artifact */
 
 } qt_matrix[] = {
-
+/*JP*/
+#if 0
 /* A */ { "the tomb of the Toltec Kings",
 	  "the College of Archeology",
 	  PM_LORD_CARNARVON, PM_MINION_OF_HUHETOL, PM_STUDENT,
 	  0, PM_HUMAN_MUMMY, S_SNAKE, S_MUMMY,
 	  ART_ORB_OF_DETECTION },
-
+#endif
+/* A */ { "¥È¥ë¥Æ¥Ã¥¯²¦¤ÎÊè",
+	  "¹Í¸Å³ØÂç³Ø",
+	  PM_LORD_CARNARVON, PM_MINION_OF_HUHETOL, PM_STUDENT,
+	  0, PM_HUMAN_MUMMY, S_SNAKE, S_MUMMY,
+	  ART_ORB_OF_DETECTION },
+/*JP*/
+#if 0
 /* B */ { "the Duali Oasis",
 	  "the Camp of the Duali Tribe",
 	  PM_PELIAS, PM_THOTH_AMON, PM_CHIEFTAIN,
 	  PM_OGRE, PM_TROLL, S_OGRE, S_TROLL,
 	  ART_HEART_OF_AHRIMAN },
-
+#endif
+/* B */ { "¥Â¥å¥¢¥ê¤Î¥ª¥¢¥·¥¹",
+	  "¥Â¥å¥¢¥êÂ²¤Î¥­¥ã¥ó¥×",
+	  PM_PELIAS, PM_THOTH_AMON, PM_CHIEFTAIN,
+	  PM_OGRE, PM_TROLL, S_OGRE, S_TROLL,
+	  ART_HEART_OF_AHRIMAN },
+/*JP*/
+#if 0
 /* C */ { "the Dragon's Lair",
 	  "the Caves of the Ancestors",
 	  PM_SHAMAN_KARNOV, PM_CHROMATIC_DRAGON, PM_NEANDERTHAL,
 	  PM_BUGBEAR, PM_HILL_GIANT, S_HUMANOID, S_GIANT,
 	  ART_SCEPTRE_OF_MIGHT },
-
+#endif
+/* C */ { "Îµ¤Î±£¤ì²È",
+	  "ÂÀ¸Å¤ÎÆ¶·¢",
+	  PM_SHAMAN_KARNOV, PM_CHROMATIC_DRAGON, PM_NEANDERTHAL,
+	  PM_BUGBEAR, PM_HILL_GIANT, S_HUMANOID, S_GIANT,
+	  ART_SCEPTRE_OF_MIGHT },
+/*JP*/
+#if 0
 /* E */ { "the Goblins' Cave",
 	  "the great Circle of Earendil",
 	  PM_EARENDIL, PM_GOBLIN_KING, PM_HIGH_ELF,
 	  PM_URUK_HAI, PM_OGRE, S_ORC, S_OGRE,
 	  ART_PALANTIR_OF_WESTERNESSE },
-
+#endif
+/* E */ { "¥´¥Ö¥ê¥ó¤ÎÆ¶·¢",
+	  "¥¨¥¢¥ì¥ó¥À¥ë¤Î°ÎÂç¤Ê¤ëÃÏ",
+	  PM_EARENDIL, PM_GOBLIN_KING, PM_HIGH_ELF,
+	  PM_URUK_HAI, PM_OGRE, S_ORC, S_OGRE,
+	  ART_PALANTIR_OF_WESTERNESSE },
+/*JP*/
+#if 0
 /* E */ { "the Goblins' Cave",
 	  "the great Circle of Elwing",
 	  PM_ELWING, PM_GOBLIN_KING, PM_HIGH_ELF,
 	  PM_URUK_HAI, PM_OGRE, S_ORC, S_OGRE,
 	  ART_PALANTIR_OF_WESTERNESSE },
-
+#endif
+/* E */ { "¥´¥Ö¥ê¥ó¤ÎÆ¶·¢",
+	  "¥¨¥ë¥¦¥£¥ó¤Î°ÎÂç¤Ê¤ëÃÏ",
+	  PM_ELWING, PM_GOBLIN_KING, PM_HIGH_ELF,
+	  PM_URUK_HAI, PM_OGRE, S_ORC, S_OGRE,
+	  ART_PALANTIR_OF_WESTERNESSE },
+/*JP*/
+#if 0
 /* H */ { "the Temple of Coeus",
 	  "the Temple of Epidaurus",
 	  PM_HIPPOCRATES, PM_CYCLOPS, PM_ATTENDANT,
 	  PM_GIANT_RAT, PM_SNAKE, S_RODENT, S_YETI,
 	  ART_STAFF_OF_AESCULAPIUS },
-
+#endif
+/* H */ { "¥³¥ª¥¹»û±¡",
+	  "¥¨¥Ô¥À¥¦¥é¥¹»û±¡",
+	  PM_HIPPOCRATES, PM_CYCLOPS, PM_ATTENDANT,
+	  PM_GIANT_RAT, PM_SNAKE, S_RODENT, S_YETI,
+	  ART_STAFF_OF_AESCULAPIUS },
+/*JP*/
+#if 0
 /* K */ { "the Isle of Glass",
 	  "Camelot Castle",
 	  PM_KING_ARTHUR, PM_IXOTH, PM_PAGE,
 	  PM_QUASIT, PM_OCHRE_JELLY, S_IMP, S_JELLY,
 	  ART_MAGIC_MIRROR_OF_MERLIN },
-
+#endif
+/* K */ { "¥¬¥é¥¹¤ÎÅç",
+	  "¥­¥ã¥á¥í¥Ã¥È¾ë",
+	  PM_KING_ARTHUR, PM_IXOTH, PM_PAGE,
+	  PM_QUASIT, PM_OCHRE_JELLY, S_IMP, S_JELLY,
+	  ART_MAGIC_MIRROR_OF_MERLIN },
+/*JP*/
+#if 0
 /* P */ { "the Temple of Nalzok",
 	  "the Great Temple",
 	  PM_ARCH_PRIEST, PM_NALZOK, PM_ACOLYTE,
 	  PM_HUMAN_ZOMBIE, PM_WRAITH, S_ZOMBIE, S_WRAITH,
 	  ART_MITRE_OF_HOLINESS },
-
+#endif
+/* P */ { "¥Ê¥ë¥¾¥¯»û±¡",
+	  "°ÎÂç¤Ê¤ë»û±¡",
+	  PM_ARCH_PRIEST, PM_NALZOK, PM_ACOLYTE,
+	  PM_HUMAN_ZOMBIE, PM_WRAITH, S_ZOMBIE, S_WRAITH,
+	  ART_MITRE_OF_HOLINESS },
+/*JP*/
+#if 0
 /* R */ { "the Asassins' Guild Hall",
 	  "the Thieves' Guild Hall",
 	  PM_MASTER_OF_THIEVES, PM_MASTER_ASSASSIN, PM_THUG,
 	  PM_LEPRECHAUN, PM_GUARDIAN_NAGA, S_NYMPH, S_NAGA,
 	  ART_MASTER_KEY_OF_THIEVERY },
-
+#endif
+/* R */ { "°Å»¦¼Ô¤Î¥®¥ë¥É",
+	  "ÅðÂ±¤Î¥®¥ë¥É",
+	  PM_MASTER_OF_THIEVES, PM_MASTER_ASSASSIN, PM_THUG,
+	  PM_LEPRECHAUN, PM_GUARDIAN_NAGA, S_NYMPH, S_NAGA,
+	  ART_MASTER_KEY_OF_THIEVERY },
+/*JP*/
+#if 0
 /* S */ { "the Shogun's Castle",
 	  "the castle of the Taro Clan",
 	  PM_LORD_SATO, PM_ASHIKAGA_TAKAUJI, PM_NINJA,
 	  PM_WOLF, PM_STALKER, S_DOG, S_STALKER,
 	  ART_TSURUGI_OF_MURAMASA },
+#endif
+/* S */ { "¾­·³¤Î¾ë",
+	  "ÂÀÏº°ìÂ²¤Î¾ë",
+	  PM_LORD_SATO, PM_ASHIKAGA_TAKAUJI, PM_NINJA,
+	  PM_WOLF, PM_STALKER, S_DOG, S_STALKER,
+	  ART_TSURUGI_OF_MURAMASA },
 
 #ifdef TOURIST
+/*JP*/
+#if 0
 /* T */ { "the Thieves' Guild Hall",
 	  "the Traveller's Aid Office",
 	  PM_TWOFLOWER, PM_MASTER_OF_THIEVES, PM_GUIDE,
 	  PM_GIANT_SPIDER, PM_FOREST_CENTAUR, S_SPIDER, S_CENTAUR,
 	  ART_YENDORIAN_EXPRESS_CARD },
 #endif
-
+/* T */ { "ÅðÂ±¤Î¥®¥ë¥É",
+	  "Î¹¹Ô¥È¥é¥Ö¥ë¥»¥ó¥¿¡¼",
+	  PM_TWOFLOWER, PM_MASTER_OF_THIEVES, PM_GUIDE,
+	  PM_GIANT_SPIDER, PM_FOREST_CENTAUR, S_SPIDER, S_CENTAUR,
+	  ART_YENDORIAN_EXPRESS_CARD },
+#endif
+/*JP*/
+#if 0
 /* V */ { "the cave of Surtur",
 	  "the Shrine of Destiny",
 	  PM_NORN, PM_LORD_SURTUR, PM_WARRIOR,
 	  PM_FIRE_ANT, PM_FIRE_GIANT, S_ANT, S_GIANT,
 	  ART_ORB_OF_FATE },
-
+#endif
+/* V */ { "¥µ¡¼¥¿¡¼¤ÎÆ¶·¢",
+	  "±¿Ì¿¤ÎÀ»Æ²",
+	  PM_NORN, PM_LORD_SURTUR, PM_WARRIOR,
+	  PM_FIRE_ANT, PM_FIRE_GIANT, S_ANT, S_GIANT,
+	  ART_ORB_OF_FATE },
+/*JP*/
+#if 0
 /* W */ { "the Tower of Darkness",
 	  "the Tower of the Balance",
+	  PM_WIZARD_OF_BALANCE, PM_DARK_ONE, PM_APPRENTICE,
+	  PM_VAMPIRE_BAT, PM_XORN, S_BAT, S_WRAITH,
+	  ART_EYE_OF_THE_AETHIOPICA },
+#endif
+/* W */ { "°Å¹õ¤ÎÅã",
+	  "Ä´ÏÂ¤ÎÅã",
 	  PM_WIZARD_OF_BALANCE, PM_DARK_ONE, PM_APPRENTICE,
 	  PM_VAMPIRE_BAT, PM_XORN, S_BAT, S_WRAITH,
 	  ART_EYE_OF_THE_AETHIOPICA },
@@ -267,7 +371,8 @@ ldrname()	/* return your class leader's name */
 {
 	int i = qt_matrix[class_index()].ldrnum;
 /*	return(mons[qt_matrix[class_index()].ldrnum].mname); */
-	return(mons[i].mname);
+/*JP	return(mons[i].mname);*/
+	return(jtrns_mon(mons[i].mname));
 }
 
 static const char *
@@ -286,13 +391,13 @@ struct obj *otmp;
 static const char *
 neminame()	/* return your class nemesis' name */
 {
-	return(mons[qt_matrix[class_index()].neminum].mname);
+	return(jtrns_mon(mons[qt_matrix[class_index()].neminum].mname));
 }
 
 static const char *
 guardname()	/* return your class leader's guard monster name */
 {
-	return(mons[qt_matrix[class_index()].guardnum].mname);
+	return(jtrns_mon(mons[qt_matrix[class_index()].guardnum].mname));
 }
 
 static const char *
@@ -331,22 +436,27 @@ char c;
 
 	    case 'p':	str = plname;
 			break;
-	    case 'c':	str = pl_character;
+	    case 'c':	str = jtrns_mon(pl_character);
 			break;
 	    case 'r':	str = rank_of(u.ulevel, pl_character[0], flags.female);
 			break;
 	    case 'R':	str = rank_of(MIN_QUEST_LEVEL, pl_character[0],
 							  flags.female);
 			break;
-	    case 's':	str = (flags.female) ? "sister" : "brother";
+/*JP	    case 's':	str = (flags.female) ? "sister" : "brother";*/
+	    case 's':	str = (flags.female) ? "Ëå" : "Äï";
 			break;
-	    case 'S':	str = (flags.female) ? "daughter" : "son";
+/*JP	    case 'S':	str = (flags.female) ? "daughter" : "son";*/
+	    case 'S':	str = (flags.female) ? "Ì¼" : "Â©»Ò";
 			break;
 	    case 'l':	str = ldrname();
 			break;
 	    case 'i':	str = intermed();
 			break;
+/*JP
 	    case 'o':	str = the(artiname(qt_matrix[class_index()].artinum));
+*/
+	    case 'o':	str = jtrns_obj('A',(artiname(qt_matrix[class_index()].artinum)));
 			break;
 	    case 'n':	str = neminame();
 			break;
@@ -362,13 +472,17 @@ char c;
 			break;
 	    case 'D':	str = align_gname(A_LAWFUL);
 			break;
-	    case 'C':	str = "chaotic";
+/*JP	    case 'C':	str = "chaotic";*/
+	    case 'C':	str = "º®ÆÙ";	        
 			break;
-	    case 'N':	str = "neutral";
+/*JP	    case 'N':	str = "neutral";*/
+	    case 'N':	str = "ÃæÎ©";	        
 			break;
-	    case 'L':	str = "lawful";
+/*JP	    case 'L':	str = "lawful";*/
+	    case 'L':	str = "Ãá½ø";	        
 			break;
-	    case 'x':	str = Blind ? "sense" : "see";
+/*JP	    case 'x':	str = Blind ? "sense" : "see";*/
+	    case 'x':	str = Blind ? "´¶¤¸" : "¸«";
 			break;
 	    case '%':	str = "%";
 			break;

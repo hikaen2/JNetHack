@@ -39,6 +39,7 @@ NetHack, except that rounddiv may call panic().
 	int		night		(void)
 	int		midnight	(void)
 =*/
+
 #ifdef LINT
 # define Static		/* pacify lint */
 #else
@@ -98,7 +99,18 @@ eos(s)			/* return the end of a string (pointing at '\0') */
     while (*s) s++;	/* s += strlen(s); */
     return s;
 }
+/* there are no `possessive' in Japanese	*/
+/* by issei@jaist.ac.jp                        	*/
+char *
+s_suffix(s)
+     const char *s;
+{
+  Static char buf[BUFSZ];
 
+  Strcpy(buf, s);
+  return buf;
+}
+#if 0
 char *
 s_suffix(s)		/* return a name converted to possessive */
     const char *s;
@@ -114,7 +126,7 @@ s_suffix(s)		/* return a name converted to possessive */
 	Strcat(buf, "'s");
     return buf;
 }
-
+#endif
 char *
 xcrypt(str)		/* trivial text encryption routine (see makedefs) */
 const char *str;

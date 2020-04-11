@@ -192,6 +192,18 @@
 /* #define X11_GRAPHICS	/* X11 interface */
 
 /*
+** added by issei, Tue May 24 11:55:10 JST 1994
+*/
+#ifdef X11_GRAPHICS
+#define XI18N		/* if you use X11 internationalization, define this */
+#endif
+
+#ifdef XI18N
+#undef  XAW_I18N	/* if you use X11R5 & Xawi18n, define this */
+#define X11R6		/* ,or if use X11R6, define this */
+#endif
+
+/*
  * Define the default window system.  This should be one that is compiled
  * into your system (see defines above).  Known window systems are:
  *
@@ -288,7 +300,7 @@
  * If you define HACKDIR, then this will be the default playground;
  * otherwise it will be the current directory.
  */
-#define HACKDIR "/usr/games/lib/nethackdir" 	/* nethack directory */
+#define HACKDIR "/usr/games/lib/jnethackdir" 	/* nethack directory */
 
 /*
  * Some system administrators are stupid enough to make Hack suid root

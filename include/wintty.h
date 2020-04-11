@@ -129,6 +129,10 @@ E void FDECL(addtopl, (const char *));
 E void NDECL(more);
 E void FDECL(update_topl, (const char *));
 E void FDECL(putsyms, (const char*));
+/*JP
+Sat Aug 27 00:42:03 JST 1994 by issei
+*/
+E void FDECL(raw_putsyms, (const char*));
 
 /* ### wintty.c ### */
 #ifdef CLIPPING

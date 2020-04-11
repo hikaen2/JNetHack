@@ -7,6 +7,12 @@
  * drawing canvas with 16 colors and one font.
  */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #ifndef SYSV
 #define PRESERVE_NO_SYSV	/* X11 include files may define SYSV */
 #endif
@@ -73,9 +79,13 @@ static XtResource resources[] = {
 	  offset(bright_cyan), XtRString, "cyan" },
     { XtNwhite, XtCColor, XtRPixel, sizeof(Pixel),
 	  offset(white), XtRString, "white" },
-
     { XtNfont, XtCFont, XtRFontStruct, sizeof(XFontStruct *),
 	  offset(font), XtRString, XtDefaultFont },
+/*JP*/
+/* for Japanese by issei (1994/1/10)
+*/
+    { XtNfontSet, XtCFontSet, XtRFontSet, sizeof(XFontSet *),
+	  offset(fontset), XtRString, XtDefaultFontSet },
     { XtNexposeCallback, XtCCallback, XtRCallback, sizeof(XtCallbackList),
 	  offset(expose_callback), XtRCallback, NULL },
     { XtNcallback, XtCCallback, XtRCallback, sizeof(XtCallbackList),

@@ -979,6 +979,7 @@ E struct permonst *NDECL(player_mon);
 E int FDECL(little_to_big, (int));
 E int FDECL(big_to_little, (int));
 E const char *FDECL(locomotion, (const struct permonst *,const char *));
+E const char *FDECL(locomotion2, (const struct permonst *,const char *));
 
 /* ### monmove.c ### */
 
@@ -1116,6 +1117,8 @@ E void NDECL(objects_init);
 /* ### objnam.c ### */
 
 E char *FDECL(typename, (int));
+/*JP*/
+E char *FDECL(jtypename, (int));
 E boolean FDECL(obj_is_pname, (struct obj *));
 E char *FDECL(distant_name, (struct obj *,char *(*)(OBJ_P)));
 E char *FDECL(xname, (struct obj *));
@@ -1863,6 +1866,32 @@ E void NDECL(makewish);
 
 #endif /* !MAKEDEFS_C && !LEV_LEX_C */
 
+/* ### jconj.c , jtrns.c  ### */
+
+E  void FDECL(setkcode,(int));
+E  void FDECL(cputc,(int,FILE *));
+E  void FDECL(cputchar,(int));
+E  void FDECL(jputc,(int,FILE *));
+E  void FDECL(jputchar,(int));
+E  void FDECL(jputs,(const char *));
+E  void FDECL(jfputs,(const char *,FILE *));
+E  const char *FDECL(str2ic, (const char *));
+E  const char *FDECL(jconvstr, (const char *));
+E  const char *FDECL(jconj, (const char *,const char *));
+E  const char *FDECL(jconj_adj, (const char *));
+E  void NDECL(jtrns_init);
+E  int NDECL(dotogglelang);
+E  int NDECL(query_lang_mode);
+E  void FDECL(set_trns_flg, (int));
+E  const char *FDECL(jtrns_mon, (const char *));
+E  const char *FDECL(jtrns_obj, (const int,const char *));
+E  int FDECL(is_kanji1, (const char *,int));
+E  int FDECL(is_kanji2, (const char *,int));
+E  int FDECL(isspace_8, (const int));
+E  void FDECL(split_japanese, (char *,char *,char *,int));
+
 #undef E
 
 #endif /* EXTERN_H */
+
+

@@ -377,6 +377,7 @@ tty_decgraphics_termcap_fixup()
 #ifdef PC9801
 	init_hilite();
 #endif
+
 	if (flags.DECgraphics) xputs("\033)0");
 }
 #endif
@@ -397,7 +398,7 @@ tty_ascgraphics_hilite_fixup()
     for (c = 0; c < MAXCOLORS / 2; c++)
 	if (c != BLACK) {
 	    hilites[c|BRIGHT] = (char *) alloc(sizeof("\033[1;3%dm"));
-	    Sprintf(hilites[c]BRIGHT], "\033[1;3%dm", c);
+	    Sprintf(hilites[c|BRIGHT], "\033[1;3%dm", c);
 	    if (c != GRAY) {
 		    hilites[c] = (char *) alloc(sizeof("\033[0;3%dm"));
 		    Sprintf(hilites[c], "\033[0;3%dm", c);
@@ -515,7 +516,7 @@ int c;
 char c;
 #endif
 {
-	(void) putchar(c);
+	(void) cputchar(c);
 }
 
 void
@@ -523,6 +524,7 @@ xputs(s)
 const char *s;
 {
 # ifndef TERMLIB
+	(void) jputchar('\0');
 	(void) fputs(s, stdout);
 # else
 #  if defined(NHSTDC) || defined(ULTRIX_PROTO)
@@ -640,7 +642,7 @@ void
 tty_nhbell()
 {
 	if (flags.silent) return;
-	(void) putchar('\007');		/* curx does not change */
+	(void) cputchar('\007');		/* curx does not change */
 	(void) fflush(stdout);
 }
 

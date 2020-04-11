@@ -1,98 +1,135 @@
 #	SCSS Id: @(#)Nethack.cnf	3.1	    93/03/26
 #	Copyright (c) NetHack PC Development Team 1990, 1991, 1992, 1993
 #	NetHack may be freely redistributed.  See license for details.
+#	Translated & Arranged by Kouji Takada	94/07/23
+#			      by Issei Numata	94/08/26
 #
-# A '#' at the beginning of a line means the rest of the line is a comment.
+# '#' で始まる行はコメント行になります
 #
-# This configuration file is set up for two cases, for a hard disk
-# (as drive C:), and for two floppy disks.
+# この設定ファイルによって、2通りの選択肢(ハードディスクか、フロッピー2枚で
+# 遊ぶか)が選択出来ます。
+# 
+# いくつかのオプションは、このファイルで正しく設定しておく必要があります。
+# 他のオプションはゲーム中に常時変更出来ます。
+# どのようなオプションがあるかは、opthelp ファイルを見るといいでしょう。
 #
-# Some options MUST be set in this file, other options can be toggled while
-# playing.  For a list of options available see the <opthelp.> file.  If
-# the game plays slowly you might notice some improvement by setting
-# !time and !showexp, which will reduce screen I/O somewhat.
-#
-# To change the configuration, comment out the unwanted lines, and
-# uncomment the configuration you want.
+# オプションの中でも !time, !showexp を定義しておくと、画面の書き換えが
+# 幾らか速くなります(もちろん、こうすると時間と経験値は見えない)。
+# 
+# 一つの定義に複数の定義の例を示しておいたので、そのうちの一つを有効にして
+# あとはコメントアウトしておくと良いでしょう。
 
-
+#------------------------------------------------------------------------------
 # *** OPTIONS ***
 #
-# These two options should be used for most setups.  If you're machine isn't
-# very IBM-compatible, and NetHack doesn't work, try commenting out this line.
+# ここでは入出力についての定義を行います。
 #
-OPTIONS=rawio,BIOS,IBMgraphics
-# DEC Rainbows will hang if rawio is set, so they should instead use:
-#OPTIONS=BIOS,DECgraphics
+# kcode は漢字コードを指定します。
+# デフォルトは EUC ですが、日本語 MS-DOS で動かす場合は sjis を指定
+# します。
 #
+# もっともベーシックな MS-DOS(PC-DOS) で動かす場合は、rawio は定義しないで
+# 下さい。rawio が定義出来ると速くなるかも知れません。
 #
-# Some options to set personal preferences.  Uncomment and change these to
-# suit your personal preference.  If several people are to use the same
-# configuration, options like these should not be set.
-#
+# BIOS を定義すると、マシンの BIOS ルーチンを使って入出力を行うので速くなる
+# かも知れません。また、BIOS が定義出来ると、ゲーム中のメタキーが有効に
+# なります(AT=alt, 98=GRPH)。BIOS はコンパイルした時の状態によって、98 又は
+# AT 専用になっています。異なるマシンで BIOS を有効にして実行すると、動作が
+# おかしくなるので、その時は BIOS を定義しないで下さい。
+# 
+# IBMgraphics を定義すると、後途の GRAPHICS 定義で示したキャラクタを使って
+# 画面を描画することが出来ます。GRAPHICS が正しくないと、画面はでたらめに
+# なってしまうので気を付けて下さい。IBMgraphics を定義しないと、もっとも基本の
+# ASCII キャラクタでの描画を行います。DECgraphics も同様です。
+# DECgraphics を定義する時は rawio を定義しないで下さい。ハングアップします。
+
+#OPTIONS=kcode:sjis
+#OPTIONS=kcode:sjis,rawio
+#OPTIONS=kcode:sjis,rawio,BIOS
+#OPTIONS=kcode:sjis,rawio,IBMgraphics
+OPTIONS=kcode:sjis,rawio,BIOS,IBMgraphics
+#OPTIONS=kcode:sjis,DECgraphics
+#OPTIONS=kcode:sjis,BIOS,DECgraphics
+
+# ここではいつも変わらないと思われるオプションを定義します(しなくてもいい)。
+
+OPTIONS=dogname:ぽち,catname:たま,fruit:レアチーズケーキ
 #OPTIONS=name:Janet-V,female,dogname:Fido,catname:Morris,fruit:apricot
 #OPTIONS=packorder:")[%?+/=!(*0_`,scores:10 top/2 around/own
-#
-#
-# Other general options.  You might also set "silent" so as not to attract
-# the boss's attention.
-#
-OPTIONS=time,rest_on_space,noautopickup,number_pad
 
+# その他のオプションです。number_pad を定義すると、1〜9 のキーで四方に移動
+# 出来るようになります。
 
+OPTIONS=time,rest_on_space,noautopickup
+#OPTIONS=time,rest_on_space,noautopickup,number_pad
+
+#------------------------------------------------------------------------------
 # *** HARD DISK CONFIGURATION ***
 #
-HACKDIR=c:\games\nethack
-#
-#   LEVELS and SAVE default to HACKDIR
-#
-#LEVELS=c:\games\nethack\bones
-#SAVE=c:\games\nethack\bones;n
-#
-#   appending a ";n" to SAVE means don't prompt to insert a disk.
-SAVE=;n
-#
-# Note that RAMDISK must *not* be the same (or even implicitly
-# get expanded to the same path by the OS) as HACKDIR.
-#
-#RAMDISK=d:
+# ハードディスクで遊ぶ場合は、以下のように設定しなければなりません。
+# HACKDIR は NetHack を展開したディレクトリを指定します。
 
+HACKDIR=c:\games\jnethack
 
+# LEVELS はゲーム中のレベルファイルを展開する場所を指定します。
+# SAVE はゲームを途中で中断してセーブした時にデータを納める場所を指定します。
+# SAVE の最後に ;n を付けると、ディスクを挿入する指示が出ないため、ハード
+# ディスクでは指定しておいた方が良いでしょう。
+# これらは普通、同じディレクトリにしておいて結構です。
+# もし省略されると、2つとも HACKDIR のディレクトリとみなされます。
+
+LEVELS=c:\games\jnethack\bones
+SAVE=c:\games\jnethack\bones;n
+
+# ラムディスクがあるのなら、RAMDISK で指定すると速くなります。但し、これは
+# 必ず必要と言う訳ではありません。
+
+RAMDISK=e:
+
+#------------------------------------------------------------------------------
 # *** 2-FLOPPY CONFIGURATION ***
 #
-# HACKDIR=a:\
-# LEVELS=b:\
-# SAVE=b:\
-# RAMDISK=c:
+# 基本的にはハードディスクの項目と変わりません。NetHack はデータも膨大になる
+# ため、実行中の処理用と、セーブディスクを分ける必要があります。そこで LEVELS
+# と SAVE を同じドライブにしておき、SAVE には ;n を付けないようにしておけば
+# セーブする時にディスクを入れ替える指示が出ます。
 
+#HACKDIR=a:\
+#LEVELS=b:\
+#SAVE=b:\
+#RAMDISK=c:
 
+#------------------------------------------------------------------------------
 # *** CHARACTER GRAPHICS ***
 #
-# The 69 GRAPHICS characters (0-68) are:
+# 画面を描画する時に使われるキャラクタ(69種類)をここで定義出来ます。
+# 定義しない時は、NetHack が持っているデフォルトのキャラクタで表示します。
 #
-# stone,
-# walls: vertical, horizontal,
-#	 4 corners: top left, top right, bottom left, bottom right,
-#	 cross wall,
-#	 4 T walls: upward, downward, left, right,
-# doors: no door,
-#	 open doors: vertical, horizontal,
-#	 closed doors: vertical, horizontal,
-# floor,
-# corridors: unlit, lit,
-# stairs up, stairs down, ladder up, ladder down,
-# trap, web, altar, throne, sink, fountain, pool/moat, ice, lava,
-# lowered drawbridge: vertical, horizontal,
-# raised drawbridge: vertical, horizontal,
-# air, cloud, water,
-# 4 beams: vertical, horizontal, left slant, right slant,
-# digging beam, camera flash beam, left boomerang, right boomerang,
-# 4 magic shield display symbols,
-# 8 swallowed: top left/middle/right, mid left/right, bottom left/mid/right,
-# 9 explosion: [3 rows (top, middle, bottom) of 3 characters]
+# キャラクタは次のようなものが定義出来ます(配列順)。
 #
-# If you specify fewer that 69 ASCII values, the remaining characters will be
-# set to their respective defaults:
+# 部屋の暗い部分,
+# 壁: 縦方向, 横方向,
+#	 部屋の4隅: 上左, 上右, 下左, 下右,
+#	 十字になった壁,
+#	 T字の壁: 上向き, 下向き, 左向き, 右向き,
+# とびら: とびら無し,
+#	 開いたとびら: 縦方向, 横方向,
+#	 閉じたとびら: 縦方向, 横方向,
+# 床,
+# 通路: 暗い通路, 明るい通路,
+# 登る階段, 降りる階段, 登る梯子, 降りる梯子,
+# 罠, 蜂の巣, 祭壇, 王座, 台所, 泉, 水の溜まった場所, 氷, 溶岩,
+# 降りているはね橋: 縦方向, 横方向,
+# あがっているはね橋: 縦方向, 横方向,
+# 空気の溜まった場所, 雲, 水,
+# 4方向の光線: 縦方向, 横方向, 左上がり, 右上がり,
+# 切削光線, カメラのフラッシュ, 左ブーメラン, 右ブーメラン,
+# 4つの魔法の縦
+# 9つの囲い: 上部 左/中/右, 中央 左/右, 下段 左/中/右,
+# 9つの爆発: 上部 左/中/右, 中央 左/中/右, 下段 左/中/右
+#
+# デフォルトでは次のキャラクタが用いられる。
+#
 #	   ' '  |   -   -   -   -   -   -   -   -
 #           |   |   .   -   |   +   +   .   #   #
 #	    <   >   <   >   ^   "   _   \   #   {
@@ -101,13 +138,11 @@ SAVE=;n
 #	    @   *   /   -   \   |   |   \   -   /
 #	    /   -   \   |  ' '  |   \   -   /
 #
-# If you merely set the IBMgraphics option as above, NetHack will use IBM
-# extended ASCII for dungeon characters.  If you don't like the selections,
-# you can make up your own via the graphics option, but you should still set
-# IBMgraphics if you are using IBM graphics characters to get the correct
-# processing.
+# もし、IBMgraphics を定義したのであれば、AT のグラフィックキャラクタもしくは
+# 98 のグラフィックキャラクタを使って、幾分奇麗な画面にすることが出来る。
+# その場合は次のような定義を使ってみると良い。
 #
-# An example using the IBM graphics character set:
+# AT 機の定義例 (1)
 #GRAPHICS= 032 179 196 218 191 192 217 197 193 194 \
 #	   180 195 249 239 239 254 254 249 177 177 \
 #	   060 062 060 062 094 157 220 190 035 244 \
@@ -115,7 +150,8 @@ SAVE=;n
 #	   179 196 092 047 042 033 041 040 048 035 \
 #	   064 042 047 045 092 058 058 092 045 047 \
 #	   047 045 092 058 032 058 092 045 047
-# An alternative:
+#
+# AT 機の定義例 (2)
 #GRAPHICS= 032 186 205 201 187 200 188 206 202 203 \
 #	   185 204 249 239 239 254 254 249 177 177 \
 #	   060 062 060 062 094 034 095 092 035 244 \
@@ -124,17 +160,22 @@ SAVE=;n
 #	   064 042 047 045 092 058 058 092 045 047 \
 #	   047 045 092 058 032 058 092 045 047
 #
-
+# 98 機の定義例
+GRAPHICS = 032 150 149 156 157 158 159 143 144 145 \
+           146 147 046 045 124 124 045 046 035 035 \
+           060 062 060 062 094 034 095 092 035 236 \
+           135 234 125 150 224 240 240 237 131 126 \
+           150 149 239 238 042 033 157 158 048 035 \
+           064 042 238 149 239 150 150 239 149 238 \
+           238 149 239 150 032 150 239 149 238
 #
-# Using the DEC Rainbow/ANSI line-drawing character set:
-#
-# If you have compiled with TERMLIB, merely set the DECgraphics option as
-# above.  NetHack will then switch into the VTxxx line-drawing character set
-# (aka ANSI ruling character set '0') for dungeon characters.  If you don't
-# like the selections, you can make up your own via the graphics option,
-# adding 128 to the value of any line-drawing character you want to use.
-# (But you should still set DECgraphics to get the correct processing.)
+# DECgraphics の場合も同様である。DEC Rainbow か、ANSI の線引きシーケンス
+# がサポートされている必要がある。
 #
 #GRAPHICS= 032 248 241 236 235 237 234 238 246 247 \
 #	   245 244 248 241 092 047 254 241 248 043 \
 #	   254 225
+#
+#------------------------------------------------------------------------------
+# *** END OF CONFIGURATION ***
+

@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "vault.h"
 
@@ -46,8 +53,10 @@ register boolean forceshow;
 		EGD(grd)->fcbeg++;
 	}
 	if(grd->mhp <= 0) {
-	    pline("The corridor disappears.");
-	    if(IS_ROCK(levl[u.ux][u.uy].typ)) You("are encased in rock.");
+/*JP	    pline("The corridor disappears.");*/
+	    pline("通路は消えた．");
+/*JP	    if(IS_ROCK(levl[u.ux][u.uy].typ)) You("are encased in rock.");*/
+	    if(IS_ROCK(levl[u.ux][u.uy].typ)) You("石につつまれた．");
 	}
 	return(TRUE);
 }
@@ -232,35 +241,44 @@ fnd:
 	}
 
 	reset_faint();			/* if fainted - wake up */
-	pline("Suddenly one of the Vault's guards enters!");
+/*JP	pline("Suddenly one of the Vault's guards enters!");*/
+	pline("突然，倉庫の番兵が入ってきた！");
 	newsym(guard->mx,guard->my);
 	if (Strangled
 #ifdef POLYSELF
 			|| uasmon->msound == MS_SILENT
 #endif
 							) {
-	    verbalize("I'll be back when you're ready to speak to me!");
+/*JP	    verbalize("I'll be back when you're ready to speak to me!");*/
+	    verbalize("話せるようになったら戻ってきてやる！");
 	    mongone(guard);
 	    return;
 	}
 	stop_occupation();		/* if occupied, stop it *now* */
 	do {
-		getlin("\"Hello stranger, who are you?\" -",buf);
+/*JP		getlin("\"Hello stranger, who are you?\" -",buf);*/
+		getlin("「見知らぬ人よ，おまえは誰だ？」-",buf);
 	} while (!letter(buf[0]));
 
 	if(!strcmp(buf, "Croesus") || !strcmp(buf, "Kroisos")) {
-		verbalize("Oh, yes, of course.  Sorry to have disturbed you.");
+/*JP		verbalize("Oh, yes, of course.  Sorry to have disturbed you.");*/
+		verbalize("いや，こりゃ，えーと，お騒せした．");
 		mongone(guard);
 		return;
 	}
-	verbalize("I don't know you.");
+/*JP	verbalize("I don't know you.");*/
+	verbalize("知らんな．");
 	if (!u.ugold && !hidden_gold())
-	    verbalize("Please follow me.");
+/*JP	    verbalize("Please follow me.");*/
+	    verbalize("私の後についてこい．");
 	else {
 	    if (!u.ugold)
-		verbalize("You have hidden gold.");
-	    verbalize("Most likely all your gold was stolen from this vault.");
-	    verbalize("Please drop that gold and follow me.");
+/*JP		verbalize("You have hidden gold.");*/
+		verbalize("まだゴールドを隠してるな．");
+/*JP	    verbalize("Most likely all your gold was stolen from this vault.");
+	    verbalize("Please drop that gold and follow me.");*/
+	    verbalize("倉庫から盗んだゴールドがあるだろう．");
+	    verbalize("それをそっくり戻してから，私の後についてこい．");
 	}
 	EGD(guard)->gdx = gx;
 	EGD(guard)->gdy = gy;
@@ -390,12 +408,16 @@ struct monst *grd;
 
 	if(movedgold || fixed) {
 	    if(in_fcorridor(grd, grd->mx, grd->my) || cansee(grd->mx, grd->my))
-		pline("The guard whispers an incantation.");
-	    else You("hear a distant chant.");
+/*JP		pline("The guard whispers an incantation.");*/
+		pline("番兵は呪文をささやいた．");
+/*JP	    else You("hear a distant chant.");*/
+	    else You("遠方での呪文を聞いた．");
 	    if(movedgold)
-		pline("A mysterious force moves the gold into the vault.");
+/*JP		pline("A mysterious force moves the gold into the vault.");*/
+		pline("神秘的な力がゴールドを倉庫へ運んだ．");
 	    if(fixed)
-		pline("The damaged vault's walls are magically restored!");
+/*JP		pline("The damaged vault's walls are magically restored!");*/
+		pline("傷ついた倉庫の壁は魔法で復元された！");
 	}
 }
 
@@ -448,14 +470,19 @@ register struct monst *grd;
 	    if(u_in_vault &&
 			(u_carry_gold || um_dist(grd->mx, grd->my, 1))) {
 		if(egrd->warncnt == 3)
-			verbalize("I repeat, %sfollow me!",
+/*JP			verbalize("I repeat, %sfollow me!",
 				u_carry_gold ? (!u.ugold ?
 					  "drop that hidden gold and " :
-					  "drop that gold and ") : "");
+					  "drop that gold and ") : "");*/
+			verbalize("繰り返す！%s私についてこい．",
+				u_carry_gold ? (!u.ugold ?
+					  "隠し持ってるゴールドを置いて" :
+					  "ゴールドを置いて") : "");
 		if(egrd->warncnt == 7) {
 			m = grd->mx;
 			n = grd->my;
-			verbalize("You've been warned, knave!");
+/*JP			verbalize("You've been warned, knave!");*/
+			verbalize("おまえは警告されているのだ，悪党！");
 			mnexto(grd);
 			levl[m][n].typ = egrd->fakecorr[0].ftyp;
 			newsym(m,n);
@@ -477,15 +504,19 @@ register struct monst *grd;
 		    grd->mpeaceful = 0;
 letknow:
 		    if(!cansee(grd->mx, grd->my))
-			You("hear the shrill sound of a guard's whistle.");
+/*JP			You("hear the shrill sound of a guard's whistle.");*/
+			You("番兵の鋭い笛の音を聞いた．");
 		    else
 			You(um_dist(grd->mx, grd->my, 2) ?
-			    "see an angry %s approaching." :
-			    "are confronted by an angry %s.",
+/*JP			    "see an angry %s approaching." :
+			    "are confronted by an angry %s.",*/
+			    "怒った%sが近づいてくるのを見た．" :
+			    "怒った%sと直面した．",
 			    l_monnam(grd));
 		    return(-1);
 		} else {
-		    verbalize("Well, begone.");
+/*JP		    verbalize("Well, begone.");*/
+		    verbalize("立ち去れ．");
 		    wallify_vault(grd);
 		    egrd->gddone = 1;
 		    goto cleanup;
@@ -497,7 +528,8 @@ letknow:
 		  !egrd->gddone && !in_fcorridor(grd, u.ux, u.uy) &&
 		  levl[egrd->fakecorr[0].fx][egrd->fakecorr[0].fy].typ
 				 == egrd->fakecorr[0].ftyp) {
-		pline("The guard, confused, disappears.");
+/*JP		pline("The guard, confused, disappears.");*/
+		pline("番兵は混乱し，消えた．");
 		disappear_msg_seen = TRUE;
 		goto cleanup;
 	    }
@@ -511,10 +543,12 @@ letknow:
 		}
 		if(egrd->warncnt < 6) {
 			egrd->warncnt = 6;
-			verbalize("Drop all your gold, scoundrel!");
+/*JP			verbalize("Drop all your gold, scoundrel!");*/
+			verbalize("金を全部置いてゆけ，ならずもの！");
 			return(0);
 		} else {
-			verbalize("So be it, rogue!");
+/*JP			verbalize("So be it, rogue!");*/
+			verbalize("盗人め！");
 			grd->mpeaceful = 0;
 			return(-1);
 		}
@@ -540,7 +574,8 @@ letknow:
 		} else {
 		    /* just for insurance... */
 		    if (MON_AT(m, n) && m != grd->mx && n != grd->my) {
-			verbalize("Out of my way, scum!");
+/*JP			verbalize("Out of my way, scum!");*/
+			verbalize("目の前から消えろ，クソったれ！");
 			rloc(m_at(m, n));
 		    }
 		    remove_monster(grd->mx, grd->my);
@@ -548,8 +583,10 @@ letknow:
 		    mpickgold(grd);	/* does a newsym */
 		}
 		if(cansee(m,n))
-		    pline("%s%s picks up the gold.", Monnam(grd),
-				grd->mpeaceful ? " calms down and" : "");
+/*JP		    pline("%s%s picks up the gold.", Monnam(grd),
+				grd->mpeaceful ? " calms down and" : "");*/
+		    pline("%sは%sゴールドを拾った．", Monnam(grd),
+				grd->mpeaceful ? "怒りを静め" : "");
 		if(x != grd->mx || y != grd->my) {
 		    remove_monster(grd->mx, grd->my);
 		    place_monster(grd, x, y);
@@ -562,7 +599,8 @@ letknow:
 		}
 	}
 	if(um_dist(grd->mx, grd->my, 1) || egrd->gddone) {
-		if(!egrd->gddone && !rn2(10)) verbalize("Move along!");
+/*JP		if(!egrd->gddone && !rn2(10)) verbalize("Move along!");*/
+		if(!egrd->gddone && !rn2(10)) verbalize("離れるな！");
 		restfakecorr(grd);
 		return(0);	/* didn't move */
 	}
@@ -669,7 +707,8 @@ cleanup:
 		if(!semi_dead && (in_fcorridor(grd, u.ux, u.uy) ||
 				     cansee(x, y))) {
 		    if (!disappear_msg_seen)
-			pline("Suddenly, the guard disappears.");
+/*JP			pline("Suddenly, the guard disappears.");*/
+			pline("突然，番兵は消えた．");
 		    return(1);
 		}
 		return(-2);
@@ -696,8 +735,9 @@ paygd()
 	if (!u.ugold || !grd) return;
 
 	if (u.uinvault) {
-	    Your("%ld zorkmid%s goes into the Magic Memory Vault.",
-		u.ugold, plur(u.ugold));
+/*JP	    Your("%ld zorkmid%s goes into the Magic Memory Vault.",*/
+	    Your("%ldゴールドは魔法のメモリー倉庫に入った．",
+		u.ugold);
 	    gx = u.ux;
 	    gy = u.uy;
 	} else {
@@ -706,12 +746,14 @@ paygd()
 		return;
 	    }
 	    mnexto(grd);
-	    pline("%s remits your gold to the vault.", Monnam(grd));
+/*JP	    pline("%s remits your gold to the vault.", Monnam(grd));*/
+	    pline("%sはあなたのゴールドを倉庫に送った．", Monnam(grd));
 	    gx = rooms[EGD(grd)->vroom].lx + rn2(2);
 	    gy = rooms[EGD(grd)->vroom].ly + rn2(2);
 	    Sprintf(buf,
-		"To Croesus: here's the gold recovered from %s the %s.",
-		plname, player_mon()->mname);
+/*JP		"To Croesus: here's the gold recovered from %s the %s.",*/
+		"Croesusへ: ここに%sの%sから取り戻したゴールドを送る．",
+		player_mon()->mname, plname );
 	    make_engr_at(gx, gy, buf, 0L, ENGRAVE);
 	}
 	place_object(gold = mkgoldobj(u.ugold), gx, gy);

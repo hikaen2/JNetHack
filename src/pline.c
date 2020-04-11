@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #define NEED_VARARGS /* Uses ... */	/* comment line for pre-compiled headers */
 #include "hack.h"
 #include "epri.h"
@@ -100,8 +107,14 @@ You VA_DECL(const char *, line)
 	char *tmp;
 	VA_START(line);
 	VA_INIT(line, const char *);
-	tmp = You_buf((int)strlen(line) + 5);
-	Strcpy(tmp, "You ");
+	tmp = You_buf((int)strlen(line) + 9);
+/*	Strcpy(tmp, "You ");*/
+#define JPYOU
+#ifdef JPYOU
+	Strcpy(tmp, "あなたは");
+#else
+	tmp[0]='\0';
+#endif
 	Strcat(tmp, line);
 	vpline(tmp, VA_ARGS);
 	VA_END();
@@ -113,8 +126,8 @@ Your VA_DECL(const char *,line)
 	char *tmp;
 	VA_START(line);
 	VA_INIT(line, const char *);
-	tmp = You_buf((int)strlen(line) + 6);
-	Strcpy(tmp, "Your ");
+	tmp = You_buf((int)strlen(line) + 9);
+	Strcpy(tmp, "あなたの");
 	Strcat(tmp, line);
 	vpline(tmp, VA_ARGS);
 	VA_END();
@@ -128,9 +141,11 @@ verbalize VA_DECL(const char *,line)
 	VA_START(line);
 	VA_INIT(line, const char *);
 	tmp = You_buf((int)strlen(line) + 3);
-	Strcpy(tmp, "\"");
+/*JP	Strcpy(tmp, "\"");*/
+	Strcpy(tmp, "「");
 	Strcat(tmp, line);
-	Strcat(tmp, "\"");
+/*JP	Strcat(tmp, "\"");*/
+	Strcat(tmp, "」");
 	vpline(tmp, VA_ARGS);
 	VA_END();
 }
@@ -191,12 +206,17 @@ align_str(alignment)
     aligntyp alignment;
 {
     switch ((int)alignment) {
-	case A_CHAOTIC: return "chaotic";
+/*JP	case A_CHAOTIC: return "chaotic";
 	case A_NEUTRAL: return "neutral";
 	case A_LAWFUL:	return "lawful";
-	case A_NONE:	return "unaligned";
+	case A_NONE:	return "unaligned";*/
+	case A_CHAOTIC: return "混沌";
+	case A_NEUTRAL: return "中立";
+	case A_LAWFUL:	return "秩序";
+	case A_NONE:	return "無心";
     }
-    return "unknown";
+/*JP    return "unknown";*/
+    return "不明";
 }
 
 void
@@ -214,7 +234,7 @@ register struct monst *mtmp;
 	alignment = (alignment > 0) ? A_LAWFUL :
 		(alignment < 0) ? A_CHAOTIC :
 		A_NEUTRAL;
-	pline("Status of %s (%s):  Level %d  Gold %lu  HP %d(%d) AC %d%s%s",
+/*JP	pline("Status of %s (%s):  Level %d  Gold %lu  HP %d(%d) AC %d%s%s",
 		mon_nam(mtmp),
 		align_str(alignment),
 		mtmp->m_lev,
@@ -223,22 +243,41 @@ register struct monst *mtmp;
 		mtmp->mhpmax,
 		find_mac(mtmp),
 		mtmp->mcan ? ", cancelled" : "" ,
-		mtmp->mtame ? ", tame" : "");
+		mtmp->mtame ? ", tame" : "");*/
+	pline("%sの状態 (%s):  Level %d  Gold %lu  HP %d(%d) AC %d%s%s",
+		mon_nam(mtmp),
+		align_str(alignment),
+		mtmp->m_lev,
+		mtmp->mgold,
+		mtmp->mhp,
+		mtmp->mhpmax,
+		find_mac(mtmp),
+		mtmp->mcan ? ", 封印されている" : "" ,
+		mtmp->mtame ? ", 飼いならされている" : "");
 }
 
 void
 ustatusline()
 {
-	pline("Status of %s (%s%s):  Level %d  Gold %lu  HP %d(%d)  AC %d",
+/*JP	pline("Status of %s (%s%s):  Level %d  Gold %lu  HP %d(%d)  AC %d",*/
+	pline("%sの状態 (%s %s):  Level %d  Gold %lu  HP %d(%d)  AC %d",
 		plname,
-		    (u.ualign.record >= 20) ? "piously " :
+/*JP		    (u.ualign.record >= 20) ? "piously " :
 		    (u.ualign.record > 13) ? "devoutly " :
 		    (u.ualign.record > 8) ? "fervently " :
 		    (u.ualign.record > 3) ? "stridently " :
 		    (u.ualign.record == 3) ? "" :
 		    (u.ualign.record >= 1) ? "haltingly " :
 		    (u.ualign.record == 0) ? "nominally " :
-					    "insufficiently ",
+					    "insufficiently ",*/
+		    (u.ualign.record >= 20) ? "敬虔" :
+		    (u.ualign.record > 13) ? "信心深い" :
+		    (u.ualign.record > 8) ? "熱烈" :
+		    (u.ualign.record > 3) ? "声のかん高い" :
+		    (u.ualign.record == 3) ? "" :
+		    (u.ualign.record >= 1) ? "有名無実" :
+		    (u.ualign.record == 0) ? "迷惑" :
+					    "不適当",
 		align_str(u.ualign.type),
 # ifdef POLYSELF
 		u.mtimedone ? mons[u.umonnum].mlevel : u.ulevel,
@@ -257,3 +296,4 @@ ustatusline()
 #endif /* OVLB */
 
 /*pline.c*/
+

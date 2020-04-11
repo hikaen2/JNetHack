@@ -4,6 +4,12 @@
 
 /* main.c - MSDOS, OS/2, ST, Amiga, and NT NetHack */
 
+/*/*
+**	Japanese version Copyright (C) Issei Numata, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifndef NO_SIGNAL
@@ -152,7 +158,11 @@ char *argv[];
 #ifdef CHDIR
 		chdirx(hackdir,0);
 #endif
+/*JP*/
+		initoptions();
+		init_jtrns();
 		prscore(argc, argv);
+		jputchar('\0'); /* reset */
 		exit(0);
 	    }
 	}
@@ -176,6 +186,8 @@ char *argv[];
 #ifdef CHDIR
 	chdirx(hackdir,1);
 #endif
+/*JP*/
+	init_jtrns();
 
 	process_options(argc, argv);
 
@@ -204,6 +216,8 @@ char *argv[];
 	Strcat(lock,".99");
 	regularize(lock);	/* is this necessary? */
 #endif
+/*JP*/
+	init_jtrns();
 
 	/* set up level 0 file to keep game state in */
 	/* this will have to be expanded to something like the
@@ -269,7 +283,8 @@ char *argv[];
 		    flags.news = FALSE;
 		}
 #endif
-		pline("Restoring save file...");
+/*JP		pline("Restoring save file...");*/
+		pline("セーブファイルを復元中．．．");
 		mark_synch();	/* flush output */
 
 		if(!dorecover(fd))
@@ -277,16 +292,19 @@ char *argv[];
 #ifdef WIZARD
 		if(!wizard && remember_wiz_mode) wizard = TRUE;
 #endif
-		pline("Hello %s, welcome back to NetHack!", plname);
+/*JP		pline("Hello %s, welcome back to NetHack!", plname);*/
+		pline("ようこそ %s, NetHackの世界へ！", plname);
 		check_special_room(FALSE);
 
 #ifdef EXPLORE_MODE
 		if (discover)
-			You("are in non-scoring discovery mode.");
+/*JP			You("are in non-scoring discovery mode.");*/
+		        pline("探索モードではスコアはのらないよ．");
 #endif
 #if defined(EXPLORE_MODE) || defined(WIZARD)
 		if (discover || wizard) {
-			if(yn("Do you want to keep the save file?") == 'n'){
+/*JP			if(yn("Do you want to keep the save file?") == 'n'){*/
+			if(yn("セーブファイルを残しておきますか？") == 'n'){
 				(void) delete_savefile();
 			}
 #ifdef AMIGA
@@ -301,10 +319,12 @@ not_recovered:
 		player_selection();
 		newgame();
 		/* give welcome message before pickup messages */
-		pline("Hello %s, welcome to NetHack!", plname);
+/*JP		pline("Hello %s, welcome to NetHack!", plname);*/
+		pline("ようこそ %s, NetHackの世界へ！", plname);
 #ifdef EXPLORE_MODE
 		if (discover)
-			You("are in non-scoring discovery mode.");
+/*JP			You("are in non-scoring discovery mode.");*/
+		        pline("探索モードではスコアはのらないよ．");
 #endif
 		flags.move = 0;
 		set_wear();
@@ -314,13 +334,16 @@ not_recovered:
 	
 	flags.moonphase = phase_of_the_moon();
 	if(flags.moonphase == FULL_MOON) {
-		You("are lucky!  Full moon tonight.");
+/*JP		You("are lucky!  Full moon tonight.");*/
+	        pline("ラッキー！今晩は満月だ．");
 		change_luck(1);
 	} else if(flags.moonphase == NEW_MOON) {
-		pline("Be careful!  New moon tonight.");
+/*JP		pline("Be careful!  New moon tonight.");*/
+	        pline("注意しろ！今晩は新月だ．");
 	}
 	if(flags.friday13 = friday_13th()) {
-		pline("Watch out!  Bad things can happen on Friday the 13th.");
+/*JP		pline("Watch out!  Bad things can happen on Friday the 13th.");*/
+	        pline("用心しろ！１３日の金曜日にはよくないことがある．") ;
 		change_luck(-1);
 	}
 

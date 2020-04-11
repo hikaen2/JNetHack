@@ -9,6 +9,16 @@
 #ifndef WINX_H
 #define WINX_H
 
+/*JP
+**	for i18n by issei 1994/1/8
+*/
+#ifdef XI18N
+#include <X11/Xlocale.h>
+#endif
+#ifdef XAW_I18N
+#include <X11/Xaw/Xawi18n.h>
+#endif
+
 #ifndef E
 #define E extern
 #endif
@@ -72,6 +82,10 @@ struct line_element {
 
 struct mesg_info_t {
     XFontStruct *fs;		/* Font for the window. */
+/*JP*/
+#ifdef XI18N
+    XFontSet	fontset;
+#endif
     int		num_lines;	/* line count */
     struct line_element *head;	/* head of circular line queue */
     struct line_element *line_here;/* current drawn line position */
@@ -125,6 +139,10 @@ struct menu_info_t {
 struct text_info_t {
     struct text_buffer text;
     XFontStruct *fs;		/* Font for the text window. */
+/*JP*/
+#ifdef XI18N
+    XFontSet	fontset;
+#endif
     int		max_width;	/* Width of widest line so far. */
     int		extra_width,	/* Sum of left and right border widths. */
 		extra_height;	/* Sum of top and bottom border widths. */

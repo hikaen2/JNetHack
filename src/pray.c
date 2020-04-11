@@ -2,6 +2,13 @@
 /* Copyright (c) Benson I. Margulies, Mike Stephenson, Steve Linhart, 1989. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "epri.h"
 
@@ -59,10 +66,14 @@ struct ghods {
 static const char	*Moloch = "Moloch";
 
 static const char *godvoices[] = {
-    "booms out",
+/*JP    "booms out",
     "thunders",
     "rings out",
-    "booms",
+    "booms",*/
+    "響きわたった",
+    "雷のように響いた",
+    "とどろいた",
+    "響いた",
 };
 
 /* values calculated when prayer starts, and used when completed */
@@ -188,8 +199,12 @@ in_trouble()
 	return(0);
 }
 
+/*JP
 const char leftglow[] = "left ring softly glows";
 const char rightglow[] = "right ring softly glows";
+*/
+const char leftglow[] = "左の指輪";
+const char rightglow[] = "右の指輪";
 
 static void
 fix_worst_trouble(trouble)
@@ -202,15 +217,18 @@ register int trouble;
 	u.ublesscnt += rnz(100);
 	switch (trouble) {
 	    case TROUBLE_STONED:
-		    You("feel more limber.");
+/*JP		    You("feel more limber.");*/
+		    You("軟らかくなったのを感じた．");
 		    Stoned = 0;
 		    break;
 	    case TROUBLE_STRANGLED:
-		    You("can breathe again.");
+/*JP		    You("can breathe again.");*/
+		    You("呼吸できるようになった．");
 		    Strangled = 0;
 		    break;
 	    case TROUBLE_LAVA:
-		    You("are back on solid ground.");
+/*JP		    You("are back on solid ground.");*/
+		    You("固い地面に戻った．");
 		    /* teleport should always succeed, but if not,
 		     * just untrap them.
 		     */
@@ -221,16 +239,19 @@ register int trouble;
 		    losestr(-1);
 		    /* fall into... */
 	    case TROUBLE_HUNGRY:
-		    Your("stomach feels content.");
+/*JP		    Your("stomach feels content.");*/
+		    Your("胃袋は満たされた．");
 		    init_uhunger ();
 		    flags.botl = 1;
 		    break;
 	    case TROUBLE_SICK:
-		    You("feel better.");
+/*JP		    You("feel better.");*/
+		    You("気分が良くなった．");
 		    make_sick(0L,FALSE);
 		    break;
 	    case TROUBLE_HIT:
-		    You("feel much better.");
+/*JP		    You("feel much better.");*/
+		    You("とても気分がよくなった．");
 		    if (u.uhpmax < u.ulevel * 5 + 11)
 			u.uhp = u.uhpmax += rnd(5);
 		    else
@@ -238,7 +259,8 @@ register int trouble;
 		    flags.botl = 1;
 		    break;
 	    case TROUBLE_STUCK_IN_WALL:
-		    Your("surroundings change.");
+/*JP		    Your("surroundings change.");*/
+		    Your("環境が変化した．");
 		    tele();
 		    break;
 	    case TROUBLE_CURSED_LEVITATION:
@@ -258,12 +280,14 @@ register int trouble;
 		    otmp = ublindf;
 		    goto decurse;
 	    case TROUBLE_PUNISHED:
-		    Your("chain disappears.");
+/*JP		    Your("chain disappears.");*/
+		    Your("鎖は消えた．");
 		    unpunish();
 		    break;
 #ifdef POLYSELF
 	    case TROUBLE_LYCANTHROPE:
-		    You("feel purified.");
+/*JP		    You("feel purified.");*/
+		    You("清められたような気がした．");
 		    if(uasmon == &mons[u.ulycn] && !Polymorph_control)
 			rehumanize();
 		    u.ulycn = -1;       /* now remove the curse */
@@ -305,24 +329,32 @@ decurse:
 		    uncurse(otmp);
 		    otmp->bknown = TRUE;
 		    if (!Blind)
-			    Your("%s %s.",
+/*JP			    Your("%s %s.",
 				 what ? what :
 				 (const char *)aobjnam (otmp, "softly glow"),
-				 Hallucination ? hcolor() : amber);
+				 Hallucination ? hcolor() : amber);*/
+			    Your("%sは%sうっすらと輝いた．",
+				 what ? what :
+				 (const char *)xname (otmp),
+				 jconj_adj(Hallucination ? hcolor() : amber));
 		    break;
 	    case TROUBLE_HALLUCINATION:
-		    pline ("Looks like you are back in Kansas.");
+/*JP		    pline ("Looks like you are back in Kansas.");*/
+		    pline ("カンサスに戻ってきたような気がした．");
 		    make_hallucinated(0L,FALSE,0L);
 		    break;
 	    case TROUBLE_BLIND:
-		    Your("%s feel better.", makeplural(body_part(EYE)));
+/*JP		    Your("%s feel better.", makeplural(body_part(EYE)));*/
+		    Your("%sは回復した．", makeplural(body_part(EYE)));
 		    make_blinded(0L,FALSE);
 		    break;
 	    case TROUBLE_POISONED:
 		    if (Hallucination)
-			pline("There's a tiger in your tank.");
+/*JP			pline("There's a tiger in your tank.");*/
+			pline("あなたのタンクの中に虎がいる．");
 		    else
-			You("feel in good health again.");
+/*JP			You("feel in good health again.");*/
+			You("また健康になったような気がした．");
 		    for(i=0; i<A_MAX; i++) {
 			if(ABASE(i) < AMAX(i)) {
 				ABASE(i) = AMAX(i);
@@ -346,49 +378,61 @@ static void
 god_zaps_you(resp_god)
 aligntyp resp_god;
 {
-	pline("Suddenly, a bolt of lightning strikes you!");
+/*JP	pline("Suddenly, a bolt of lightning strikes you!");*/
+	pline("突然，稲妻があなたに命中した！");
 	if (Reflecting) {
 	    shieldeff(u.ux, u.uy);
 	    if (Blind)
-		pline("For some reason you're unaffected.");
+/*JP		pline("For some reason you're unaffected.");*/
+		pline("何らかの理由であなたは影響を受けない．");
 	    else {
 		if (Reflecting & W_AMUL) {
-		    pline("It reflects from your medallion.");
+/*JP		    pline("It reflects from your medallion.");*/
+		    pline("それはあなたのメダリオンによって反射された．");
 		    makeknown(AMULET_OF_REFLECTION);
 		} else {
-		    pline("It reflects from your shield.");
+/*JP		    pline("It reflects from your shield.");*/
+		    pline("それはあなたの盾によって反射された．");
 		    makeknown(SHIELD_OF_REFLECTION);
 		}
 	    }
 	    goto ohno;
 	} else if (Shock_resistance) {
 	    shieldeff(u.ux, u.uy);
-	    pline("It seems not to affect you.");
+/*JP	    pline("It seems not to affect you.");*/
+	    pline("それはあなたに影響を与えないようだ．");
 ohno:
-	    pline("%s is not deterred...", align_gname(resp_god));
-	    pline("A wide-angle disintegration beam hits you!");
+/*JP	    pline("%s is not deterred...", align_gname(resp_god));
+	    pline("A wide-angle disintegration beam hits you!");*/
+	    pline("%sはやめなかった．．．", align_gname(resp_god));
+	    pline("粉砕の光線があなたに命中した！");
 	    if (Disint_resistance) {
-		You("bask in its %s glow for a minute...", Black);
-		godvoice(resp_god, "I believe it not!");
+/*JP		You("bask in its %s glow for a minute...", Black);*/
+		You("一瞬，その%s輝きで暖まった．．．", Black);
+/*JP		godvoice(resp_god, "I believe it not!");*/
+		godvoice(resp_god, "信じられぬ！");
 		if(Is_astralevel(&u.uz)) {
 
 		    /* one more try on the astral level */
-		    verbalize("Thou cannot escape my wrath, mortal!");
+/*JP		    verbalize("Thou cannot escape my wrath, mortal!");*/
+		    verbalize("汝我が怒りから逃がれることならん，人間よ！");
 		    summon_minion(resp_god, FALSE);
 		    summon_minion(resp_god, FALSE);
 		    summon_minion(resp_god, FALSE);
-		    verbalize("Destroy %s, my servants!", him[flags.female]);
+/*JP		    verbalize("Destroy %s, my servants!", him[flags.female]);*/
+		    verbalize("%sを殺せ！，わが下僕よ！", him[flags.female]);
 		}
 		return;
 	    }
 	}
 	{
 	    char killerbuf[64];
-	    You("fry to a crisp.");
+/*JP	    You("fry to a crisp.");*/
+	    You("パリパリになった．");
 	    killer_format = KILLED_BY;
-	    Sprintf(killerbuf, "the wrath of %s", align_gname(resp_god));
+	    Sprintf(killerbuf, "%sの怒りに触れ", align_gname(resp_god));
 	    killer = killerbuf;
-	    done(DIED);
+	    done(DIED2);
 	}
 }
 
@@ -413,23 +457,33 @@ aligntyp resp_god;
 	switch (maxanger ? rn2(maxanger): 0) {
 
 	    case 0:
-	    case 1:	You("feel that %s is %s.", align_gname(resp_god),
-			    Hallucination ? "bummed" : "displeased");
+/*JP	    case 1:	You("feel that %s is %s.", align_gname(resp_god),
+			    Hallucination ? "bummed" : "displeased");*/
+	    case 1:	You("%sが%sいるのを感じた．", align_gname(resp_god),
+			    Hallucination ? "ねだって" : "立腹して");
 			break;
 	    case 2:
 	    case 3:
 			godvoice(resp_god,NULL);
 # ifdef POLYSELF
-			pline("\"Thou %s, %s.\"",
+/*JP			pline("\"Thou %s, %s.\"",
 			      ugod_is_angry() ? "hast strayed from the path" :
 						"art arrogant",
-			      u.usym == S_HUMAN ? "mortal" : "creature");
+			      u.usym == S_HUMAN ? "mortal" : "creature");*/
+			pline("「汝%s，%s．」",
+			      ugod_is_angry() ? "その道から踏み出ておる":
+						"傲慢なり",
+			      u.usym == S_HUMAN ? "人間よ" : "生物よ");
 # else
-			pline("\"Thou %s, mortal.\"",
+/*JP			pline("\"Thou %s, mortal.\"",
 			      ugod_is_angry() ? "hast strayed from the path" :
-						"art arrogant");
+						"art arrogant");*/
+			pline("「汝%s，人間よ．」"
+			      ugod_is_angry() ? "その道から踏み出ておる":
+						"傲慢なり");
 # endif
-			verbalize("Thou must relearn thy lessons!");
+/*JP			verbalize("Thou must relearn thy lessons!");*/
+			verbalize("汝もう一度学ぶべし！");
 			(void) adjattrib(A_WIS, -1, FALSE);
 			if (u.ulevel > 1) {
 			    losexp();
@@ -448,21 +502,30 @@ aligntyp resp_god;
 	    case 4:
 	    case 5:	gods_angry(resp_god);
 			if (!Blind && !Antimagic)
-			    pline("%s glow surrounds you.",
+/*JP			    pline("%s glow surrounds you.",
+				  An(Hallucination ? hcolor() : Black));*/
+			    pline("%s光があなたを取り巻いた．",
 				  An(Hallucination ? hcolor() : Black));
 			rndcurse();
 			break;
 	    case 7:
 	    case 8:	godvoice(resp_god,NULL);
-			verbalize("Thou durst %s me?",
+/*JP			verbalize("Thou durst %s me?",
 				  (on_altar() &&
 				   (a_align(u.ux,u.uy) != resp_god)) ?
-				  "scorn":"call upon");
+				  "scorn":"call upon");*/
+			verbalize("汝，我%s？",
+				  (on_altar() &&
+				   (a_align(u.ux,u.uy) != resp_god)) ?
+				  "をさげすむか？":"祈りを求めしか？");
 # ifdef POLYSELF
-			pline("\"Then die, %s!\"",
-			      u.usym == S_HUMAN ? "mortal" : "creature");
+/*JP			pline("\"Then die, %s!\"",
+			      u.usym == S_HUMAN ? "mortal" : "creature");*/
+			pline("「死ね，%s！」",
+			      u.usym == S_HUMAN ? "人間よ" : "生物よ");
 # else
-			verbalize("Then die, mortal!");
+/*JP			verbalize("Then die, mortal!");*/
+			verbalize("死ね！，人間よ！");
 # endif
 
 			summon_minion(resp_god, FALSE);
@@ -483,12 +546,18 @@ pleased(g_align)
 	int trouble = p_trouble;	/* what's your worst difficulty? */
 	int pat_on_head = 0;
 
-	You("feel that %s is %s.", align_gname(g_align),
+/*JP	You("feel that %s is %s.", align_gname(g_align),
 	    u.ualign.record >= DEVOUT ?
 	    Hallucination ? "pleased as punch" : "well-pleased" :
 	    u.ualign.record >= STRIDENT ?
 	    Hallucination ? "ticklish" : "pleased" :
-	    Hallucination ? "full" : "satisfied");
+	    Hallucination ? "full" : "satisfied");*/
+	pline("%sが%sような気がした．", align_gname(g_align),
+	    u.ualign.record >= DEVOUT ?
+	    Hallucination ? "くそ機嫌いい" : "ご機嫌麗しい" :
+	    u.ualign.record >= STRIDENT ?
+	    Hallucination ? "くすぐったがっている" : "上機嫌である" :
+	    Hallucination ? "腹いっぱいである" : "満足している");
 
 	/* not your deity */
 	if (on_altar() && p_aligntyp != u.ualign.type) {
@@ -544,17 +613,25 @@ pleased(g_align)
 		    uwep->cursed = FALSE;
 		    uwep->bknown = TRUE;
 		    if (!Blind)
-			Your("%s %s.", aobjnam(uwep, "softly glow"),
-			     Hallucination ? hcolor() : amber);
-		    else You("feel the power of %s over your %s.",
+/*JP			Your("%s %s.", aobjnam(uwep, "softly glow"),
+			     Hallucination ? hcolor() : amber);*/
+			Your("%sは%sうっすらと輝いた．", xname(uwep), 
+			     jconj_adj(Hallucination ? hcolor() : amber));
+/*JP		    else You("feel the power of %s over your %s.",
+			u_gname(), xname(uwep));*/
+		    else pline("%sの力が%sに注がれているのを感じた．",
 			u_gname(), xname(uwep));
 		} else if(uwep->otyp < BOW || uwep->otyp > CROSSBOW) {
 		    uwep->blessed = uwep->bknown = TRUE;
 		    if (!Blind)
-			Your("%s with %s aura.",
+/*JP			Your("%s with %s aura.",
 			     aobjnam(uwep, "softly glow"),
-			     an(Hallucination ? hcolor() : light_blue));
-		    else You("feel the blessing of %s over your %s.",
+			     an(Hallucination ? hcolor() : light_blue));*/
+			Your("%sは%sぼんやりしたオーラにつつまれた．",
+			     xname(uwep), 
+			     Hallucination ? hcolor() : light_blue);
+/*JP		    else You("feel the blessing of %s over your %s.",*/
+		    else pline("%sの祝福が%sに注がれているのを感じた．",
 			u_gname(), xname(uwep));
 		}
 	    }
@@ -565,18 +642,24 @@ pleased(g_align)
 		if(u.uevent.uheard_tune < 1) {
 		    godvoice(g_align,NULL);
 #ifdef POLYSELF
-		    verbalize("Hark, %s!",
-			  u.usym == S_HUMAN ? "mortal" : "creature");
+/*JP		    verbalize("Hark, %s!",
+			  u.usym == S_HUMAN ? "mortal" : "creature");*/
+		    verbalize("聞け，%s！",
+			  u.usym == S_HUMAN ? "人間よ" : "生物よ");
 #else
-		    verbalize("Hark, mortal!");
+/*JP		    verbalize("Hark, mortal!");*/
+		    verbalize("聞け，人間よ！");
 #endif
 		    verbalize(
-			"To enter the castle, thou must play the right tune!");
+/*JP			"To enter the castle, thou must play the right tune!");*/
+			"汝城に入らんとするなら，正しき旋律で演奏せねばならぬ！");
 		    u.uevent.uheard_tune++;
 		    break;
 		} else if (u.uevent.uheard_tune < 2) {
-		    You(Hallucination ? "hear a funeral march..." : "hear a divine music...");
-		    pline("It sounds like:  \"%s\".", tune);
+/*JP		    You(Hallucination ? "hear a funeral march..." : "hear a divine music...");
+		    pline("It sounds like:  \"%s\".", tune);*/
+		    You(Hallucination ? "葬式の行進曲を聞いた．．．" : "神の音楽を聞いた．．．");
+		    pline("それは次のように聞こえた:  「%s」", tune);
 		    u.uevent.uheard_tune++;
 		    break;
 		}
@@ -584,7 +667,9 @@ pleased(g_align)
 	    /* Otherwise, falls into next case */
 	case 2:
 	    if (!Blind)
-		You("are surrounded by %s glow.",
+/*JP		You("are surrounded by %s glow.",
+		    an(Hallucination ? hcolor() : golden));*/
+		You("%s輝きにつつまれた．",
 		    an(Hallucination ? hcolor() : golden));
 	    u.uhp = u.uhpmax += 5;
 	    ABASE(A_STR) = AMAX(A_STR);
@@ -597,15 +682,18 @@ pleased(g_align)
 	    register struct obj *otmp;
 
 	    if (Blind)
-		You("feel the power of %s.", u_gname());
-	    else You("are surrounded by %s aura.",
+/*JP		You("feel the power of %s.", u_gname());*/
+		You("%sの力を感じた．", u_gname());
+/*JP	    else You("are surrounded by %s aura.",*/
+	    else You("%sオーラにつつまれた．",
 		     an(Hallucination ? hcolor() : light_blue));
 	    for(otmp=invent; otmp; otmp=otmp->nobj) {
 		if (otmp->cursed) {
 		    uncurse(otmp);
 		    if (!Blind) {
-			Your("%s %s.", aobjnam(otmp, "softly glow"),
-			     Hallucination ? hcolor() : amber);
+/*JP			Your("%s %s.", aobjnam(otmp, "softly glow"),*/
+			Your("%sは%sうっすらと輝いた．", xname(otmp),
+			     jconj_adj(Hallucination ? hcolor() : amber));
 			otmp->bknown = TRUE;
 		    }
 		}
@@ -613,26 +701,33 @@ pleased(g_align)
 	    break;
 	}
 	case 5: {
-	    const char *msg="\"and thus I grant thee the gift of %s!\"";
-	    godvoice(u.ualign.type, "Thou hast pleased me with thy progress,");
+/*JP	    const char *msg="\"and thus I grant thee the gift of %s!\"";*/
+	    const char *msg="「さらに汝に%sをさずけよう！」";
+/*JP	    godvoice(u.ualign.type, "Thou hast pleased me with thy progress,");*/
+	    godvoice(u.ualign.type, "汝の成長は非常に望ましい，");
 	    if (!(HTelepat & INTRINSIC))  {
 		HTelepat |= FROMOUTSIDE;
-		pline(msg, "Telepathy");
+/*JP		pline(msg, "Telepathy");*/
+		pline(msg, "テレパシー");
 		if (Blind) see_monsters();
 	    } else if (!(Fast & INTRINSIC))  {
 		Fast |= FROMOUTSIDE;
-		pline(msg, "Speed");
+/*JP		pline(msg, "Speed");*/
+		pline(msg, "速さ");
 	    } else if (!(Stealth & INTRINSIC))  {
 		Stealth |= FROMOUTSIDE;
-		pline(msg, "Stealth");
+/*JP		pline(msg, "Stealth");*/
+		pline(msg, "忍の力");
 	    } else {
 		if (!(Protection & INTRINSIC))  {
 		    Protection |= FROMOUTSIDE;
 		    if (!u.ublessed)  u.ublessed = rn1(3, 2);
 		} else u.ublessed++;
-		pline(msg, "my protection");
+/*JP		pline(msg, "my protection");*/
+		pline(msg, "我が護り");
 	    }
-	    verbalize("Use it wisely in my name!");
+/*JP	    verbalize("Use it wisely in my name!");*/
+	    verbalize("我名に於いて有効に使うがよい！");
 	    break;
 	}
 	case 7:
@@ -651,25 +746,32 @@ pleased(g_align)
 		switch(u.ualign.type) {
 		case A_LAWFUL:
 		    u.uevent.uhand_of_elbereth = 1;
-		    verbalize("I crown thee...      The Hand of Elbereth!");
+/*JP		    verbalize("I crown thee...      The Hand of Elbereth!");*/
+		    verbalize("汝にさずけよう．．．     エルベレスの御手を！");
 		    if (obj && (obj->otyp == LONG_SWORD) && !obj->oartifact)
 			obj = oname(obj, artiname(ART_EXCALIBUR), 1);
 		    break;
 		case A_NEUTRAL:
 		    u.uevent.uhand_of_elbereth = 2;
-		    verbalize("Thou shalt be my Envoy of Balance!");
+/*JP		    verbalize("Thou shalt be my Envoy of Balance!");*/
+		    verbalize("汝，我が調和の使者なり！");
 		    if (uwep && uwep->oartifact == ART_VORPAL_BLADE) {
 			obj = uwep;	/* to be blessed and rustproofed */
-			Your("%s goes snicker-snack!", xname(obj));
+/*JP			Your("%s goes snicker-snack!", xname(obj));*/
+			Your("%sは軽くなった！", xname(obj));
 			obj->dknown = TRUE;
 		    } else if (!exist_artifact(LONG_SWORD,
 						artiname(ART_VORPAL_BLADE))) {
 		        obj = mksobj(LONG_SWORD, FALSE, FALSE);
 			obj = oname(obj, artiname(ART_VORPAL_BLADE), 0);
-		        pline("%s %s %s your %s!", Blind ? "Something" : "A",
+/*JP		        pline("%s %s %s your %s!", Blind ? "Something" : "A",
 			      Blind ? "lands" : "sword appears",
 			      Levitation ? "beneath" : "at",
-			      makeplural(body_part(FOOT)));
+			      makeplural(body_part(FOOT)));*/
+		        pline("%sがあなたの%s%sに%s！", Blind ? "何か" : "剣が",
+			      body_part(FOOT),
+			      Levitation ? "の下方" : "元",
+			      Blind ? "着地した" : "現われた");
 			obj->spe = 1;
 			dropy(obj);
 		    }
@@ -691,19 +793,28 @@ pleased(g_align)
 		    in_hand = (uwep && uwep->oartifact == ART_STORMBRINGER);
 		    already_exists = exist_artifact(RUNESWORD,
 						artiname(ART_STORMBRINGER));
-		    verbalize("Thou art chosen to %s for My Glory!",
+/*JP		    verbalize("Thou art chosen to %s for My Glory!",
 			      already_exists && !in_hand ?
-			      "take lives" : "steal souls");
+			      "take lives" : "steal souls");*/
+		    verbalize("汝，我が栄光のため%sとして選ばれん！",
+			      already_exists && !in_hand ?
+			      "生きながらえん者" : "魂を奪いしためる者");
 		    if (in_hand) {
 			obj = uwep;	/* to be blessed and rustproofed */
 		    } else if (!already_exists) {
 		        obj = mksobj(RUNESWORD, FALSE, FALSE);
 			obj = oname(obj, artiname(ART_STORMBRINGER), 0);
-		        pline("%s %s %s your %s!", Blind ? "Something" :
+/*JP		        pline("%s %s %s your %s!", Blind ? "Something" :
 			      An(Hallucination ? hcolor() : Black),
 			      Blind ? "lands" : "sword appears",
 			      Levitation ? "beneath" : "at",
-			      makeplural(body_part(FOOT)));
+			      makeplural(body_part(FOOT)));*/
+		        pline("%s%sがあなたの%s%sに%s！", Blind ? "何か" :
+			      An(Hallucination ? hcolor() : Black),
+			      Blind ? "" : "剣が",
+			      makeplural(body_part(FOOT)),
+			      Levitation ? "の下方に" : "元",
+			      Blind ? "着地した" : "現われた");
 			obj->spe = 1;
 			dropy(obj);
 		    }
@@ -720,12 +831,14 @@ pleased(g_align)
 		    obj->bknown = obj->rknown = TRUE;
 		    if (obj->spe < 1) obj->spe = 1;
 		} else	/* opportunity knocked, but there was nobody home... */
-		    You("feel unworthy.");
+/*JP		    You("feel unworthy.");*/
+		    You("無駄だと感じた．");
 		break;
 	    }
 #endif
 
-	case 6:	pline ("An object appears at your %s!",
+/*JP	case 6:	pline ("An object appears at your %s!",*/
+	case 6:	pline ("物体があなたの%s元に現われた！",
 		       makeplural(body_part(FOOT)));
 	    bless(mkobj_at(SPBOOK_CLASS, u.ux, u.uy, TRUE));
 	    break;
@@ -765,10 +878,13 @@ water_prayer(bless_water)
 	    other = TRUE;
     }
     if(!Blind && changed) {
-	pline("%s potion%s on the altar glow%s %s for a moment.",
+/*JP	pline("%s potion%s on the altar glow%s %s for a moment.",
 	      ((other && changed > 1L) ? "Some of the" : (other ? "A" : "The")),
 	      (changed > 1L ? "s" : ""), (changed > 1L ? "" : "s"),
-	      (bless_water ? amber : Black));
+	      (bless_water ? amber : Black));*/
+	pline("%s祭壇の薬は一瞬%s輝いた．",
+	      (other && changed > 1L) ? "いくつかの" : "",
+	      jconj_adj(bless_water ? amber : Black));
     }
     return((boolean)(changed > 0L));
 }
@@ -779,20 +895,30 @@ godvoice(g_align, words)
     const char *words;
 {
     const char *quot = "";
+/*JP*/
+    const char *quot2 = "";
     if(words)
-	quot = "\"";
+/*JP	quot = "\"";*/
+      {
+	quot = "「";
+	quot2 = "」";
+      }
     else
 	words = "";
 
+/*JP
     pline("The voice of %s %s: %s%s%s", align_gname(g_align),
-	  godvoices[rn2(SIZE(godvoices))], quot, words, quot);
+	  godvoices[rn2(SIZE(godvoices))], quot, words, quot);*/
+    pline("%sの声が%s: %s%s%s", align_gname(g_align),
+	  godvoices[rn2(SIZE(godvoices))], quot, words, quot2);
 }
 
 static void
 gods_angry(g_align)
     aligntyp g_align;
 {
-    godvoice(g_align, "Thou hast angered me.");
+/*JP    godvoice(g_align, "Thou hast angered me.");*/
+    godvoice(g_align, "汝，我を怒りしめた．");
 }
 
 /* The g_align god is upset with you. */
@@ -814,19 +940,25 @@ register struct obj *otmp;
     if (Hallucination)
 	switch (rn2(3)) {
 	    case 0:
-		Your("sacrifice sprouts wings and a propeller and roars away!");
+/*JP		Your("sacrifice sprouts wings and a propeller and roars away!");*/
+		Your("献上物は羽をはやし，プロペラがまわり，飛んでった！");
 		break;
 	    case 1:
-		Your("sacrifice puffs up, swelling bigger and bigger, and pops!");
+/*JP		Your("sacrifice puffs up, swelling bigger and bigger, and pops!");*/
+		Your("献上物は噴煙をあげ，どんどん膨れ，そしてはじけた！");
 		break;
 	    case 2:
-		Your("sacrifice collapses into a cloud of dancing particles and fades away!");
+/*JP		Your("sacrifice collapses into a cloud of dancing particles and fades away!");*/
+		Your("献上物は細かく砕け，踊り出し，どこかに行ってしまった！");
 		break;
 	}
     else if (Blind && u.ualign.type == A_LAWFUL)
-	Your("sacrifice disappears!");
-    else Your("sacrifice is consumed in a %s!",
-	      u.ualign.type == A_LAWFUL ? "flash of light" : "burst of flame");
+/*JP	Your("sacrifice disappears!");*/
+	Your("献上物は消えた！");
+/*JP    else Your("sacrifice is consumed in a %s!",
+	      u.ualign.type == A_LAWFUL ? "flash of light" : "burst of flame");*/
+    else Your("献上物は%s消えさった！",
+	      u.ualign.type == A_LAWFUL ? "まばゆい光を放ち" : "炎を上げ");
     if (carried(otmp)) useup(otmp);
     else useupf(otmp);
     exercise(A_WIS, TRUE);
@@ -840,14 +972,17 @@ dosacrifice()
     aligntyp altaralign = a_align(u.ux,u.uy);
 
     if (!on_altar()) {
-	You("are not standing on an altar.");
+/*JP	You("are not standing on an altar.");*/
+	You("祭壇の上に立っていない．");
 	return 0;
     }
 
     if (In_endgame(&u.uz)) {
-	if (!(otmp = getobj(sacrifice_types, "sacrifice"))) return 0;
+/*JP	if (!(otmp = getobj(sacrifice_types, "sacrifice"))) return 0;*/
+	if (!(otmp = getobj(sacrifice_types, "捧げる"))) return 0;
     } else
-	if (!(otmp = floorfood("sacrifice", 0))) return 0;
+/*JP	if (!(otmp = floorfood("sacrifice", 0))) return 0;*/
+	if (!(otmp = floorfood("捧げる", 0))) return 0;
 
     /*
       Was based on nutritional value and aging behavior (< 50 moves).
@@ -874,19 +1009,23 @@ dosacrifice()
 	if ((pl_character[0]=='E') ? is_elf(ptr) : is_human(ptr)) {
 #ifdef POLYSELF
 	    if (is_demon(uasmon)) {
-		You("find the idea very satisfying.");
+/*JP		You("find the idea very satisfying.");*/
+		You("その考えは十分満足できるものだとわかった．");
 		exercise(A_WIS, TRUE);
 	    } else
 #endif
 		if (u.ualign.type != A_CHAOTIC) {
-		    pline("You'll regret this infamous offense!");
+/*JP		    pline("You'll regret this infamous offense!");*/
+		    pline("汝、この侮辱の行ないを後悔するべし！");
 		    exercise(A_WIS, FALSE);
 		}
 
 	    if (altaralign != A_CHAOTIC && altaralign != A_NONE) {
 		/* curse the lawful/neutral altar */
-		pline("The altar is stained with %sn blood.",
-		      (pl_character[0]=='E') ? "elve" : "huma");
+/*JP		pline("The altar is stained with %sn blood.",
+		      (pl_character[0]=='E') ? "elve" : "huma");*/
+		pline("祭壇は%sの血で汚れている．",
+		      (pl_character[0]=='E') ? "エルフ" : "人");
 		if(!Is_astralevel(&u.uz))
 		    levl[u.ux][u.uy].altarmask = AM_CHAOTIC;
 		angry_priest();
@@ -895,22 +1034,28 @@ dosacrifice()
 		/* Human sacrifice on a chaotic or unaligned altar */
 		/* is equivalent to demon summoning */
 		if(u.ualign.type != A_CHAOTIC) {
-		pline("The blood floods the altar, which vanishes in %s cloud!",
+/*JP		pline("The blood floods the altar, which vanishes in %s cloud!",
+			  an(Hallucination ? hcolor() : Black));*/
+		pline("血が祭壇から溢れ，祭壇は%s雲となり消えた！",
 			  an(Hallucination ? hcolor() : Black));
 		    levl[u.ux][u.uy].typ = ROOM;
 		    levl[u.ux][u.uy].altarmask = 0;
 		    if(Invisible) newsym(u.ux, u.uy);
 		} else {
-		    pline("The blood covers the altar!");
+/*JP		    pline("The blood covers the altar!");*/
+		    pline("血は祭壇を覆った！");
 		    change_luck(2);
 		}
 		if ((dmon = makemon(&mons[dlord(altaralign)], u.ux, u.uy))) {
-		    You("have summoned %s!", a_monnam(dmon));
+/*JP		    You("have summoned %s!", a_monnam(dmon));*/
+		    You("%sを召喚した！", a_monnam(dmon));
 		    if (sgn(u.ualign.type) == sgn(dmon->data->maligntyp))
 			dmon->mpeaceful = TRUE;
-		    You("are terrified, and unable to move.");
+/*JP		    You("are terrified, and unable to move.");*/
+		    You("恐くなり，動けなくなった．");
 		    nomul(-3);
-		} else pline("The cloud dissipates.");
+/*JP		} else pline("The cloud dissipates.");*/
+		} else pline("雲は飛び散った．");
 	    }
 
 	    if (u.ualign.type != A_CHAOTIC) {
@@ -931,17 +1076,22 @@ dosacrifice()
 
 	    /* If same as altar, always a very bad action. */
 	    if (unicalign == altaralign) {
-		pline("Such an action is an insult to %s!",
+/*JP		pline("Such an action is an insult to %s!",
 		      (unicalign == A_CHAOTIC)
-		      ? "chaos" : unicalign ? "law" : "balance");
+		      ? "chaos" : unicalign ? "law" : "balance");*/
+		pline("そのような行動は『%s』に反する！",
+		      (unicalign == A_CHAOTIC)
+		      ? "混沌" : unicalign ? "秩序" : "調和");
 		(void) adjattrib(A_WIS, -1, TRUE);
 		value = -5;
 	    } else if (u.ualign.type == altaralign) {
 		/* If different from altar, and altar is same as yours, */
 		/* it's a very good action */
 		if (u.ualign.record < ALIGNLIM)
-		    You("feel appropriately %s.", align_str(u.ualign.type));
-		else You("feel you are thoroughly on the right path.");
+/*JP		    You("feel appropriately %s.", align_str(u.ualign.type));*/
+		    You("%sにふさわしいと感じた．", align_str(u.ualign.type));
+/*JP		else You("feel you are thoroughly on the right path.");*/
+		else You("完全に正しい道を歩んでいるのを感じた．");
 		adjalign(5);
 		value += 3;
 	    } else
@@ -957,9 +1107,11 @@ dosacrifice()
     if (otmp->otyp == AMULET_OF_YENDOR) {
 	if (!In_endgame(&u.uz)) {
 	    if (Hallucination)
-		    You("feel homesick.");
+/*JP		    You("feel homesick.");*/
+		    You("故郷が恋しくなった．");
 	    else
-		    You("feel an urge to return to the surface.");
+/*JP		    You("feel an urge to return to the surface.");*/
+		    You("地上に帰りたい気持に駆り立てられた．");
 	    return 1;
 	} else {
 	    /* The final Test.	Did you win? */
@@ -967,26 +1119,37 @@ dosacrifice()
 	    u.uevent.ascended = 1;
 	    if(carried(otmp)) useup(otmp); /* well, it's gone now */
 	    else useupf(otmp);
-	    You("offer the Amulet of Yendor to %s...", a_gname());
+/*JP	    You("offer the Amulet of Yendor to %s...", a_gname());*/
+	    You("イェンダーの魔除けを%sに献上した．．．",a_gname());
 	    if (u.ualign.type != altaralign) {
 		/* And the opposing team picks you up and
 		   carries you off on their shoulders */
 		adjalign(-99);
-		pline("%s accepts your gift, and gains dominion over %s...",
+/*JP		pline("%s accepts your gift, and gains dominion over %s...",*/
+		pline("%sはあなたの送り物を受けとり，%sの権力を得た．．．",
 		      a_gname(), u_gname());
-		pline("%s is enraged...", u_gname());
-		pline("Fortunately, %s permits you to live...", a_gname());
-		pline("A cloud of %s smoke surrounds you...",
-		      Hallucination ? hcolor() : (const char *)"orange");
+/*JP		pline("%s is enraged...", u_gname());*/
+		pline("%sは大激怒した．．．", u_gname());
+/*JP		pline("Fortunately, %s permits you to live...", a_gname());*/
+		pline("幸運にも，%sはあなたの存在を許している．．．",a_gname());
+/*JP		pline("A cloud of %s smoke surrounds you...",*/
+		pline("%s煙があなたを取り囲んだ．．．",
+/*JP		      Hallucination ? hcolor() : (const char *)"orange");*/
+		      Hallucination ? hcolor() : (const char *)"オレンジ色の");
 		done(ESCAPED);
 	    } else { /* super big win */
 		adjalign(10);
-pline("An invisible choir sings, and you are bathed in radiance...");
-		godvoice(altaralign, "Congratulations, mortal!");
+/*JPpline("An invisible choir sings, and you are bathed in radiance...");*/
+pline("どこからともなく聖歌隊の歌が聞こえ，あなたは光に包まれた．．．");
+/*JP		godvoice(altaralign, "Congratulations, mortal!");*/
+		godvoice(altaralign, "よくやった，人間よ！");
 		display_nhwindow(WIN_MESSAGE, FALSE);
-verbalize("In return for thy service, I grant thee the gift of Immortality!");
-		You("ascend to the status of Demigod%s...",
-		    flags.female ? "dess" : "");
+/*JPverbalize("In return for thy service, I grant thee the gift of Immortality!");*/
+verbalize("汝の偉業に対し，不死の体を捧げようぞ！");
+/*JP		You("ascend to the status of Demigod%s...",
+		    flags.female ? "dess" : "");*/
+		You("昇天し，%s神となった．．．",
+		    flags.female ? "女" : "");
 		done(ASCENDED);
 	    }
 	}
@@ -994,10 +1157,13 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 
     if (otmp->otyp == FAKE_AMULET_OF_YENDOR) {
 	    if (flags.soundok)
-		You("hear a nearby thunderclap.");
+/*JP		You("hear a nearby thunderclap.");*/
+		You("近くに雷が落ちた音を聞いた．");
 	    if (!otmp->known) {
-		You("realize you have made a %s.",
-		    Hallucination ? "boo-boo" : "mistake");
+/*JP		You("realize you have made a %s.",
+		    Hallucination ? "boo-boo" : "mistake");*/
+		You("%sを犯したことに気がついた．",
+		    Hallucination ? "ブーブー" : "間違い");
 		otmp->known = TRUE;
 		change_luck(-1);
 		return 1;
@@ -1020,9 +1186,12 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 	 * REAL BAD NEWS!!! High altars cannot be converted.  Even an attempt
 	 * gets the god who owns it truely pissed off.
 	 */
-	You("feel the air around you grow charged...");
-	pline("Suddenly, you realize that %s has noticed you...", a_gname());
-	godvoice(altaralign, "So, mortal!  You dare desecrate my High Temple!");
+/*JP	You("feel the air around you grow charged...");*/
+	You("回りの空気にエネルギーが満ちていくような気がした．．．");
+/*JP	pline("Suddenly, you realize that %s has noticed you...", a_gname());*/
+	pline("突然，%sがあなたをじっと見ているのに気がついた．．．",a_gname());
+/*JP	godvoice(altaralign, "So, mortal!  You dare desecrate my High Temple!");*/
+	godvoice(altaralign, "人間よ！おまえは我が神聖なる寺院を汚すのか！");
 	/* Throw everything we have at the player */
 	god_zaps_you(altaralign);
     } else if (value < 0) /* I don't think the gods are gonna like this... */
@@ -1038,10 +1207,13 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 	    if(ugod_is_angry()) {
 		if(u.ualignbase[0] == u.ualignbase[1] &&
 		   altaralign != A_NONE) {
-		    You("have a strong feeling that %s is angry...", u_gname());
+/*JP		    You("have a strong feeling that %s is angry...", u_gname());*/
+		    You("%sが怒っているような気がひどくした．．．", u_gname());
 		    consume_offering(otmp);
-		    pline("%s accepts your allegiance.", a_gname());
-		    You("have a sudden sense of a new direction.");
+/*JP		    pline("%s accepts your allegiance.", a_gname());*/
+		    pline("%sはあなたの属性を受けいれた．", a_gname());
+/*JP		    You("have a sudden sense of a new direction.");*/
+		    You("突然，別の感覚にめざめた．");
 
 		    /* The player wears a helm of opposite alignment? */
 		    if (uarmh && uarmh->otyp == HELM_OF_OPPOSITE_ALIGNMENT)
@@ -1054,8 +1226,10 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 		    u.ublesscnt += 300;
 		    adjalign((int)(u.ualignbase[1] * (ALIGNLIM / 2)));
 		} else {
-		    pline("%s rejects your sacrifice!", a_gname());
-		    godvoice(altaralign, "Suffer, infidel!");
+/*JP		    pline("%s rejects your sacrifice!", a_gname());*/
+		    pline("%sはあなたの献上物を受けいれない！", a_gname());
+/*JP		    godvoice(altaralign, "Suffer, infidel!");*/
+		    godvoice(altaralign, "異端者よ！失せろ！！");
 		    adjalign(-5);
 		    u.ugangr += 3;
 		    (void) adjattrib(A_WIS, -2, TRUE);
@@ -1065,11 +1239,13 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 		return(1);
 	    } else {
 		consume_offering(otmp);
-		You("sense a conflict between %s and %s.",
+/*JP		You("sense a conflict between %s and %s.",*/
+		You("%sと%s間の争いを感じた．",
 		    u_gname(), a_gname());
 		if (rn2(8 + (int)u.ulevel) > 5) {
 		    struct monst *pri;
-		    You("feel the power of %s increase.", u_gname());
+/*JP		    You("feel the power of %s increase.", u_gname());*/
+		    You("%sの力が増大したのを感じた．", u_gname());
 		    exercise(A_WIS, TRUE);
 		    change_luck(1);
 		    /* Yes, this is supposed to be &=, not |= */
@@ -1078,10 +1254,14 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 		    levl[u.ux][u.uy].altarmask =
 			levl[u.ux][u.uy].altarmask | (Align2amask(u.ualign.type));
 		    if (!Blind)
-			pline("The altar glows %s.",
+/*JP			pline("The altar glows %s.",
 			      Hallucination ? hcolor() :
 			      u.ualign.type == A_LAWFUL ? White :
-			      u.ualign.type ? Black : (const char *)"gray");
+			      u.ualign.type ? Black : (const char *)"gray");*/
+			pline("祭壇は%s輝いた．",
+			      jconj_adj(Hallucination ? hcolor() :
+			      u.ualign.type == A_LAWFUL ? White :
+			      u.ualign.type ? Black : (const char *)"灰色に"));
 
 		    if(rnl((int)u.ulevel) > 6 && u.ualign.record > 0 &&
 		       rnd(u.ualign.record) > (3*ALIGNLIM)/4)
@@ -1091,7 +1271,8 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 		       !p_coaligned(pri))
 			angry_priest();
 		} else {
-		    pline("Unluckily, you feel the power of %s decrease.",
+/*JP		    pline("Unluckily, you feel the power of %s decrease.",*/
+		    pline("不幸にも，%sの力が減少したのを感じた．",
 			  u_gname());
 		    change_luck(-1);
 		    exercise(A_WIS, FALSE);
@@ -1111,26 +1292,33 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 	    if(u.ugangr < 0) u.ugangr = 0;
 	    if(u.ugangr != saved_anger) {
 		if (u.ugangr) {
-		    pline("%s seems %s.", u_gname(),
-			  Hallucination ? "groovy" : "slightly mollified");
+/*JP		    pline("%s seems %s.", u_gname(),
+			  Hallucination ? "groovy" : "slightly mollified");*/
+		    pline("%sは%sに見える．", u_gname(),
+			  Hallucination ? "素敵" : "ちょっと和らいだよう");
 
 		    if ((int)u.uluck < 0) change_luck(1);
 		} else {
-		    pline("%s seems %s.", u_gname(), Hallucination ?
-			  "cosmic (not a new fact)" : "mollified");
+/*JP		    pline("%s seems %s.", u_gname(), Hallucination ?
+			  "cosmic (not a new fact)" : "mollified");*/
+		    pline("%sは%sに見える．", u_gname(), Hallucination ?
+			  "虹色(新事実ではない)" : "軽蔑したよう");
 
 		    if ((int)u.uluck < 0) u.uluck = 0;
 		}
 	    } else { /* not satisfied yet */
 		if (Hallucination)
-		    pline("The gods seem tall.");
-		else You("have a feeling of inadequacy.");
+/*JP		    pline("The gods seem tall.");*/
+		    pline("神は背が高いように見える．");
+/*JP		else You("have a feeling of inadequacy.");*/
+		else You("まだまだ青いと感じた．");
 	    }
 	} else if(ugod_is_angry()) {
 	    if(value > MAXVALUE) value = MAXVALUE;
 	    if(value > -u.ualign.record) value = -u.ualign.record;
 	    adjalign(value);
-	    You("feel partially absolved.");
+/*JP	    You("feel partially absolved.");*/
+	    You("少しだけゆるしてもらえたのを感じた．");
 	} else if (u.ublesscnt > 0) {
 	    u.ublesscnt -=
 		((value * (u.ualign.type == A_CHAOTIC ? 500 : 300)) / MAXVALUE);
@@ -1138,15 +1326,19 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 	    if(u.ublesscnt != saved_cnt) {
 		if (u.ublesscnt) {
 		    if (Hallucination)
-			You("realize that the gods are not like you and I.");
+/*JP			You("realize that the gods are not like you and I.");*/
+			pline("神はあなたと私を好いてないことに気がついた．");
 		    else
-			You("have a hopeful feeling.");
+/*JP			You("have a hopeful feeling.");*/
+			pline("希望が見えてきたような気がした．");
 		    if ((int)u.uluck < 0) change_luck(1);
 		} else {
 		    if (Hallucination)
-			pline("Overall, there is a smell of fried onions.");
+/*JP			pline("Overall, there is a smell of fried onions.");*/
+			pline("全体的に，たまねぎを揚げた匂いがする．");
 		    else
-			You("have a feeling of reconciliation.");
+/*JP			You("have a feeling of reconciliation.");*/
+			You("一体感を感じた．");
 		    if ((int)u.uluck < 0) u.uluck = 0;
 		}
 	    }
@@ -1162,9 +1354,11 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 		    if (otmp->spe < 0) otmp->spe = 0;
 		    if (otmp->cursed) uncurse(otmp);
 		    dropy(otmp);
-		    pline("An object appears at your %s!",
+/*JP		    pline("An object appears at your %s!",*/
+		    pline("あなたの%s元に物体が現れた！",
 			  makeplural(body_part(FOOT)));
-		    godvoice(u.ualign.type, "Use my gift wisely!");
+/*JP		    godvoice(u.ualign.type, "Use my gift wisely!");*/
+		    godvoice(u.ualign.type, "我れ与えしもの賢く使うべし！");
 		    u.ublesscnt = rnz(300 + (50 * nartifacts));
 		    exercise(A_WIS, TRUE);
 		    return(1);
@@ -1173,10 +1367,13 @@ verbalize("In return for thy service, I grant thee the gift of Immortality!");
 	    change_luck((value * LUCKMAX) / (MAXVALUE * 2));
 	    if (u.uluck != saved_luck) {
 		if (Blind)
-		    You("think something brushed your %s.", body_part(FOOT));
+/*JP		    You("think something brushed your %s.", body_part(FOOT));*/
+		    pline("何かがあなたの%sをくすぐった．", body_part(FOOT));
 		else You(Hallucination ?
-		    "see crabgrass at your %s.  A funny thing in a dungeon." :
-		    "glimpse a four-leaf clover at your %s.",
+/*JP		    "see crabgrass at your %s.  A funny thing in a dungeon." :
+		    "glimpse a four-leaf clover at your %s.",*/
+		    "あなたの%s元にペンペン草をみつけた．迷宮にしては珍しい．":
+		    "四葉のクローバーを%s元に見つけた．",
 		    makeplural(body_part(FOOT)));
 	    }
 	}
@@ -1194,8 +1391,10 @@ dopray()
 
 #ifdef POLYSELF
     if (is_demon(uasmon) && (p_aligntyp != A_CHAOTIC)) {
-	pline("The very idea of praying to a %s god is repugnant to you.",
-	      p_aligntyp ? "lawful" : "neutral");
+/*JP	pline("The very idea of praying to a %s god is repugnant to you.",
+	      p_aligntyp ? "lawful" : "neutral");*/
+	pline("%sの神に祈りをささげるのは常識に背く．",
+	      p_aligntyp ? "秩序" : "中立");
 	return(0);
     }
 #endif
@@ -1207,7 +1406,8 @@ dopray()
 	/* Different (but non-opposite) alignment altar */
     else alignment = u.ualign.record;
 
-    You("begin praying to %s.", align_gname(p_aligntyp));
+/*JP    You("begin praying to %s.", align_gname(p_aligntyp));*/
+    You("%sに祈りを捧げた．", align_gname(p_aligntyp));
     if ((!p_trouble && (u.ublesscnt > 0)) ||
 	((p_trouble < 0) && (u.ublesscnt > 100)) || /* minor difficulties */
 	((p_trouble > 0) && (u.ublesscnt > 200))) /* big trouble */
@@ -1229,7 +1429,8 @@ dopray()
 
 #ifdef WIZARD
     if (wizard && p_type >= 0) {
-	if (yn("Force the gods to be pleased?") == 'y') {
+/*JP	if (yn("Force the gods to be pleased?") == 'y') {*/
+	if (yn("無理矢理神に微笑んでもらいますか？") == 'y') {
 	    u.ublesscnt = 0;
 	    if (u.uluck < 0) u.uluck = 0;
 	    if (u.ualign.record <= 0) u.ualign.record = 1;
@@ -1239,13 +1440,15 @@ dopray()
     }
 #endif
     nomul(-3);
-    nomovemsg = "You finish your prayer.";
+/*JP    nomovemsg = "You finish your prayer.";*/
+    nomovemsg = "祈り終えた．";
     afternmv = prayer_done;
 
     if(p_type == 3 && !Inhell) {
 	/* if you've been true to your god you can't die while you pray */
 	if (!Blind)
-	    You("are surrounded by a shimmering light.");
+/*JP	    You("are surrounded by a shimmering light.");*/
+	    You("かすかな光につつまれた．");
 	u.uinvulnerable = TRUE;
     }
 
@@ -1261,17 +1464,22 @@ prayer_done()		/* M. Stephenson (1.0.3b) */
     if(p_type == -1) {
 	godvoice(alignment,
 		 alignment == A_LAWFUL ?
-		 "Vile creature, thou durst call upon me?" :
-		 "Walk no more, perversion of nature!");
-	You("feel like you are falling apart.");
+/*JP		 "Vile creature, thou durst call upon me?" :
+		 "Walk no more, perversion of nature!");*/
+		 "卑劣な生物よ，汝，我に祈りを求めたか？" :
+		 "動くな！死にぞこないの生物よ！");
+/*JP	You("feel like you are falling apart.");*/
+	You("バラバラになったような気がした．");
 	rehumanize();
-	losehp(rnd(20), "residual undead turning effect", KILLED_BY_AN);
+/*JP	losehp(rnd(20), "residual undead turning effect", KILLED_BY_AN);*/
+	losehp(rnd(20), "不死の生物を土に返す力で", KILLED_BY_AN);
 	exercise(A_CON, FALSE);
 	return(1);
     }
 #endif
     if (Inhell) {
-	pline("Since you are in Gehennom, %s won't help you.",
+/*JP	pline("Since you are in Gehennom, %s won't help you.",*/
+	pline("ゲヘナに%sの力は届かない．",
 	      align_gname(alignment));
 	/* haltingly aligned is least likely to anger */
 	if (u.ualign.record <= 0 || rnl(u.ualign.record))
@@ -1327,7 +1535,8 @@ doturn()
 			    return spelleffects(++sp_no, TRUE);
 		}
 
-		You("don't know how to turn undead!");
+/*JP		You("don't know how to turn undead!");*/
+		You("不死の生き物を土に戻す方法を知らない！");
 		return(0);
 	}
 	if (
@@ -1337,18 +1546,21 @@ doturn()
 #  endif
 	    u.ugangr > 6 /* "Die, mortal!" */) {
 
-		pline("For some reason, %s seems to ignore you.", u_gname());
+/*JP		pline("For some reason, %s seems to ignore you.", u_gname());*/
+		pline("何らかの理由で，%sはあなたを無視したようだ．", u_gname());
 		aggravate();
 		exercise(A_WIS, FALSE);
 		return(0);
 	}
 
 	if (Inhell) {
-	    pline("Since you are in Gehennom, %s won't help you.", u_gname());
+/*JP	    pline("Since you are in Gehennom, %s won't help you.", u_gname());*/
+	    pline("ゲヘナに%sの力は届かない．", u_gname());
 	    aggravate();
 	    return(0);
 	}
-	pline("Calling upon %s, you chant an arcane formula.", u_gname());
+/*JP	pline("Calling upon %s, you chant an arcane formula.", u_gname());*/
+	pline("%sに祈りを求めると，あなたは不可思議な言葉の聖歌を聞いた．",u_gname());
 	exercise(A_WIS, TRUE);
 	for(mtmp = fmon; mtmp; mtmp = mtmp2) {
 	    mtmp2 = mtmp->nmon;
@@ -1357,7 +1569,8 @@ doturn()
 		   (is_demon(mtmp->data) && (u.ulevel > (MAXULEV/2))))) {
 
 		    if(Confusion) {
-			pline("Unfortunately, your voice falters.");
+/*JP			pline("Unfortunately, your voice falters.");*/
+			pline("不幸にもあなたの声はどもってしまった．");
 			mtmp->mflee = mtmp->mfrozen = mtmp->msleep = FALSE;
 			mtmp->mcanmove = TRUE;
 		    } else if (! resist(mtmp, '\0', 0, TELL)) {
@@ -1376,7 +1589,8 @@ doturn()
 				if(u.ualign.type == A_CHAOTIC) {
 				    mtmp->mpeaceful = TRUE;
 				} else { /* damn them */
-				    You("destroy %s!", mon_nam(mtmp));
+/*JP				    You("destroy %s!", mon_nam(mtmp));*/
+				    You("%sを殺した！", mon_nam(mtmp));
 				    mondied(mtmp);
 				}
 			    }
@@ -1419,19 +1633,21 @@ align_gname(alignment)
 {
 	register struct ghods *aghod;
 
-	if(alignment == A_NONE) return(Moloch);
+/*JP	if(alignment == A_NONE) return(Moloch);*/
+	if(alignment == A_NONE) return(jtrns_mon(Moloch));
 
 	for(aghod=gods; aghod->classlet; aghod++)
 	    if(aghod->classlet == pl_character[0])
 		switch(alignment) {
-		case A_CHAOTIC:	return(aghod->chaos);
-		case A_NEUTRAL:	return(aghod->balance);
-		case A_LAWFUL:	return(aghod->law);
+		case A_CHAOTIC:	return(jtrns_mon(aghod->chaos));
+		case A_NEUTRAL:	return(jtrns_mon(aghod->balance));
+		case A_LAWFUL:	return(jtrns_mon(aghod->law));
 		default: impossible("unknown alignment.");
 			 return("Balance");
 		}
 	impossible("unknown character's god?");
-	return("someone");
+/*JP	return("someone");*/
+	return("誰か");
 }
 
 void
@@ -1441,12 +1657,15 @@ register int x, y;
     aligntyp altaralign = a_align(x,y);
 
     if(!strcmp(align_gname(altaralign), u_gname())) {
-	godvoice(altaralign, "How darest thou desecrate my altar!");
+/*JP	godvoice(altaralign, "How darest thou desecrate my altar!");*/
+	godvoice(altaralign, "汝，我が祭壇を汚すか！");
 	(void) adjattrib(A_WIS, -1, FALSE);
     } else {
-	pline("A voice (could it be %s?) whispers:",
+/*JP	pline("A voice (could it be %s?) whispers:",*/
+	pline("ささやき声が聞こえる(たぶん%s？):",
 	      align_gname(altaralign));
-	verbalize("Thou shalt pay, infidel!");
+/*JP	verbalize("Thou shalt pay, infidel!");*/
+	verbalize("異端者よ！献金せよ！");
 	change_luck(-1);
     }
 }

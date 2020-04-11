@@ -25,13 +25,15 @@ MAKEBIN	= make45l
 #	(Note: if you don't, leave the top pair uncommented.)
 #
 
-YACC	= yacc
-LEX	= lex
-# YACC	= bison -y
-# LEX	= flex
+# YACC	= yacc
+# LEX	= lex
+YACC	= bison -y
+LEX	= flex
 
 YTABC	= y_tab.c
 YTABH	= y_tab.h
+#YTABC	= $(YY)_comp.c
+#YTABH	= $(YY)_comp.h
 LEXYYC	= lexyy.c
 
 #
@@ -52,8 +54,8 @@ LDFLAGS =
 #	CC
 #
 
-CPPFLAGS = /E /AL /c /Os /Gs /Gt20 /Zp1 /W0 /I$(INCL) $(CDFLAGS)
-CFLAGS	 = /AL /c /Os /Gs /Gt20 /Zp1 /W0 /I$(INCL) $(CDFLAGS)
+CPPFLAGS = /E /AL /c /Oso /G2 /Gs /Gt10 /Zp1 /W0 /I$(INCL) $(CDFLAGS)
+CFLAGS	 = /AL /c /Oso /G2 /Gs /Gt10 /Zp1 /W0 /I$(INCL) /I..\japanese $(CDFLAGS)
 
 #
 #	Link
@@ -76,10 +78,10 @@ default: all
 #	out the upper two targets and uncomment the lower two.
 #
 
-do_yacc: yacc_msg
-do_lex:  lex_msg
-# do_yacc: yacc_act
-# do_lex:  lex_act
+#do_yacc: yacc_msg
+#do_lex:  lex_msg
+do_yacc: yacc_act
+do_lex:  lex_act
 
 #
 #	Optional C library specifier for those with non-standard
@@ -283,7 +285,7 @@ lex_msg:
 	@echo $(YY)_comp.l has changed. To update $(YY)_$(LEX).c run $(LEX).
 
 lex_act:
-	$(LEX) $(YY)_comp.l
+	$(LEX) -8 $(YY)_comp.l
 	copy $(LEXYYC) $(YY)_$(LEX).c
 	del $(LEXYYC)
 

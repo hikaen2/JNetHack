@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "edog.h"
 
@@ -66,7 +73,8 @@ top:
 	if (otmp) pm = &mons[otmp->corpsenm]; /* Figurine; otherwise spell */
 	else if (rn2(3)) {
 	    if (!(pm = rndmonst())) {
-		pline("There seems to be nothing available for a familiar.");
+/*JP		pline("There seems to be nothing available for a familiar.");*/
+		pline("仲良くなれるものはいないようだ．");
 		return;
 	    }
 	}
@@ -77,7 +85,8 @@ top:
 	pm->pxlth -= sizeof(struct edog);
 	if (!mtmp) { /* monster was genocided */
 	    if (otmp)
-		pline("The figurine writhes and then shatters into pieces!");
+/*JP		pline("The figurine writhes and then shatters into pieces!");*/
+		pline("人形はもがき，くだけ散った！");
 	    else goto top;
 		/* rndmonst() returns something not genocided always, so this
 		 * means it was a cat or dog; loop back to try again until
@@ -89,7 +98,8 @@ top:
 	initedog(mtmp);
 	mtmp->msleep = 0;
 	if (otmp && otmp->cursed) { /* cursed figurine */
-		You("get a bad feeling about this.");
+/*JP		You("get a bad feeling about this.");*/
+		You("嫌な予感がした．");
 		mtmp->mtame = mtmp->mpeaceful = 0;
 		newsym(mtmp->mx, mtmp->my);
 	}
@@ -307,19 +317,24 @@ keepdogs()
 		/* long worms can now change levels! - Norm */
 
 		if (mtmp->mtame && mtmp->meating && canseemon(mtmp)) {
-			pline("%s is still eating.", Monnam(mtmp));
+/*JP			pline("%s is still eating.", Monnam(mtmp));*/
+			pline("%sはまだ食べている．", Monnam(mtmp));
 			goto merge;
 		}
 		if (mon_has_amulet(mtmp)) {
-			pline("%s seems very disoriented for a moment.",
+/*JP			pline("%s seems very disoriented for a moment.",*/
+			pline("%sは一瞬方向感覚を失ったようだ．",
 				Monnam(mtmp));
 		merge:
 #ifdef WALKIES
 			if (mtmp->mleashed) {
-				pline("%s leash suddenly comes loose.",
+/*JP				pline("%s leash suddenly comes loose.",*/
+				pline("%s紐は突然ゆるんだ．",
 					humanoid(mtmp->data)
-					    ? (mtmp->female ? "Her" : "His")
-					    : "Its");
+/*JP					    ? (mtmp->female ? "Her" : "His")
+					    : "Its");*/
+					    ? (mtmp->female ? "彼女の" : "彼の")
+					    : "その");
 				m_unleash(mtmp);
 			}
 #endif
@@ -399,7 +414,8 @@ migrate_to_level(mtmp, tolev, xyloc)
 	if (mtmp->mleashed)  {
 		m_unleash(mtmp);
 		mtmp->mtame--;
-		pline("The leash comes off!");
+/*JP		pline("The leash comes off!");*/
+		pline("紐ははずれた！");
 	}
 #endif
 	newsym(mtmp->mx,mtmp->my);
@@ -545,7 +561,8 @@ register struct obj *obj;
 	if(obj) {
 		if(dogfood(mtmp, obj) >= MANFOOD) return((struct monst *)0);
 		if(cansee(mtmp->mx,mtmp->my))
-			pline("%s devours %s.", Monnam(mtmp), the(xname(obj)));
+/*JP			pline("%s devours %s.", Monnam(mtmp), the(xname(obj)));*/
+			pline("%sは%sをがつがつ食べている．", Monnam(mtmp), the(xname(obj)));
 		obfree(obj, (struct obj *)0);
 	}
 	if (u.uswallow && mtmp == u.ustuck)

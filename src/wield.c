@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include	"hack.h"
 
 /* elven weapons vibrate warningly when enchanted beyond a limit */
@@ -53,20 +60,25 @@ dowield()
 	multi = 0;
 #ifdef POLYSELF
 	if (cantwield(uasmon)) {
-		pline("Don't be ridiculous!");
+/*JP		pline("Don't be ridiculous!");*/
+		pline("ばかばかしい！");
 		return(0);
 	}
 #endif
-	if (!(wep = getobj(wield_objs, "wield"))) /* nothing */;
+/*JP	if (!(wep = getobj(wield_objs, "wield"))) /* nothing */;
+	if (!(wep = getobj(wield_objs, "装備する"))) /* nothing */;
 	else if (uwep == wep)
-		You("are already wielding that!");
+/*JP		You("are already wielding that!");*/
+		You("もうそれを装備している！");
 	else if (welded(uwep))
 		weldmsg(uwep, TRUE);
 	else if (wep == &zeroobj) {
 	    if (uwep == 0)
-		You("are already empty %s.", body_part(HANDED));
+/*JP		You("are already empty %s.", body_part(HANDED));*/
+		You("もう何も装備していない！");
 	    else  {
-	  	You("are empty %s.", body_part(HANDED));
+/*JP	  	You("are empty %s.", body_part(HANDED));*/
+	  	You("%sを空けた．", body_part(HAND));
 	  	setuwep((struct obj *) 0);
 	  	res++;
 	    }
@@ -76,23 +88,30 @@ dowield()
 #endif
 		   (wep->otyp == CORPSE && wep->corpsenm == PM_COCKATRICE)) {
 	    /* Prevent wielding cockatrice when not wearing gloves --KAA */
-	    You("wield the cockatrice corpse in your bare %s.",
+/*JP	    You("wield the cockatrice corpse in your bare %s.",*/
+	    You("コカトリスの死体を%sにした．",
 			makeplural(body_part(HAND)));
 # ifdef POLYSELF
 	    if (!(poly_when_stoned(uasmon) && polymon(PM_STONE_GOLEM)))
 # endif
 	    {
-		You("turn to stone...");
+/*JP		You("turn to stone...");*/
+		You("石になった．．．");
 		killer_format = KILLED_BY;
-		killer="touching a cockatrice corpse";
+/*JP		killer="touching a cockatrice corpse";*/
+		killer="コカトリスの死体に触れて";
 		done(STONING);
 	    }
 	} else if (uarms && bimanual(wep))
-	    You("cannot wield a two-handed %s while wearing a shield.",
+/*JP	    You("cannot wield a two-handed %s while wearing a shield.",
 		is_sword(wep) ? "sword" :
-		    wep->otyp == BATTLE_AXE ? "axe" : "weapon");
+		    wep->otyp == BATTLE_AXE ? "axe" : "weapon");*/
+	    pline("盾を装備しているときに両手持ちの%sを装備できない．",
+		is_sword(wep) ? "剣" :
+		    wep->otyp == BATTLE_AXE ? "斧" : "武器");
 	else if (wep->owornmask & (W_ARMOR | W_RING | W_AMUL | W_TOOL))
-		You("cannot wield that!");
+/*JP		You("cannot wield that!");*/
+		You("それを装備できない！");
 	else if (!wep->oartifact || touch_artifact(wep,&youmonst)) {
 		res++;
 		if (wep->cursed &&
@@ -103,9 +122,12 @@ dowield()
 		    if (strncmp(tmp, thestr, 4) && !strncmp(The(tmp),thestr,4))
 			tmp = thestr;
 		    else tmp = "";
-		    pline("%s%s %s to your %s!",
+/*JP		    pline("%s%s %s to your %s!",
 			tmp, aobjnam(wep, "weld"),
-			(wep->quan == 1L) ? "itself" : "themselves", /* a3 */
+			(wep->quan == 1L) ? "itself" : "themselves", /* a3 *
+			body_part(HAND));*/
+		    pline("%sは勝手にあなたの%sに装備された．",
+			xname(wep), 
 			body_part(HAND));
 		    wep->bknown = TRUE;
 		} else {
@@ -136,18 +158,27 @@ boolean acid_dmg;
 	} else if(uwep->oerodeproof ||
 	   (acid_dmg ? !is_corrodeable(uwep) : !is_rustprone(uwep))) {
 		if (flags.verbose || !(uwep->oerodeproof && uwep->rknown))
-		    Your("%s not affected.", aobjnam(uwep, "are"));
+/*JP		    Your("%s not affected.", aobjnam(uwep, "are"));*/
+		    Your("%sは影響を受けない．", xname(uwep));
 		if (uwep->oerodeproof) uwep->rknown = TRUE;
 	} else if (uwep->oeroded < MAX_ERODE) {
-		Your("%s%s!", aobjnam(uwep, acid_dmg ? "corrode" : "rust"),
+/*JP		Your("%s%s!", aobjnam(uwep, acid_dmg ? "corrode" : "rust"),
 		     uwep->oeroded+1 == MAX_ERODE ? " completely" :
-		     uwep->oeroded ? " further" : "");
+		     uwep->oeroded ? " further" : "");*/
+		Your("%sは%s%s！", xname(uwep),
+		     uwep->oeroded+1 == MAX_ERODE ? "完全に" :
+		     uwep->oeroded ? "さらに" : "",
+		     acid_dmg ? "腐食した" : "錆びた");
 		uwep->oeroded++;
 	} else
 		if (flags.verbose)
-		    Your("%s completely %s.",
+/*JP		    Your("%s completely %s.",
 			 aobjnam(uwep, Blind ? "feel" : "look"),
-			 acid_dmg ? "corroded" : "rusty");
+			 acid_dmg ? "corroded" : "rusty");*/
+		    Your("%sは完全に%s%s．",
+			 xname(uwep),
+			 acid_dmg ? "腐食した" : "錆びた",
+			 Blind ? "ようだ" : "ように見える");
 }
 
 int
@@ -163,8 +194,10 @@ register int amount;
 			&& uwep->otyp != UNICORN_HORN)) {
 		char buf[36];
 
-		Sprintf(buf, "Your %s %s.", makeplural(body_part(HAND)),
-			(amount >= 0) ? "twitch" : "itch");
+/*JP		Sprintf(buf, "Your %s %s.", makeplural(body_part(HAND)),
+			(amount >= 0) ? "twitch" : "itch");*/
+		Sprintf(buf, "あなたの%sは%s．", makeplural(body_part(HAND)),
+			(amount >= 0) ? "ひきつった" : "ムズムズした");
 		strange_feeling(otmp, buf);
 		exercise(A_DEX, amount >= 0);
 		return(0);
@@ -172,31 +205,37 @@ register int amount;
 
 	if(uwep->otyp == WORM_TOOTH && amount >= 0) {
 		uwep->otyp = CRYSKNIFE;
-		Your("weapon seems sharper now.");
+/*JP		Your("weapon seems sharper now.");*/
+		Your("武器はより鋭さを増したようだ．");
 		uwep->cursed = 0;
 		return(1);
 	}
 
 	if(uwep->otyp == CRYSKNIFE && amount < 0) {
 		uwep->otyp = WORM_TOOTH;
-		Your("weapon seems duller now.");
+/*JP		Your("weapon seems duller now.");*/
+		Your("武器はより鈍くなったようだ．");
 		return(1);
 	}
 
 	if (amount < 0 && uwep->oartifact && restrict_name(uwep, ONAME(uwep))) {
 	    if (!Blind)
-		Your("%s %s.", aobjnam(uwep, "faintly glow"), color);
+/*JP		Your("%s %s.", aobjnam(uwep, "faintly glow"), color);*/
+		Your("%sはわずかに%s輝いた．", xname(uwep),jconj_adj(color));
 	    return(1);
 	}
 	/* there is a (soft) upper and lower limit to uwep->spe */
 	if(((uwep->spe > 5 && amount >= 0) || (uwep->spe < -5 && amount < 0))
 								&& rn2(3)) {
 	    if (!Blind)
-	    Your("%s %s for a while and then evaporate%s.",
+/*JP	    Your("%s %s for a while and then evaporate%s.",
 		 aobjnam(uwep, "violently glow"), color,
-		 uwep->quan == 1L ? "s" : "");
+		 uwep->quan == 1L ? "s" : "");*/
+	    Your("%sはしばらく激しく%s輝き，蒸発した．",
+		 xname(uwep), jconj_adj(color));
 	    else
-		Your("%s.", aobjnam(uwep, "evaporate"));
+/*JP		Your("%s.", aobjnam(uwep, "evaporate"));*/
+		Your("%sは蒸発した", xname(uwep));
 
 	    while(uwep)		/* let all of them disappear */
 				/* note: uwep->quan = 1 is nogood if unpaid */
@@ -204,10 +243,14 @@ register int amount;
 	    return(1);
 	}
 	if (!Blind) {
-	    xtime = (amount*amount == 1) ? "moment" : "while";
-	    Your("%s %s for a %s.",
+/*JP	    xtime = (amount*amount == 1) ? "moment" : "while";*/
+	    xtime = (amount*amount == 1) ? "一瞬" : "しばらく";
+/*JP	    Your("%s %s for a %s.",
 		 aobjnam(uwep, amount == 0 ? "violently glow" : "glow"),
-		 color, xtime);
+		 color, xtime);*/
+	    Your("%sは%s%s%s輝いた．",
+		 xname(uwep), xtime, jconj_adj(color), 
+		 amount == 0 ? "激しく" : "");
 	}
 	uwep->spe += amount;
 	if(amount > 0) uwep->cursed = 0;
@@ -218,16 +261,21 @@ register int amount;
 	 * spe dependent.  Give an obscure clue here.
 	 */
 	if (uwep->oartifact == ART_MAGICBANE && uwep->spe >= 0) {
-		Your("right %s %sches!",
+/*JP		Your("right %s %sches!",
 			body_part(HAND),
-			(((amount > 1) && (uwep->spe > 1)) ? "flin" : "it"));
+			(((amount > 1) && (uwep->spe > 1)) ? "flin" : "it"));*/
+		Your("右%sは%s！",
+			body_part(HAND),
+			(((amount > 1) && (uwep->spe > 1)) ? "ひりひりした" : "ムズムズした"));
 	}
 
 	/* an elven magic clue, cookie@keebler */
 	if ((uwep->spe > 5)
 		&& (is_elven_weapon(uwep) || uwep->oartifact || !rn2(7)))
-	    Your("%s unexpectedly.",
-		aobjnam(uwep, "suddenly vibrate"));
+/*JP	    Your("%s unexpectedly.",
+		aobjnam(uwep, "suddenly vibrate"));*/
+	    Your("%sは突然震えだした．",
+		xname(uwep));
 
 	return(1);
 }
@@ -265,16 +313,21 @@ boolean specific;
 		Strcpy(buf, Doname2(obj));
 		obj->owornmask = savewornmask;
 	} else
-		Sprintf(buf, "Your %s%s",
+/*JP		Sprintf(buf, "Your %s%s",
 			is_sword(obj) ? "sword" : "weapon",
-			plur(obj->quan));
-	Strcat(buf, (obj->quan == 1L) ? " is" : " are");
+			plur(obj->quan));*/
+		Sprintf(buf, "あなたは%s",
+			is_sword(obj) ? "剣" : "武器");
+/*JP	Strcat(buf, (obj->quan == 1L) ? " is" : " are");*/
 #ifdef POLYSELF
-	Sprintf(eos(buf), " welded to your %s!",
+/*JP	Sprintf(eos(buf), " welded to your %s!",
+		bimanual(obj) ? (const char *)makeplural(body_part(HAND)) : body_part(HAND));*/
+	Sprintf(eos(buf), "を%sに構えた！",
 		bimanual(obj) ? (const char *)makeplural(body_part(HAND)) : body_part(HAND));
 #else
-	Sprintf(eos(buf), " welded to your hand%s!",
-		bimanual(obj) ? "s" : "");
+/*JP	Sprintf(eos(buf), " welded to your hand%s!",
+		bimanual(obj) ? "s" : "");*/
+	Sprintf(eos(buf), "を手に構えた！");
 #endif
 	pline(buf);
 }

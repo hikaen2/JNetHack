@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #define NEED_VARARGS	/* comment line for pre-compiled headers */
 
 #include "hack.h"
@@ -27,16 +34,21 @@ void NDECL(clear_icon);
  */
 static NEARDATA const char *deaths[] = {		/* the array of death */
 	"died", "choked", "poisoned", "starvation", "drowning",
-	"burning", "crushed", "turned to stone", "genocided",
+/*JP	"burning", "crushed", "turned to stone", "genocided",*/
+	"burning", "crushed", "turned to stone", "died", "genocided",
 	"panic", "trickery",
 	"quit", "escaped", "ascended"
 };
 
 static NEARDATA const char *ends[] = {		/* "when you..." */
-	"died", "choked", "were poisoned", "starved", "drowned",
+/*JP	"died", "choked", "were poisoned", "starved", "drowned",
 	"burned", "were crushed", "turned to stone", "were genocided",
 	"panicked", "were tricked",
-	"quit", "escaped", "ascended"
+	"quit", "escaped", "ascended"*/
+  "殺された","窒息した", "毒におかされた", "餓死した", "溺死した",
+  "燃死した", "押し潰された", "石になった", "死んだ", "虐殺された",
+  "パニックにおちいった", "奇妙な出来事に会った",
+  "逃亡した", "脱出した", "昇天した"
 };
 
 int
@@ -61,7 +73,8 @@ done1()
 int
 done2()
 {
-	if(yn("Really quit?") == 'n') {
+/*JP	if(yn("Really quit?") == 'n') {*/
+	if(yn("本当に?") == 'n') {
 #ifndef NO_SIGNAL
 		(void) signal(SIGINT, (SIG_RET_TYPE) done1);
 #endif
@@ -139,36 +152,45 @@ register struct monst *mtmp;
 {
 	char buf[BUFSZ];
 
-	You("die...");
+/*JP	You("die...");*/
+	pline("あなたは死にました．．．");
 	mark_synch();	/* flush buffered screen output */
 	buf[0] = '\0';
 	if (type_is_pname(mtmp->data) || (mtmp->data->geno & G_UNIQ)) {
-	     if (!(type_is_pname(mtmp->data) && (mtmp->data->geno & G_UNIQ)))
-		Strcat(buf, "the ");
+/*JP	     if (!(type_is_pname(mtmp->data) && (mtmp->data->geno & G_UNIQ)))
+		Strcat(buf, "the ");*/
 	     killer_format = KILLED_BY;
 	}
 	if (mtmp->minvis)
-		Strcat(buf, "invisible ");
+/*JP		Strcat(buf, "invisible ");*/
+		Strcat(buf, "透明な");
 	if (Hallucination)
-		Strcat(buf, "hallucinogen-distorted ");
+/*JP		Strcat(buf, "hallucinogen-distorted ");*/
+		Strcat(buf, "幻覚で歪んだ");
+
+	if (mtmp->mnamelth) Sprintf(eos(buf), "%sと呼ばれる", NAME(mtmp));
 
 	if(mtmp->data == &mons[PM_GHOST]) {
 		register char *gn = (char *) mtmp->mextra;
 		if (!Hallucination && !mtmp->minvis && *gn) {
-			Strcat(buf, "the ");
+/*JP			Strcat(buf, "the ");*/
 			killer_format = KILLED_BY;
 		}
-		Sprintf(eos(buf), (*gn ? "ghost of %s" : "ghost%s"), gn);
+/*JP		Sprintf(eos(buf), (*gn ? "ghost of %s" : "ghost%s"), gn);*/
+		Sprintf(eos(buf), (*gn ? "%sの幽霊" : "ghost%s"), gn);
 	} else if(mtmp->isshk) {
-		Sprintf(eos(buf), "%s %s, the shopkeeper",
-			(mtmp->female ? "Ms." : "Mr."), shkname(mtmp));
+/*JP		Sprintf(eos(buf), "%s %s, the shopkeeper",
+			(mtmp->female ? "Ms." : "Mr."), shkname(mtmp));*/
+		Sprintf(eos(buf), "%sと言う名の店主",
+			shkname(mtmp));
 		killer_format = KILLED_BY;
 	} else if (mtmp->ispriest || mtmp->isminion) {
 		killer = priestname(mtmp);
-		if (!strncmp(killer, "the ", 4)) Strcat(buf, killer+4);
-		else Strcat(buf, killer);
-	} else Strcat(buf, mtmp->data->mname);
-	if (mtmp->mnamelth) Sprintf(eos(buf), " called %s", NAME(mtmp));
+		Strcat(buf, killer);
+/*JP		if (!strncmp(killer, "the ", 4)) Strcat(buf, killer+4);
+		else Strcat(buf, killer);*/
+	} else Strcat(buf, jtrns_mon(mtmp->data->mname));
+/*JP	if (mtmp->mnamelth) Sprintf(eos(buf), " called %s", NAME(mtmp));*/
 	killer = buf;
 	if (mtmp->data->mlet == S_WRAITH)
 		u.ugrave_arise = PM_WRAITH;
@@ -208,10 +230,12 @@ panic VA_DECL(const char *, str)
 	if (flags.window_inited) exit_nhwindows(NULL);
 	flags.window_inited = 0; /* they're gone; force raw_print()ing */
 
-	raw_print(" Suddenly, the dungeon collapses.");
+/*JP	raw_print(" Suddenly, the dungeon collapses.");*/
+	raw_print("突然迷宮が崩れた．");
 #if defined(WIZARD) && !defined(MICRO)
 	if(!wizard) {
-	    raw_printf("Report error to %s and it may be possible to rebuild.",
+/*JP	    raw_printf("Report error to %s and it may be possible to rebuild.",*/
+	    raw_printf("%sに報告．エラー発生．再実行不可能．",
 # ifdef WIZARD_NAME	/*(KR1ED)*/
 		WIZARD_NAME);
 # else
@@ -253,10 +277,13 @@ boolean taken;
 	if (invent && !done_stopprint &&
 		(!flags.end_disclose[0] || index(flags.end_disclose, 'i'))) {
 	    if(taken)
-		Sprintf(qbuf,"Do you want to see what you had when you %s?",
-			(how == QUIT) ? "quit" : "died");
+/*JP		Sprintf(qbuf,"Do you want to see what you had when you %s?",
+			(how == QUIT) ? "quit" : "died");*/
+		Sprintf(qbuf,"%sとき何を持っていたか見ますか？",
+			(how == QUIT) ? "やめた" : "死んだ");
 	    else
-		Strcpy(qbuf,"Do you want your possessions identified?");
+/*JP		Strcpy(qbuf,"Do you want your possessions identified?");*/
+		Strcpy(qbuf,"持ち物を識別しますか？"); 
 	    if ((c = yn_function(qbuf, ynqchars, 'y')) == 'y') {
 	    /* New dump format by maartenj@cs.vu.nl */
 		struct obj *obj;
@@ -285,7 +312,8 @@ boolean taken;
 
 	if (!done_stopprint &&
 		(!flags.end_disclose[0] || index(flags.end_disclose, 'a'))) {
-	    c = yn_function("Do you want to see your attributes?",ynqchars,'y');
+/*JP	    c = yn_function("Do you want to see your attributes?",ynqchars,'y');*/
+	    c = yn_function("属性を見ますか？",ynqchars,'y');
 	    if (c == 'y') enlightenment(TRUE);	/* final */
 	    if (c == 'q') done_stopprint++;
 	}
@@ -313,7 +341,8 @@ int how;
 	    newuhs(FALSE);
 	}
 	if (how == CHOKING) init_uhunger();
-	nomovemsg = "You survived that attempt on your life.";
+/*JP	nomovemsg = "You survived that attempt on your life.";*/
+	nomovemsg = "あなたは生きながらえた．";
 	flags.move = 0;
 	if(multi > 0) multi = 0; else multi = -1;
 	if(u.utrap && u.utraptype == TT_LAVA) u.utrap = 0;
@@ -367,6 +396,8 @@ int how;
 	char kilbuf[BUFSZ], pbuf[BUFSZ];
 	winid endwin = WIN_ERR;
 	boolean have_windows = flags.window_inited;
+/*JP*/
+	char amulet_tmp[BUFSZ];
 
 	/* kilbuf: used to copy killer in case it comes from something like
 	 *	xname(), which would otherwise get overwritten when we call
@@ -382,26 +413,34 @@ int how;
 	killer = kilbuf;
 #ifdef WIZARD
 	if (wizard && how == TRICKED) {
-		You("are a very tricky wizard, it seems.");
+/*JP		You("are a very tricky wizard, it seems.");*/
+		You("とてもトリッキーな魔法使いのようだ．");
 		return;
 	}
 #endif
 	if (how < PANICKED) u.umortality++;
 	if (Lifesaved && how <= GENOCIDED) {
-		pline("But wait...");
+/*JP		pline("But wait...");*/
+		pline("ちょっとまった．．．");
 		makeknown(AMULET_OF_LIFE_SAVING);
-		Your("medallion %s!",
-		      !Blind ? "begins to glow" : "feels warm");
-		if (how == CHOKING) You("vomit ...");
-		You("feel much better!");
-		pline("The medallion crumbles to dust!");
+/*JP		Your("medallion %s!",
+		      !Blind ? "begins to glow" : "feels warm");*/
+		Your("メダリオンは%s！",
+		      !Blind ? "輝きはじめた" : "暖かくなりはじめた");
+/*JP		if (how == CHOKING) You("vomit ...");*/
+		if (how == CHOKING) You("吐血した．．．"); 
+/*JP		You("feel much better!");*/
+		You("気分がよくなった！");
+/*JP		pline("The medallion crumbles to dust!");*/
+		pline("メダリオンはこなごなにくだけた！");
 		useup(uamul);
 
 		(void) adjattrib(A_CON, -1, TRUE);
 		if(u.uhpmax <= 0) u.uhpmax = 10;	/* arbitrary */
 		savelife(how);
 		if (how == GENOCIDED)
-			pline("Unfortunately you are still genocided...");
+/*JP			pline("Unfortunately you are still genocided...");*/
+			pline("不幸にもあなたは虐殺された．．．");
 		else {
 			killer = 0;
 			return;
@@ -409,9 +448,12 @@ int how;
 	}
 #if defined(WIZARD) || defined(EXPLORE_MODE)
 	if ((wizard || discover) && how <= GENOCIDED) {
-		if(yn("Die?") == 'y') goto die;
-		pline("OK, so you don't %s.",
-			(how == CHOKING) ? "choke" : "die");
+/*JP		if(yn("Die?") == 'y') goto die;*/
+		if(yn("死んでみる？") == 'y') goto die;
+/*JP		pline("OK, so you don't %s.",
+			(how == CHOKING) ? "choke" : "die");*/
+		You("%sなかった．",
+			(how == CHOKING) ? "絞殺され" : "死な");
 		if(u.uhpmax <= 0) u.uhpmax = u.ulevel * 8;	/* arbitrary */
 		savelife(how);
 		killer = 0;
@@ -424,7 +466,8 @@ int how;
 	 */
 	if (moves <= 1 && how < PANICKED)
 	    /* You die... --More-- */
-	    pline("Do not pass go.  Do not collect 200 zorkmids.");
+/*JP	    pline("Do not pass go.  Do not collect 200 zorkmids.");*/
+	    pline("注意一秒，怪我一生，死亡一歩．");
 
 die:
 	if (have_windows) wait_synch();	/* flush screen output */
@@ -459,7 +502,8 @@ die:
 		if (u.uhp < 1) {
 			how = DIED;
 /* note that killer is pointing at kilbuf */
-			Strcpy(kilbuf, "quit while already on Charon's boat");
+/* JP			Strcpy(kilbuf, "quit while already on Charon's boat");*/
+			Strcpy(kilbuf, "カロンの舟に乗っている間に抜けた");
 		}
 	}
 	if (how == ESCAPED || how == PANICKED)
@@ -481,7 +525,8 @@ die:
 
 	if (how < GENOCIDED) {
 #ifdef WIZARD
-	    if (!wizard || yn("Save bones?") == 'y')
+/*JP	    if (!wizard || yn("Save bones?") == 'y')*/
+	    if (!wizard || yn("骨をうめる？") == 'y')
 #endif
 		savebones();
 	}
@@ -520,13 +565,24 @@ die:
 /* changing kilbuf really changes killer. we do it this way because
    killer is declared a (const char *)
 */
-	if (u.uhave.amulet) Strcat(kilbuf, " (with the Amulet)");
+/*JP	if (u.uhave.amulet) Strcat(kilbuf, " (with the Amulet)");*/
+	if (u.uhave.amulet){
+	  Strcpy(amulet_tmp,kilbuf);
+	  Strcpy(kilbuf,"魔除けを手に");
+	  Strcat(kilbuf,amulet_tmp);
+	}
 	if (!done_stopprint) {
-	    Sprintf(pbuf, "%s %s the %s...",
+/*JP	    Sprintf(pbuf, "%s %s the %s...",
 		   (pl_character[0] == 'S') ? "Sayonara" :
 		   (pl_character[0] == 'T') ? "Aloha" : "Goodbye", plname,
 		   how != ASCENDED ? (const char *) pl_character :
-		   (const char *) (flags.female ? "Demigoddess" : "Demigod"));
+		   (const char *) (flags.female ? "Demigoddess" : "Demigod"));*/
+	    Sprintf(pbuf, "%s．%sの%s．．．．",
+		   (pl_character[0] == 'S') ? "武士道とは死ぬこと" :
+		   (pl_character[0] == 'T') ? "アローハ" : "さようなら", 
+		   how != ASCENDED ? (const char *) jtrns_mon(pl_character) :
+		   (const char *) (flags.female ? "女神" : "神"),
+		    plname );
 	    putstr(endwin, 0, pbuf);
 	    putstr(endwin, 0, "");
 	}
@@ -556,13 +612,16 @@ die:
 		keepdogs();
 		viz_array[0][0] |= IN_SIGHT; /* need visibility for naming */
 		mtmp = mydogs;
-		if(!done_stopprint) Strcpy(pbuf, "You");
+/*JP		if(!done_stopprint) Strcpy(pbuf, "You");*/
+		if(!done_stopprint) Strcpy(pbuf, "あなた");
 		if(mtmp) {
 			while(mtmp) {
 				if(!done_stopprint) {
-				    Strcat(pbuf, " and ");
+/*JP				    Strcat(pbuf, " and ");*/
+				    Strcat(pbuf, "と");
 				    Strcat(pbuf, mon_nam(mtmp));
 				}
+				Strcat(pbuf, "は");
 				if(mtmp->mtame)
 					u.urexp += mtmp->mhp;
 				mtmp = mtmp->nmon;
@@ -571,16 +630,19 @@ die:
 				putstr(endwin, 0, pbuf);
 			pbuf[0] = 0;
 		} else {
-			if(!done_stopprint)
-				Strcat(pbuf, " ");
+/*JP			if(!done_stopprint)
+				Strcat(pbuf, " ");*/
 		}
 		if(!done_stopprint) {
 			Sprintf(eos(pbuf),
-				"%s with %ld point%s,",
+/*JP				"%s with %ld point%s,",
 				how==ASCENDED ? "went to your reward"
-				: "escaped from the dungeon",
-				u.urexp, plur(u.urexp));
-			putstr(endwin, 0, pbuf);
+				: "escaped from the dungeon",*/
+				"%ldポイントマークし%s．",
+				u.urexp,
+				how==ASCENDED ? "報酬を受けとった"
+				: "迷宮から脱出した");
+				putstr(endwin, 0, pbuf);
 		}
 
 		/* print jewels chain here */
@@ -599,51 +661,64 @@ die:
 				i = objects[otmp->otyp].oc_cost;
 			}
 			if(!done_stopprint) {
-			    Sprintf(pbuf, "        %s (worth %ld zorkmids),",
+/*JP			    Sprintf(pbuf, "        %s (worth %ld zorkmids),",*/
+			    Sprintf(pbuf, "        %s (%ldゴールドの価値)．",
 				    doname(otmp), i);
 			    putstr(endwin, 0, pbuf);
 			}
 		}
 		if(worthlessct && !done_stopprint) {
 		    Sprintf(pbuf,
-			  "        %ld worthless piece%s of colored glass,",
-			  worthlessct, plur(worthlessct));
+/*JP			  "        %ld worthless piece%s of colored glass,",*/
+			  "        %ld個の価値のない色つきガラス．",
+			  worthlessct);
 		    putstr(endwin, 0, pbuf);
 		}
 	} else if (!done_stopprint) {
-		Strcpy(pbuf, "You ");
-		Strcat(pbuf, ends[how]);
+/*JP		Strcpy(pbuf, "You ");*/
+		Strcpy(pbuf, "あなたは");
+/*JP		Strcat(pbuf, ends[how]);*/
 		if (how != ASCENDED) {
-		    Strcat(pbuf, " in ");
+/*JP		    Strcat(pbuf, " in ");*/
 		    if (Is_astralevel(&u.uz))
-			Strcat(pbuf, "The Astral Plane");
-		    else Strcat(pbuf, dungeons[u.uz.dnum].dname);
-		    Strcat(pbuf, " ");
+/*JP			Strcat(pbuf, "The Astral Plane");*/
+			Strcat(pbuf, "精霊界");
+		    else{
+		      Strcat(pbuf, jtrns_obj('d',dungeons[u.uz.dnum].dname));
+/*JP		    Strcat(pbuf, " ");*/
+		    }
 		    if (!In_endgame(&u.uz)
 #ifdef MULDGN
 					       && !Is_knox(&u.uz)
 #endif
 			)
-			Sprintf(eos(pbuf), "on dungeon level %d ", (
+/*JP			Sprintf(eos(pbuf), "on dungeon level %d ", (*/
+			Sprintf(eos(pbuf), "の地下%d階で", (
 #ifdef MULDGN
 						 In_quest(&u.uz) ?
 						    dunlev(&u.uz) :
 #endif
 						    depth(&u.uz)));
+/*JP*/
+		    else
+		      Strcat(pbuf,"で");
 		}
 		Sprintf(eos(pbuf),
-			"with %ld point%s,", u.urexp, plur(u.urexp));
+/*JP			"with %ld point%s,", u.urexp, plur(u.urexp));*/
+			"%ldポイントマークし", u.urexp);
 		putstr(endwin, 0, pbuf);
 	}
 	if (!done_stopprint) {
-	    Sprintf(pbuf, "and %ld piece%s of gold, after %ld move%s.",
-		    u.ugold, plur(u.ugold), moves, plur(moves));
+/*JP	    Sprintf(pbuf, "and %ld piece%s of gold, after %ld move%s.",*/
+	    Sprintf(pbuf, "%ldゴールドを得，%ld歩動いた．",
+		    u.ugold, moves);
 	    putstr(endwin, 0, pbuf);
 	}
 	if (!done_stopprint) {
 	    Sprintf(pbuf,
-	     "You were level %u with a maximum of %d hit point%s when you %s.",
-		    u.ulevel, u.uhpmax, plur(u.uhpmax), ends[how]);
+/*JP	     "You were level %u with a maximum of %d hit point%s when you %s.",*/
+	     "%sとき，あなたはレベル%uで，最大体力は%dであった．",
+		    ends[how],u.ulevel, u.uhpmax);
 	    putstr(endwin, 0, pbuf);
 	    putstr(endwin, 0, "");
 	}
@@ -684,7 +759,8 @@ container_contents(list, identified, all_containers)
 	    if (Is_container(box) && box->otyp != BAG_OF_TRICKS) {
 		if (box->cobj) {
 		    winid tmpwin = create_nhwindow(NHW_MENU);
-		    Sprintf(buf, "Contents of %s:", the(xname(box)));
+/*JP		    Sprintf(buf, "Contents of %s:", the(xname(box)));*/
+		    Sprintf(buf, "%sの中身：", the(xname(box)));
 		    putstr(tmpwin, 0, buf); putstr(tmpwin, 0, "");
 		    for (obj = box->cobj; obj; obj = obj->nobj) {
 			if (identified) {
@@ -699,7 +775,8 @@ container_contents(list, identified, all_containers)
 		    if (all_containers)
 			container_contents(box->cobj, identified, TRUE);
 		} else {
-		    pline("%s is empty.", The(xname(box)));
+/*JP		    pline("%s is empty.", The(xname(box)));*/
+		    pline("%sは空っぽだ．", The(xname(box)));
 		    display_nhwindow(WIN_MESSAGE, FALSE);
 		}
 	    }
@@ -718,6 +795,8 @@ int status;
 		getreturn("to exit");
 	}
 #endif
+/*JP*/
+	jputchar('\0');	/* reset terminal */
 	exit(status);
 }
 
@@ -742,12 +821,14 @@ list_vanquished()
      * includes all dead monsters, not just those killed by the player
      */
     if (ntypes != 0) {
-	c = yn_function("Do you want an account of foes vanquished?",
+/*JP	c = yn_function("Do you want an account of foes vanquished?",*/
+	c = yn_function("倒した敵の一覧を見ますか？",
 			ynqchars, 'n');
 	if (c == 'q') done_stopprint++;
 	if (c == 'y') {
 	    klwin = create_nhwindow(NHW_MENU);
-	    putstr(klwin, 0, "Vanquished foes:");
+/*JP	    putstr(klwin, 0, "Vanquished foes:");*/
+	    putstr(klwin, 0, "倒した敵：");
 	    putstr(klwin, 0, "");
 
 	    /* countdown by monster "toughness" */
@@ -755,19 +836,21 @@ list_vanquished()
 	      for (i = 0; i < NUMMONS; i++)
 		if (mons[i].mlevel == lev && (nkilled = u.nr_killed[i])) {
 		    if (i == PM_WIZARD_OF_YENDOR || mons[i].geno & G_UNIQ) {
-			Sprintf(buf, type_is_pname(&mons[i]) ? mons[i].mname :
-				The(mons[i].mname));
+			Sprintf(buf, type_is_pname(&mons[i]) ? jtrns_mon(mons[i].mname) :
+				The(jtrns_mon(mons[i].mname)));
 			if (nkilled > 1)
-			    Sprintf(eos(buf)," (%d time%s)",
-				    nkilled, plur(nkilled));
+/*JP			    Sprintf(eos(buf)," (%d time%s)",*/
+			    Sprintf(eos(buf)," (%d回)",
+				    nkilled);
 		    } else {
 			/* trolls or undead might have come back,
 			   but we don't keep track of that */
 			if (nkilled == 1)
-			    Strcpy(buf, an(mons[i].mname));
+			    Strcpy(buf, an(jtrns_mon(mons[i].mname)));
 			else
-			    Sprintf(buf, "%d %s",
-				    nkilled, makeplural(mons[i].mname));
+/*JP			    Sprintf(buf, "%d %s",*/
+			    Sprintf(buf, "%d匹の%s",
+				    nkilled, makeplural(jtrns_mon(mons[i].mname)));
 		    }
 		    putstr(klwin, 0, buf);
 		}
@@ -777,7 +860,8 @@ list_vanquished()
 	     */
 	    if (ntypes > 1) {
 		putstr(klwin, 0, "");
-		Sprintf(buf, "%ld creatures vanquished.", total_killed);
+/*JP		Sprintf(buf, "%ld creatures vanquished.", total_killed);*/
+		Sprintf(buf, "%ld匹の生物を倒した．", total_killed);
 		putstr(klwin, 0, buf);
 	    }
 	    display_nhwindow(klwin, TRUE);
@@ -802,20 +886,23 @@ list_genocided()
 
     /* genocided species list */
     if (ngenocided != 0) {
-	c = yn_function("Do you want a list of species genocided?",
+/*JP	c = yn_function("Do you want a list of species genocided?",*/
+	c = yn_function("虐殺した種の一覧を見ますか？",
 			ynqchars, 'n');
 	if (c == 'q') done_stopprint++;
 	if (c == 'y') {
 	    klwin = create_nhwindow(NHW_MENU);
-	    putstr(klwin, 0, "Genocided species:");
+/*JP	    putstr(klwin, 0, "Genocided species:");*/
+	    putstr(klwin, 0, "虐殺した種:");
 	    putstr(klwin, 0, "");
 
 	    for (i = 0; i < NUMMONS; i++)
 		if (mons[i].geno & G_GENOD)
-		    putstr(klwin, 0, makeplural(mons[i].mname));
+		    putstr(klwin, 0, makeplural(jtrns_mon(mons[i].mname)));
 
 	    putstr(klwin, 0, "");
-	    Sprintf(buf, "%d species genocided.", ngenocided);
+/*JP	    Sprintf(buf, "%d species genocided.", ngenocided);*/
+	    Sprintf(buf, "%d の種を虐殺した．", ngenocided);
 	    putstr(klwin, 0, buf);
 
 	    display_nhwindow(klwin, TRUE);

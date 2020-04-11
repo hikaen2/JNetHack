@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 static boolean FDECL(known_hitum, (struct monst *,int));
@@ -98,10 +105,13 @@ register struct monst *mtmp;
 			register struct obj *obj;
 
 			if(Blind)
-			    pline("Wait!  There's a hidden monster there!");
+/*JP			    pline("Wait!  There's a hidden monster there!");*/
+			    pline("待て！怪物が隠れている！");
 			else if ((obj = level.objects[mtmp->mx][mtmp->my]) != 0)
-			    pline("Wait!  There's %s hiding under %s!",
-					an(l_monnam(mtmp)), doname(obj));
+/*JP			    pline("Wait!  There's %s hiding under %s!",
+					an(l_monnam(mtmp)), doname(obj));*/
+			    pline("待て！%sの下に%sが隠れている！",
+					doname(obj), an(l_monnam(mtmp)));
 			mtmp->msleep = 0;
 			mtmp->data->mflags3 &= ~M3_WAITMASK;
 			return(TRUE);
@@ -115,7 +125,8 @@ register struct monst *mtmp;
 			return(FALSE);
 
 		if (canspotmon(mtmp)) {
-			Sprintf(qbuf, "Really attack %s?", mon_nam(mtmp));
+/*JP			Sprintf(qbuf, "Really attack %s?", mon_nam(mtmp));*/
+			Sprintf(qbuf, "本当に%sを攻撃するの？", mon_nam(mtmp));
 			if (yn(qbuf) != 'y') {
 				flags.move = 0;
 				mtmp->data->mflags3 &= ~M3_WAITMASK;
@@ -224,12 +235,14 @@ register struct monst *mtmp;
 			) {
 		    mtmp->mflee = 1;
 		    mtmp->mfleetim = rnd(6);
-		    You("stop.  %s is in your way!",
+/*JP		    You("stop.  %s is in your way!",*/
+		    You("止まった．%sが道にいる！",
 			(mtmp->mnamelth ? NAME(mtmp) : Monnam(mtmp)));
 		    return(TRUE);
 		} else if ((mtmp->mfrozen || (! mtmp->mcanmove)
 				|| (mtmp->data->mmove == 0)) && rn2(6)) {
-		    pline("%s doesn't seem to move!", Monnam(mtmp));
+/*JP		    pline("%s doesn't seem to move!", Monnam(mtmp));*/
+		    pline("%sは動けないようだ．", Monnam(mtmp));
 		    return(TRUE);
 		} else return(FALSE);
 	}
@@ -241,28 +254,34 @@ register struct monst *mtmp;
 	if(u.umonnum >= 0) {	/* certain "pacifist" monsters don't attack */
 		set_uasmon();
 		if(noattacks(uasmon)) {
-			You("have no way to attack monsters physically.");
+/*JP			You("have no way to attack monsters physically.");*/
+			You("物理的に怪物を攻撃するすべがない．");
 			mtmp->data->mflags3 &= ~M3_WAITMASK;
 			return(TRUE);
 		}
 	}
 #endif
 
-	if(check_capacity("You cannot fight while so heavily loaded."))
+/*JP	if(check_capacity("You cannot fight while so heavily loaded."))*/
+	if(check_capacity("あなたは物を沢山持ちすぎて戦えない．"))
 	    return (TRUE);
 
 	if(unweapon) {
 	    unweapon=FALSE;
 	    if(flags.verbose)
 		if(uwep)
-		    You("begin bashing monsters with your %s.",
-			aobjnam(uwep, NULL));
+/*JP		    You("begin bashing monsters with your %s.",
+			aobjnam(uwep, NULL));*/
+		    You("%sで怪物をなぐりつけた．",
+			xname(uwep));
 		else
 #ifdef POLYSELF
 		    if (!cantwield(uasmon))
 #endif
-		    You("begin bashing monsters with your %s hands.",
-			uarmg ? "gloved" : "bare");		/* Del Lamb */
+/*JP		    You("begin bashing monsters with your %s hands.",
+			uarmg ? "gloved" : "bare");		* Del Lamb */
+		    You("%sで怪物をなぐりつけた．",
+			uarmg ? "グローブ" : "素手");
 	}
 	exercise(A_STR, TRUE);		/* you're exercising muscles */
 	/* andrew@orca: prevent unlimited pick-axe attacks */
@@ -302,8 +321,10 @@ register int mhit;
 				      mon->ispriest || mon->isshk));
 
 	if(!mhit) {
-	    if(flags.verbose) You("miss %s.", mon_nam(mon));
-	    else			You("miss it.");
+/*JP	    if(flags.verbose) You("miss %s.", mon_nam(mon));*/
+	    if(flags.verbose) Your("%sへの攻撃ははずれた．", mon_nam(mon));
+/*JP	    else			You("miss it.");*/
+	    else			Your("攻撃ははずれた．");
 	    if(!mon->msleep && mon->mcanmove)
 		wakeup(mon);
 #ifdef MUSE
@@ -315,7 +336,8 @@ register int mhit;
 		obj->owornmask &= ~W_WEP;
 		MON_NOWEP(mon);
 		m_useup(mon, obj);
-		pline("%s weapon shatters!", s_suffix(Monnam(mon)));
+/*JP		pline("%s weapon shatters!", s_suffix(Monnam(mon)));*/
+		pline("%sの武器はくだけちった！", s_suffix(Monnam(mon)));
 		/* perhaps this will freak out the monster */
 		if (!rn2(3)) {
 		    mon->mflee = 1;
@@ -404,7 +426,7 @@ register int thrown;
 	boolean get_dmg_bonus = TRUE;
 	boolean ispoisoned = FALSE, needpoismsg = FALSE, poiskilled = FALSE;
 	boolean silvermsg = FALSE;
-
+	
 	wakeup(mon);
 	if(!obj) {	/* attack with bare hands */
 	    if (mdat == &mons[PM_SHADE])
@@ -418,13 +440,15 @@ register int thrown;
 #endif
 		) {
 
-		You("hit %s with your bare %s.",
-			mon_nam(mon), makeplural(body_part(HAND)));
+/*JP		You("hit %s with your bare %s.",*/
+		You("%sで%sを攻撃した．",
+			 makeplural(humanoid(uasmon)?"素手":body_part(HAND),mon_nam(mon)));
 # ifdef POLYSELF
 		if(poly_when_stoned(uasmon) && polymon(PM_STONE_GOLEM))
 		    return TRUE;
 # endif
-		You("turn to stone...");
+/*JP		You("turn to stone...");*/
+		You("石になった．．．");
 		done_in_by(mon);
 		hittxt = TRUE; /* maybe lifesaved */
 	    }
@@ -464,7 +488,8 @@ register int thrown;
 			silvermsg = TRUE;
 		    if(!thrown && obj == uwep && obj->otyp == BOOMERANG &&
 		       !rnl(3)) {
-			pline("As you hit %s, %s breaks into splinters.",
+/*JP			pline("As you hit %s, %s breaks into splinters.",*/
+			pline("%sを攻撃すると, %sはこっぱみじんになった．",
 			      mon_nam(mon), the(xname(obj)));
 			useup(obj);
 			obj = (struct obj *) 0;
@@ -511,7 +536,8 @@ register int thrown;
 		    case BOULDER:
 			tmp = rnd(20); break;
 		    case MIRROR:
-			You("break your mirror.  That's bad luck!");
+/*JP			You("break your mirror.  That's bad luck!");*/
+			You("鏡を壊してしまった．こりゃまいった！");
 			change_luck(-2);
 			useup(obj);
 			obj = (struct obj *) 0;
@@ -520,13 +546,15 @@ register int thrown;
 			break;
 #ifdef TOURIST
 		    case EXPENSIVE_CAMERA:
-	You("succeed in destroying your camera.  Congratulations!");
+/*JP	You("succeed in destroying your camera.  Congratulations!");*/
+	You("カメラを壊すことができた．おめでとう！");
 			useup(obj);
 			return(TRUE);
 #endif
 		    case CORPSE:		/* fixed by polder@cs.vu.nl */
 			if(obj->corpsenm == PM_COCKATRICE) {
-			    You("hit %s with the cockatrice corpse.",
+/*JP			    You("hit %s with the cockatrice corpse.",*/
+			    You("%sをコカトリスの死体で攻撃した．",
 				  mon_nam(mon));
 			    if(resists_ston(mdat)) {
 				tmp = 1;
@@ -539,7 +567,8 @@ register int thrown;
 				hittxt = TRUE;
 				break;
 			    }
-			    pline("%s turns to stone.", Monnam(mon));
+/*JP			    pline("%s turns to stone.", Monnam(mon));*/
+			    pline("%sは石になった．", Monnam(mon));
 			    stoned = TRUE;
 			    xkilled(mon,0);
 			    return(FALSE);
@@ -550,13 +579,14 @@ register int thrown;
 			if(obj->corpsenm > -1
 					&& obj->corpsenm != PM_COCKATRICE
 					&& mdat == &mons[PM_COCKATRICE]) {
-				You("hit %s with the %s egg%s.",
+/*JP				You("hit %s with the %s egg%s.",*/
+				You("%sに%sの卵を投げつけた．",
 					mon_nam(mon),
-					mons[obj->corpsenm].mname,
-					plur(obj->quan));
+					jtrns_mon(mons[obj->corpsenm].mname));
 				hittxt = TRUE;
-				pline("The egg%sn't live any more...",
-					(obj->quan == 1L) ? " is" : "s are");
+/*JP				pline("The egg%sn't live any more...",
+					(obj->quan == 1L) ? " is" : "s are");*/
+				pline("もう卵が孵化することはないだろう．．．");
 				obj->otyp = ROCK;
 				obj->oclass = GEM_CLASS;
 				obj->known = obj->dknown = 0;
@@ -572,20 +602,26 @@ register int thrown;
 #ifdef POLYSELF
 		    case BLINDING_VENOM:
 			if(Blind || !haseyes(mon->data))
-			    pline(obj->otyp==CREAM_PIE ? "Splat!" : "Splash!");
+/*JP			    pline(obj->otyp==CREAM_PIE ? "Splat!" : "Splash!");*/
+			    pline(obj->otyp==CREAM_PIE ? "ピシャッ！" : "ビチャッ！");
 			else if (obj->otyp == BLINDING_VENOM)
-			    pline("The venom blinds %s%s!", mon_nam(mon),
-					mon->mcansee ? "" : " further");
+/*JP			    pline("The venom blinds %s%s!", mon_nam(mon),
+					mon->mcansee ? "" : " further");*/
+			    pline("毒液で%sは%s目が見えなくなった！", mon_nam(mon),
+					mon->mcansee ? "" : "さらに");
 #else
-			if(Blind) pline("Splat!");
+/*JP			if(Blind) pline("Splat!");*/
+			if(Blind) pline("ピシャッ！");
 #endif
 			else
-			    pline("The cream pie splashes over %s%s!",
+/*JP			    pline("The cream pie splashes over %s%s!",
 				mon_nam(mon),
 				(haseyes(mdat) &&
 				    mdat != &mons[PM_FLOATING_EYE])
 				? (*(eos(mon_nam(mon))-1) == 's' ? "' face" :
-					 "'s face") : "");
+					 "'s face") : "");*/
+			    pline("クリームパイは%sの顔にぶちまけられた！",
+				mon_nam(mon));
 			if(mon->msleep) mon->msleep = 0;
 			setmangry(mon);
 			if(haseyes(mon->data)) {
@@ -602,11 +638,13 @@ register int thrown;
 #ifdef POLYSELF
 		    case ACID_VENOM: /* only possible if thrown */
 			if(resists_acid(mdat)) {
-				Your("venom hits %s harmlessly.",
+/*JP				Your("venom hits %s harmlessly.",*/
+				Your("毒液は%sには効果がなかった．",
 					mon_nam(mon));
 				tmp = 0;
 			} else {
-				Your("venom burns %s!", mon_nam(mon));
+/*JP				Your("venom burns %s!", mon_nam(mon));*/
+				Your("毒液は%sを焼いた！", mon_nam(mon));
 				tmp = dmgval(obj, mdat);
 			}
 			hittxt = TRUE;
@@ -661,7 +699,8 @@ register int thrown;
 	}
 	if(tmp < 1)
 	    if (mdat == &mons[PM_SHADE]) {
-		Your("attack passes harmlessly through %s.",
+/*JP		Your("attack passes harmlessly through %s.",*/
+		Your("攻撃は%sに効果がなかった．",
 			mon_nam(mon));
 		hittxt = TRUE;
 	    } else
@@ -682,36 +721,45 @@ register int thrown;
 		   /* && !destroyed  -- guaranteed by mhp > 1 */ ) {
 
 		if (clone_mon(mon)) {
-			pline("%s divides as you hit it!", Monnam(mon));
+/*JP			pline("%s divides as you hit it!", Monnam(mon));*/
+			pline("あなたの攻撃で%sは分裂した！", Monnam(mon));
 			hittxt = TRUE;
 		}
 	}
-
+    
 	if(!hittxt && !destroyed) {
 		if(thrown)
 		    /* thrown => obj exists */
 		    hit(xname(obj), mon, exclam(tmp) );
-		else if(!flags.verbose) You("hit it.");
-		else	You("hit %s%s", mon_nam(mon), canseemon(mon)
-			? exclam(tmp) : ".");
+/*JP		else if(!flags.verbose) You("hit it.");*/
+		else if(!flags.verbose) Your("攻撃は命中した！");
+/*JP		else	You("hit %s%s", mon_nam(mon), canseemon(mon)
+			? exclam(tmp) : ".");*/
+		else	Your("%sへの攻撃は命中した%s", mon_nam(mon), canseemon(mon)
+			? exclam(tmp) : "．");
 	}
 
 	if (silvermsg) {
 		if (canseemon(mon) || sensemon(mon))
-			pline("The silver sears %s%s!",
+/*JP			pline("The silver sears %s%s!",
 				mon_nam(mon),
 				noncorporeal(mdat) ? "" : 
 			          (*(eos(mon_nam(mon))-1) == 's' ?
-				       "' flesh" : "'s flesh"));
+				       "' flesh" : "'s flesh"));*/
+			pline("銀は%sの体を焼いた！",
+				mon_nam(mon));
 		else
-			pline("It%s is seared!",
-				noncorporeal(mdat) ? "" : "s flesh");
+/*JP			pline("It%s is seared!",
+				noncorporeal(mdat) ? "" : "s flesh");*/
+			pline("何者かの体は焼かれた！");
 	}
 
 	if (needpoismsg)
-		pline("The poison doesn't seem to affect %s.", mon_nam(mon));
+/*JP		pline("The poison doesn't seem to affect %s.", mon_nam(mon));*/
+		pline("毒は%sに効かなかったようだ．", mon_nam(mon));
 	if (poiskilled) {
-		pline("The poison was deadly...");
+/*JP		pline("The poison was deadly...");*/
+		pline("毒は致死量だった．．．");
 		xkilled(mon, 0);
 		return FALSE;
 	} else if (destroyed) {
@@ -722,10 +770,10 @@ register int thrown;
 			mon->mconf = 1;
 			if(!mon->mstun && mon->mcanmove && !mon->msleep &&
 			   !Blind)
-				pline("%s appears confused.", Monnam(mon));
+/*JP				pline("%s appears confused.", Monnam(mon));*/
+				pline("%sは混乱しているようだ．", Monnam(mon));
 		}
 	}
-
 #if 0
 	if(mdat == &mons[PM_RUST_MONSTER] && obj && obj == uwep &&
 		is_rustprone(obj) && obj->oeroded < MAX_ERODE) {
@@ -733,12 +781,17 @@ register int thrown;
 		grease_protect(obj,NULL,FALSE);
 	    else if (obj->oerodeproof || (obj->blessed && !rnl(4))) {
 	        if (flags.verbose)
-			pline("Somehow, your %s is not affected.",
-			      is_sword(obj) ? "sword" : "weapon");
+/*JP			pline("Somehow, your %s is not affected.",
+			      is_sword(obj) ? "sword" : "weapon");*/
+			pline("どうも，あなたの%sには影響がなかったようだ．",
+			      is_sword(obj) ? "剣" : "武器");
 	    } else {
-		Your("%s%s!", aobjnam(obj, "rust"),
+/*JP		Your("%s%s!", aobjnam(obj, "rust"),
 		     obj->oeroded+1 == MAX_ERODE ? " completely" :
-		     obj->oeroded ? " further" : "");
+		     obj->oeroded ? " further" : "");*/
+	        Your("%sは%s錆びた！",xname(obj),
+		     obj->oeroded+1 == MAX_ERODE ? "完全に" :
+		     obj->oeroded ? "さらに" : "");
 		obj->oeroded++;
 	    }
 	}
@@ -746,7 +799,6 @@ register int thrown;
 
 	return((boolean)(destroyed ? FALSE : TRUE));
 }
-
 #ifdef POLYSELF
 
 int
@@ -761,7 +813,8 @@ register struct attack *mattk;
 		&& u.umonnum != PM_SUCCUBUS && u.umonnum != PM_INCUBUS
 		&& u.umonnum != PM_BALROG) {
 	    struct monst *dtmp;
-	    pline("Some hell-p has arrived!");
+/*JP	    pline("Some hell-p has arrived!");*/
+	    pline("地獄の仲間が現われた！");
 	    if((dtmp = makemon(!rn2(6) ? &mons[ndemon(u.ualign.type)] :
 					 uasmon, u.ux, u.uy)))
 		(void)tamedog(dtmp, (struct obj *)0);
@@ -772,7 +825,8 @@ register struct attack *mattk;
 	switch(mattk->adtyp) {
 	    case AD_STUN:
 		if(!Blind)
-		    pline("%s staggers for a moment.", Monnam(mdef));
+/*JP		    pline("%s staggers for a moment.", Monnam(mdef));*/
+		    pline("%sは一瞬くらくらした．", Monnam(mdef));
 		mdef->mstun = 1;
 		/* fall through to next case */
 	    case AD_WERE:	    /* no effect on monsters */
@@ -785,12 +839,14 @@ register struct attack *mattk;
 			if(thick_skinned(mdef->data)) tmp = 0;
 		break;
 	    case AD_FIRE:
-		if(!Blind) pline("%s is on fire!", Monnam(mdef));
+/*JP		if(!Blind) pline("%s is on fire!", Monnam(mdef));*/
+		if(!Blind) pline("%sは火だるまになった！", Monnam(mdef));
 		tmp += destroy_mitem(mdef, SCROLL_CLASS, AD_FIRE);
 		tmp += destroy_mitem(mdef, SPBOOK_CLASS, AD_FIRE);
 		if(resists_fire(pd)) {
 		    if (!Blind)
-			pline("The fire doesn't heat %s!", mon_nam(mdef));
+/*JP			pline("The fire doesn't heat %s!", mon_nam(mdef));*/
+			pline("炎は%sに影響がない！", mon_nam(mdef));
 		    golemeffects(mdef, AD_FIRE, tmp);
 		    shieldeff(mdef->mx, mdef->my);
 		    tmp = 0;
@@ -799,22 +855,26 @@ register struct attack *mattk;
 		tmp += destroy_mitem(mdef, POTION_CLASS, AD_FIRE);
 		break;
 	    case AD_COLD:
-		if(!Blind) pline("%s is covered in frost!", Monnam(mdef));
+/*JP		if(!Blind) pline("%s is covered in frost!", Monnam(mdef));*/
+		if(!Blind) pline("%sは氷で覆われた！", Monnam(mdef));
 		if(resists_cold(pd)) {
 		    shieldeff(mdef->mx, mdef->my);
 		    if (!Blind)
-			pline("The frost doesn't chill %s!", mon_nam(mdef));
+/*JP			pline("The frost doesn't chill %s!", mon_nam(mdef));*/
+			pline("氷は%sを凍らすことができない！", mon_nam(mdef));
 		    golemeffects(mdef, AD_COLD, tmp);
 		    tmp = 0;
 		}
 		tmp += destroy_mitem(mdef, POTION_CLASS, AD_COLD);
 		break;
 	    case AD_ELEC:
-		if (!Blind) pline("%s is zapped!", Monnam(mdef));
+/*JP		if (!Blind) pline("%s is zapped!", Monnam(mdef));*/
+		if (!Blind) pline("%sは衝撃をくらった！", Monnam(mdef));
 		tmp += destroy_mitem(mdef, WAND_CLASS, AD_ELEC);
 		if(resists_elec(pd)) {
 		    if (!Blind)
-			pline("The zap doesn't shock %s!", mon_nam(mdef));
+/*JP			pline("The zap doesn't shock %s!", mon_nam(mdef));*/
+			pline("衝撃は%sに影響を与えない！", mon_nam(mdef));
 		    golemeffects(mdef, AD_ELEC, tmp);
 		    shieldeff(mdef->mx, mdef->my);
 		    tmp = 0;
@@ -830,7 +890,8 @@ register struct attack *mattk;
 		   mon_to_stone(mdef);
 		else if(!resists_ston(pd)) {
 		    stoned = TRUE;
-		    if(!Blind) pline("%s turns to stone.", Monnam(mdef));
+/*JP		    if(!Blind) pline("%s turns to stone.", Monnam(mdef));*/
+		    if(!Blind) pline("%sは石になった．", Monnam(mdef));
 		    xkilled(mdef, 0);
 		    return(2);
 		}
@@ -866,9 +927,11 @@ register struct attack *mattk;
 			boolean stolen = FALSE;
 			if (gender(mdef) == u.mfemale &&
 						uasmon->mlet == S_NYMPH)
-	You("charm %s.  She gladly hands over her possessions.", mon_nam(mdef));
+/*JP	You("charm %s.  She gladly hands over her possessions.", mon_nam(mdef));*/
+	You("%sをうっとりさせた．彼女はそっと持ち物をさしだした．", mon_nam(mdef));
 			else
-			You("seduce %s and %s starts to take off %s clothes.",
+/*JP			You("seduce %s and %s starts to take off %s clothes.",*/
+			You("%sを誘惑した．%sは%sの服を脱ぎはじめた．",
 			    mon_nam(mdef), he[pronoun_gender(mdef)],
 			    his[pronoun_gender(mdef)]);
 			while(mdef->minvent) {
@@ -887,16 +950,22 @@ register struct attack *mattk;
 				    stolen = TRUE;
 				} else {
 				    otmp = hold_another_object(otmp,
-						 "You steal %s.", doname(otmp),
-								"You steal: ");
+/*JP						 "You steal %s.", doname(otmp),
+								"You steal: ");*/
+						 "あなたは%sを盗んだ．", doname(otmp),
+								"を盗んだ：");
 				}
 			}
 			if (!stolen)
-				impossible("Player steal fails!");
+/*JP				impossible("Player steal fails!");*/
+				impossible("盗みは失敗した！");
 			else {
-				pline("%s finishes taking off %s suit.",
-				      Monnam(mdef), his[pronoun_gender(mdef)]);
-				You("steal %s!", doname(stealoid));
+/*JP				pline("%s finishes taking off %s suit.",
+				      Monnam(mdef), his[pronoun_gender(mdef)]);*/
+				pline("%sは服を脱ぎ終えた",
+				      Monnam(mdef));
+/*JP				You("steal %s!", doname(stealoid));*/
+				You("%sを盗んだ！", doname(stealoid));
 # if defined(ARMY) && !defined(MUSE)
 				mdef->data = &mons[PM_UNARMORED_SOLDIER];
 # endif
@@ -908,8 +977,10 @@ register struct attack *mattk;
 		   } else {
 			otmp = mdef->minvent;
 			mdef->minvent = otmp->nobj;
-			otmp = hold_another_object(otmp, "You steal %s.",
-						  doname(otmp), "You steal: ");
+/*JP			otmp = hold_another_object(otmp, "You steal %s.",
+						  doname(otmp), "You steal: ");*/
+			otmp = hold_another_object(otmp, "あなたは%sを盗んだ．",
+						  doname(otmp), "盗んだ：");
 #ifdef MUSE
 			possibly_unwield(mdef);
 			otmp->owornmask = 0L;
@@ -927,7 +998,8 @@ register struct attack *mattk;
 		if (mdef->mgold) {
 		    u.ugold += mdef->mgold;
 		    mdef->mgold = 0;
-		    Your("purse feels heavier.");
+/*JP		    Your("purse feels heavier.");*/
+		    Your("財布が重くなったような気がする．");
 		}
 		exercise(A_DEX, TRUE);
 		tmp = 0;
@@ -936,13 +1008,15 @@ register struct attack *mattk;
 		if(tmp <= 0) tmp = 1;
 		if(tmp < mdef->mhp) {
 		    rloc(mdef);
-		    if(!Blind) pline("%s suddenly disappears!", Monnam(mdef));
+/*JP		    if(!Blind) pline("%s suddenly disappears!", Monnam(mdef));*/
+		    if(!Blind) pline("%sは突然消えた！", Monnam(mdef));
 		}
 		break;
 	    case AD_BLND:
 		if(haseyes(pd)) {
 
-		    if(!Blind) pline("%s is blinded.", Monnam(mdef));
+/*JP		    if(!Blind) pline("%s is blinded.", Monnam(mdef));*/
+		    if(!Blind) pline("%sは目が見えなくなった．", Monnam(mdef));
 		    mdef->mcansee = 0;
 		    mdef->mblinded += tmp;
 		}
@@ -952,23 +1026,27 @@ register struct attack *mattk;
 		if (night() && !rn2(10) && !mdef->mcan) {
 		    if (mdef->data == &mons[PM_CLAY_GOLEM]) {
 			if (!Blind)
-			    pline("Some writing vanishes from %s head!",
+/*JP			    pline("Some writing vanishes from %s head!",*/
+			    pline("何かの文字が%sの頭から消えた！",
 				s_suffix(mon_nam(mdef)));
 			xkilled(mdef, 0);
 			return 2;
 		    }
 		    mdef->mcan = 1;
-		    You("chuckle.");
+/*JP		    You("chuckle.");*/
+		    You("くすくす笑った．");
 		}
 		tmp = 0;
 		break;
 	    case AD_DRLI:
 		if(rn2(2) && !resists_drli(pd)) {
 			int xtmp = d(2,6);
-			pline("%s suddenly seems weaker!", Monnam(mdef));
+/*JP			pline("%s suddenly seems weaker!", Monnam(mdef));*/
+			pline("%sは突然弱くなったように見えた！", Monnam(mdef));
 			mdef->mhpmax -= xtmp;
 			if ((mdef->mhp -= xtmp) <= 0 || !mdef->m_lev) {
-				pline("%s dies!", Monnam(mdef));
+/*JP				pline("%s dies!", Monnam(mdef));*/
+				pline("%sは死んだ！", Monnam(mdef));
 				xkilled(mdef,0);
 				return(2);
 			}
@@ -978,7 +1056,8 @@ register struct attack *mattk;
 		break;
 	    case AD_RUST:
 		if (pd == &mons[PM_IRON_GOLEM]) {
-			pline("%s falls to pieces!", Monnam(mdef));
+/*JP			pline("%s falls to pieces!", Monnam(mdef));*/
+			pline("%sはバラバラになった！", Monnam(mdef));
 			xkilled(mdef,0);
 			return(2);
 		}
@@ -987,7 +1066,8 @@ register struct attack *mattk;
 	    case AD_DCAY:
 		if (pd == &mons[PM_WOOD_GOLEM] ||
 		    pd == &mons[PM_LEATHER_GOLEM]) {
-			pline("%s falls to pieces!", Monnam(mdef));
+/*JP			pline("%s falls to pieces!", Monnam(mdef));*/
+			pline("%sはバラバラになった！", Monnam(mdef));
 			xkilled(mdef,0);
 			return(2);
 		}
@@ -995,14 +1075,18 @@ register struct attack *mattk;
 	    case AD_DRDX:
 	    case AD_DRCO:
 		if (!rn2(8)) {
-		    Your("%s was poisoned!", mattk->aatyp==AT_BITE ?
-			"bite" : "sting");
+/*JP		    Your("%s was poisoned!", mattk->aatyp==AT_BITE ?
+			"bite" : "sting");*/
+		    Your("%sは毒されている！", mattk->aatyp==AT_BITE ?
+			"歯" : "針");
 		    if (resists_poison(mdef->data))
-			pline("The poison doesn't seem to affect %s.",
+/*JP			pline("The poison doesn't seem to affect %s.",*/
+			pline("毒は%sに影響を与えない．",
 				mon_nam(mdef));
 		    else {
 			if (!rn2(10)) {
-			    Your("poison was deadly...");
+/*JP			    Your("poison was deadly...");*/
+			    Your("与えた毒は致死量だった．．．");
 			    tmp = mdef->mhp;
 			} else tmp += rn1(10,6);
 		    }
@@ -1010,20 +1094,25 @@ register struct attack *mattk;
 		break;
 	    case AD_DRIN:
 		if (!has_head(mdef->data)) {
-		    pline("%s doesn't seem harmed.", Monnam(mdef));
+/*JP		    pline("%s doesn't seem harmed.", Monnam(mdef));*/
+		    pline("%sは傷ついたようには見えない．", Monnam(mdef));
 		    tmp = 0;
 		    break;
 		}
 #ifdef MUSE
 		if ((mdef->misc_worn_check & W_ARMH) && rn2(8)) {
-		    pline("%s helmet blocks your attack to %s head.",
-			  s_suffix(Monnam(mdef)), his[pronoun_gender(mdef)]);
+/*JP		    pline("%s helmet blocks your attack to %s head.",
+			  s_suffix(Monnam(mdef)), his[pronoun_gender(mdef)]);*/
+		    pline("%sの兜は頭への攻撃を防いだ．",
+			  s_suffix(Monnam(mdef)));
 		    break;
 		}
 #endif
-		You("eat %s brain!", s_suffix(mon_nam(mdef)));
+/*JP		You("eat %s brain!", s_suffix(mon_nam(mdef)));*/
+		You("%sの脳を食べた！", s_suffix(mon_nam(mdef)));
 		if (mindless(mdef->data)) {
-		    pline("%s doesn't notice.", Monnam(mdef));
+/*JP		    pline("%s doesn't notice.", Monnam(mdef));*/
+		    pline("%sはぼーっとしている．", Monnam(mdef));
 		    break;
 		}
 		tmp += rnd(10);
@@ -1043,7 +1132,8 @@ register struct attack *mattk;
 		break;
 	    case AD_PLYS:
 		if (mdef->mcanmove && !rn2(3) && tmp < mdef->mhp) {
-		    if (!Blind) pline("%s is frozen by you!", Monnam(mdef));
+/*JP		    if (!Blind) pline("%s is frozen by you!", Monnam(mdef));*/
+		    if (!Blind) pline("%sはあなたの眼力で動けなくなった！", Monnam(mdef));
 		    mdef->mcanmove = 0;
 		    mdef->mfrozen = rnd(10);
 		}
@@ -1052,7 +1142,8 @@ register struct attack *mattk;
 		if (!resists_sleep(mdef->data) && !mdef->msleep &&
 							mdef->mcanmove) {
 		    if (!Blind)
-			pline("%s suddenly falls asleep!", Monnam(mdef));
+/*JP			pline("%s suddenly falls asleep!", Monnam(mdef));*/
+			pline("%sは突然眠りにおちた！", Monnam(mdef));
 		    mdef->mcanmove = 0;
 		    mdef->mfrozen = rnd(10);
 		}
@@ -1065,10 +1156,12 @@ register struct attack *mattk;
 	if((mdef->mhp -= tmp) < 1) {
 
 	    if (mdef->mtame && !cansee(mdef->mx,mdef->my)) {
-		You("feel embarrassed for a moment.");
+/*JP		You("feel embarrassed for a moment.");*/
+		You("恥ずかしい思いをした．");
 		xkilled(mdef, 0);
 	    } else if (!flags.verbose) {
-		You("destroy it!");
+/*JP		You("destroy it!");*/
+		You("倒した！");
 		xkilled(mdef, 0);
 	    } else
 		killed(mdef);
@@ -1084,11 +1177,13 @@ register struct attack *mattk;
 {
 	register int tmp = d((int)mattk->damn, (int)mattk->damd);
 
-	You("explode!");
+/*JP	You("explode!");*/
+	You("爆発した！");
 	switch(mattk->adtyp) {
 	    case AD_BLND:
 		if (haseyes(mdef->data)) {
-		    pline("%s is blinded by your flash of light!", Monnam(mdef));
+/*JP		    pline("%s is blinded by your flash of light!", Monnam(mdef));*/
+		    pline("%sはまばゆい光で目がくらんだ", Monnam(mdef));
 		    if (mdef->mcansee) {
 			mdef->mblinded += tmp;
 			mdef->mcansee = 0;
@@ -1097,7 +1192,8 @@ register struct attack *mattk;
 		break;
 	    case AD_COLD:
 		if (!resists_cold(mdef->data)) {
-		    pline("%s gets blasted!", Monnam(mdef));
+/*JP		    pline("%s gets blasted!", Monnam(mdef));*/
+		    pline("%sは氷の風をうけた！", Monnam(mdef));
 		    mdef->mhp -= tmp;
 		    if (mdef->mhp <= 0) {
 			 killed(mdef);
@@ -1108,7 +1204,8 @@ register struct attack *mattk;
 		    if (is_golem(mdef->data))
 			golemeffects(mdef, AD_COLD, tmp);
 		    else
-			pline("The blast doesn't seem to affect %s.",
+/*JP			pline("The blast doesn't seem to affect %s.",*/
+			pline("氷の風は%sに影響を与えなかったようだ．",
 				mon_nam(mdef));
 		}
 		break;
@@ -1147,35 +1244,42 @@ register struct attack *mattk;
  * the screen and you moved onto it, then you get moved back and it gets
  * moved back if the monster survives--just like when monsters swallow you.
  */
-		You("engulf %s!", mon_nam(mdef));
+/*JP		You("engulf %s!", mon_nam(mdef));*/
+		You("%sを飲み込んだ！", mon_nam(mdef));
 		switch(mattk->adtyp) {
 		    case AD_DGST:
 			u.uhunger += mdef->data->cnutrit;
 			newuhs(FALSE);
 			xkilled(mdef,2);
-			Sprintf(msgbuf, "You totally digest %s.",
+/*JP			Sprintf(msgbuf, "You totally digest %s.",*/
+			Sprintf(msgbuf, "あなたは%sを完全に消化した．",
 					mon_nam(mdef));
 			if ((tmp = 3 + (mdef->data->cwt >> 6)) != 0) {
-			    You("digest %s.", mon_nam(mdef));
+/*JP			    You("digest %s.", mon_nam(mdef));*/
+			    You("%sを消化している．", mon_nam(mdef));
 			    nomul(-tmp);
 			    nomovemsg = msgbuf;
 			} else pline(msgbuf);
 			exercise(A_CON, TRUE);
 			return(2);
 		    case AD_PHYS:
-			pline("%s is pummeled with your debris!",Monnam(mdef));
+/*JP			pline("%s is pummeled with your debris!",Monnam(mdef));*/
+			pline("%sは瓦礫で痛めつけられた！",Monnam(mdef));
 			break;
 		    case AD_ACID:
-			pline("%s is covered with your goo!", Monnam(mdef));
+/*JP			pline("%s is covered with your goo!", Monnam(mdef));*/
+			pline("%sはねばつくものでおわれた！", Monnam(mdef));
 			if (resists_acid(mdef->data)) {
-			    pline("It seems harmless to %s.", mon_nam(mdef));
+/*JP			    pline("It seems harmless to %s.", mon_nam(mdef));*/
+			    pline("が，%sはなんともない．", mon_nam(mdef));
 			    dam = 0;
 			}
 			break;
 		    case AD_BLND:
 			if(haseyes(mdef->data)) {
 			    if (mdef->mcansee)
-				pline("%s can't see in there!", Monnam(mdef));
+/*JP				pline("%s can't see in there!", Monnam(mdef));*/
+				pline("%sは目が見えなくなった！", Monnam(mdef));
 			    mdef->mcansee = 0;
 			    dam += mdef->mblinded;
 			    if (dam > 127) dam = 127;
@@ -1185,9 +1289,11 @@ register struct attack *mattk;
 			break;
 		    case AD_ELEC:
 			if (rn2(2)) {
-			    pline("The air around %s crackles with electricity.", mon_nam(mdef));
+/*JP			    pline("The air around %s crackles with electricity.", mon_nam(mdef));*/
+			    pline("%sの回りの空気は静電気でピリピリしている．", mon_nam(mdef));
 			    if (resists_elec(mdef->data)) {
-				pline("%s seems unhurt.", Monnam(mdef));
+/*JP				pline("%s seems unhurt.", Monnam(mdef));*/
+				pline("が，%sは平気なようだ．", Monnam(mdef));
 				dam = 0;
 			    }
 			    golemeffects(mdef,(int)mattk->adtyp,dam);
@@ -1196,20 +1302,24 @@ register struct attack *mattk;
 		    case AD_COLD:
 			if (rn2(2)) {
 			    if (resists_cold(mdef->data)) {
-				pline("%s seems mildly chilly.", Monnam(mdef));
+/*JP				pline("%s seems mildly chilly.", Monnam(mdef));*/
+				pline("%sは冷えたようだ．", Monnam(mdef));
 				dam = 0;
 			    } else
-				pline("%s is freezing to death!",Monnam(mdef));
+/*JP				pline("%s is freezing to death!",Monnam(mdef));*/
+				pline("%sは凍死してしまった！",Monnam(mdef));
 			    golemeffects(mdef,(int)mattk->adtyp,dam);
 			} else dam = 0;
 			break;
 		    case AD_FIRE:
 			if (rn2(2)) {
 			    if (resists_fire(mdef->data)) {
-				pline("%s seems mildly hot.", Monnam(mdef));
+/*JP				pline("%s seems mildly hot.", Monnam(mdef));*/
+				pline("%sは暖かくなったようだ．", Monnam(mdef));
 				dam = 0;
 			    } else
-				pline("%s is burning to a crisp!",Monnam(mdef));
+/*JP				pline("%s is burning to a crisp!",Monnam(mdef));*/
+				pline("%sは燃えてカラカラになった！",Monnam(mdef));
 			    golemeffects(mdef,(int)mattk->adtyp,dam);
 			} else dam = 0;
 			break;
@@ -1218,17 +1328,23 @@ register struct attack *mattk;
 		    killed(mdef);
 		    return(2);
 		}
-		You("%s %s!", is_animal(uasmon) ? "regurgitate"
-			: "expel", mon_nam(mdef));
+/*JP		You("%s %s!", is_animal(uasmon) ? "regurgitate"
+			: "expel", mon_nam(mdef));*/
+		You("%sを%s！", mon_nam(mdef),
+                     is_animal(uasmon) ? "吐き戻した" : "吐出した");
 		if (is_animal(uasmon)) {
-		    pline("Obviously, you didn't like %s taste.",
+/*JP		    pline("Obviously, you didn't like %s taste.",*/
+		    pline("どうも%sの味は好きになれない．",
 			  s_suffix(mon_nam(mdef)));
 		}
 	    } else {
-		You("bite into %s", mon_nam(mdef));
-		You("turn to stone...");
+/*JP		You("bite into %s", mon_nam(mdef));*/
+		You("%sに噛みついた", mon_nam(mdef));
+/*JP		You("turn to stone...");*/
+		You("石になった．．．");
 		killer_format = KILLED_BY;
-		killer = "swallowing a cockatrice whole";
+/*JP		killer = "swallowing a cockatrice whole";*/
+		killer = "コカトリスをまるまる飲みこんで";
 		done(STONING);
 	    }
 	}
@@ -1241,11 +1357,14 @@ register struct monst *mdef;
 register struct attack *mattk;
 {
 	if (could_seduce(&youmonst, mdef, mattk))
-		You("pretend to be friendly to %s.", mon_nam(mdef));
+/*JP		You("pretend to be friendly to %s.", mon_nam(mdef));*/
+		You("%sに友好的なふりをした．", mon_nam(mdef));
 	else if(!Blind && flags.verbose)
-		You("miss %s.", mon_nam(mdef));
+/*JP		You("miss %s.", mon_nam(mdef));*/
+		Your("%sへの攻撃は外れた．", mon_nam(mdef));
 	else
-		You("miss it.");
+/*JP		You("miss it.");*/
+		Your("何者かへの攻撃は外れた．");
 	wakeup(mdef);
 }
 
@@ -1313,34 +1432,47 @@ use_weapon:
 
 			    if (!u.uswallow &&
 				(compat=could_seduce(&youmonst, mon, mattk))) {
-				You("%s %s %s.",
+/*JP				You("%s %s %s.",
 				    mon->mcansee && haseyes(mon->data)
 				    ? "smile at" : "talk to",
 				    mon_nam(mon),
-				    compat == 2 ? "engagingly":"seductively");
+				    compat == 2 ? "engagingly":"seductively");*/
+				You("%sへ%s%s．",
+				    mon_nam(mon),
+				    compat == 2 ? "魅力的に":"誘惑的に",
+				    mon->mcansee && haseyes(mon->data)
+				    ? "微笑みかけた" : "話しかけた");
 				/* doesn't anger it; no wakeup() */
 				sum[i] = damageum(mon, mattk);
 				break;
 			    }
 			    wakeup(mon);
 			    if (mon->data == &mons[PM_SHADE]) {
-				Your("attack passes harmlessly through %s.",
+/*JP				Your("attack passes harmlessly through %s.",*/
+				Your("%sへの攻撃は失敗した．",
 				    mon_nam(mon));
 				break;
 			    }
 			    if (mattk->aatyp == AT_KICK)
-				    You("kick %s.", mon_nam(mon));
+/*JP				    You("kick %s.", mon_nam(mon));*/
+				    You("%sを蹴った．", mon_nam(mon));
 			    else if (mattk->aatyp == AT_BITE)
-				    You("bite %s.", mon_nam(mon));
+/*JP				    You("bite %s.", mon_nam(mon));*/
+				    You("%sに噛みついた．", mon_nam(mon));
 			    else if (mattk->aatyp == AT_STNG)
-				    You("sting %s.", mon_nam(mon));
+/*JP				    You("sting %s.", mon_nam(mon));*/
+				    You("%sを突きさした．", mon_nam(mon));
 			    else if (mattk->aatyp == AT_BUTT)
-				    You("butt %s.", mon_nam(mon));
+/*JP				    You("butt %s.", mon_nam(mon));*/
+				    You("%sに頭突きをくらわした．", mon_nam(mon));
 			    else if (mattk->aatyp == AT_TUCH)
-				    You("touch %s.", mon_nam(mon));
+/*JP				    You("touch %s.", mon_nam(mon));*/
+				    You("%sに触れた．", mon_nam(mon));
 			    else if (mattk->aatyp == AT_TENT)
-				    Your("tentacles suck %s.", mon_nam(mon));
-			    else You("hit %s.", mon_nam(mon));
+/*JP				    Your("tentacles suck %s.", mon_nam(mon));*/
+				    Your("触手が%sの体液を吸いとった．", mon_nam(mon));
+/*JP			    else You("hit %s.", mon_nam(mon));*/
+			    else Your("%sへの攻撃は命中した．", mon_nam(mon));
 			    sum[i] = damageum(mon, mattk);
 			} else
 			    missum(mon, mattk);
@@ -1353,16 +1485,21 @@ use_weapon:
 			dhit = 1;
 			wakeup(mon);
 			if (mon->data == &mons[PM_SHADE])
-			    Your("hug passes harmlessly through %s.",
+/*JP			    Your("hug passes harmlessly through %s.",*/
+			    You("%sを羽交い絞めにしようとしたが失敗した．",
 				mon_nam(mon));
 			else if (!sticks(mon->data) && !u.uswallow)
 			    if (mon==u.ustuck) {
-				pline("%s is being %s.", Monnam(mon),
+/*JP				pline("%s is being %s.", Monnam(mon),
 				    u.umonnum==PM_ROPE_GOLEM ? "choked":
-				    "crushed");
+				    "crushed");*/
+				pline("%sは%s．", Monnam(mon),
+				    u.umonnum==PM_ROPE_GOLEM ? "首を絞められている":
+				    "押しつぶされている");
 				sum[i] = damageum(mon, mattk);
 			    } else if(i >= 2 && sum[i-1] && sum[i-2]) {
-				You("grab %s!", mon_nam(mon));
+/*JP				You("grab %s!", mon_nam(mon));*/
+				You("%sをつかまえた！", mon_nam(mon));
 				u.ustuck = mon;
 				sum[i] = damageum(mon, mattk);
 			    }
@@ -1378,7 +1515,8 @@ use_weapon:
 			if((dhit = (tmp > rnd(20+i)))) {
 				wakeup(mon);
 				if (mon->data == &mons[PM_SHADE])
-				    Your("attempt to surround %s is harmless.",
+/*JP				    Your("attempt to surround %s is harmless.",*/
+				    You("%sを飲みこもうとしたが失敗した．",
 					mon_nam(mon));
 				else
 				    sum[i]= gulpum(mon,mattk);
@@ -1457,8 +1595,10 @@ boolean kicked;
 
 	  case AD_ACID:
 	    if(mhit && rn2(2)) {
-		if (Blind || !flags.verbose) You("are splashed!");
-		else	You("are splashed by %s acid!", 
+/*JP		if (Blind || !flags.verbose) You("are splashed!");*/
+		if (Blind || !flags.verbose) You("何かを浴びせられた！");
+/*JP		else	You("are splashed by %s acid!", */
+		else	You("%sの酸を浴びせられた！", 
 			                s_suffix(mon_nam(mon)));
 
 #ifdef POLYSELF
@@ -1484,7 +1624,8 @@ boolean kicked;
 		    && !(poly_when_stoned(uasmon) && polymon(PM_STONE_GOLEM))
 #endif
 		   ) {
-		    You("turn to stone...");
+/*JP		    You("turn to stone...");*/
+		    You("石になった．．．");
 		    done_in_by(mon);
 		    return 2;
 		}
@@ -1501,9 +1642,11 @@ boolean kicked;
 	    /* wrath of gods for attacking Oracle */
 	    if(Antimagic) {
 		shieldeff(u.ux, u.uy);
-		pline("A hail of magic missiles narrowly misses you!");
+/*JP		pline("A hail of magic missiles narrowly misses you!");*/
+		pline("マジックミサイルの雨をなんとかかわした！");
 	    } else {
-		You("are hit by magic missiles appearing from thin air!");
+/*JP		You("are hit by magic missiles appearing from thin air!");*/
+		pline("突如空中に現われたマジックミサイルが命中した！");
 		mdamageu(mon, tmp);
 	    }
 	    break;
@@ -1525,24 +1668,30 @@ boolean kicked;
 		    if(mon->mcansee) {
 			if(Reflecting & W_AMUL) {
 			    makeknown(AMULET_OF_REFLECTION);
-			    pline("%s gaze is reflected by your medallion.",
+/*JP			    pline("%s gaze is reflected by your medallion.",*/
+			    pline("%sのにらみは魔除けによって反射された．",
 				  s_suffix(Monnam(mon)));
 			} else if(Reflecting & W_ARMS) {
 			    makeknown(SHIELD_OF_REFLECTION);
-			    pline("%s gaze is reflected by your shield.",
+/*JP			    pline("%s gaze is reflected by your shield.",*/
+			    pline("%sのにらみは盾によって反射された．",
 				  s_suffix(Monnam(mon)));
 			} else {
-			    You("are frozen by %s gaze!", 
+/*JP			    You("are frozen by %s gaze!", */
+			    You("%sのにらみで動けなくなった．",
 				  s_suffix(mon_nam(mon)));
 			    nomul((ACURR(A_WIS) > 12 || rn2(4)) ? -tmp : -127);
 			}
 		    } else {
-			pline("%s cannot defend itself.",
-				Adjmonnam(mon,"blind"));
+/*JP			pline("%s cannot defend itself.",
+				Adjmonnam(mon,"blind"));*/
+			pline("目の見えない%sは自分自身を守れない．",
+				Monnam(mon));
 			if(!rn2(500)) change_luck(-1);
 		    }
 		} else { /* gelatinous cube */
-		    You("are frozen by %s!", mon_nam(mon));
+/*JP		    You("are frozen by %s!", mon_nam(mon));*/
+		    You("%sによって動けなくなった！", mon_nam(mon));
 		    nomul(-tmp);
 		    exercise(A_DEX, FALSE);
 		}
@@ -1551,13 +1700,15 @@ boolean kicked;
 		if(monnear(mon, u.ux, u.uy)) {
 		    if(Cold_resistance) {
   			shieldeff(u.ux, u.uy);
-			You("feel a mild chill.");
+/*JP			You("feel a mild chill.");*/
+			You("寒さを感じた．");
 #ifdef POLYSELF
 			ugolemeffects(AD_COLD, tmp);
 #endif
 			break;
 		    }
-		    You("are suddenly very cold!");
+/*JP		    You("are suddenly very cold!");*/
+		    You("突然，猛烈に寒くなった！");
 		    mdamageu(mon, tmp);
 		/* monster gets stronger with your heat! */
 		    mon->mhp += tmp / 2;
@@ -1569,7 +1720,8 @@ boolean kicked;
 			if ((mtmp = clone_mon(mon)) != 0) {
 			    mtmp->mhpmax = mon->mhpmax /= 2;
 			    if(!Blind)
-				pline("%s multiplies from your heat!",
+/*JP				pline("%s multiplies from your heat!",*/
+				pline("%sは熱で分裂した！",
 								Monnam(mon));
 			}
 		    }
@@ -1583,26 +1735,30 @@ boolean kicked;
 		if(monnear(mon, u.ux, u.uy)) {
 		    if(Fire_resistance) {
 			shieldeff(u.ux, u.uy);
-			You("feel mildly warm.");
+/*JP			You("feel mildly warm.");*/
+			You("暖かさを感じた．");
 #ifdef POLYSELF
 			ugolemeffects(AD_FIRE, tmp);
 #endif
 			break;
 		    }
-		    You("are suddenly very hot!");
+/*JP		    You("are suddenly very hot!");*/
+		    You("突然，猛烈に熱くなった！");
 		    mdamageu(mon, tmp);
 		}
 		break;
 	      case AD_ELEC:
 		if(Shock_resistance) {
 		    shieldeff(u.ux, u.uy);
-		    You("feel a mild tingle.");
+/*JP		    You("feel a mild tingle.");*/
+		    You("ピリピリと痺れを感じた．");
 #ifdef POLYSELF
 		    ugolemeffects(AD_ELEC, tmp);
 #endif
 		    break;
 		}
-		You("are jolted with electricity!");
+/*JP		You("are jolted with electricity!");*/
+		You("電気ショックをうけた！");
 		mdamageu(mon, tmp);
 		break;
 	      default:
@@ -1621,16 +1777,20 @@ register struct monst *mtmp;
 	    u.ustuck = mtmp;
 	if (Blind) {
 	    if(!Telepat)
-		pline("Wait!  That's a monster!");
+/*JP		pline("Wait!  That's a monster!");*/
+		pline("ちょっとまった！怪物だ！");
 	} else if (glyph_is_cmap(levl[u.ux+u.dx][u.uy+u.dy].glyph) &&
 		(glyph_to_cmap(levl[u.ux+u.dx][u.uy+u.dy].glyph) == S_hcdoor ||
 		 glyph_to_cmap(levl[u.ux+u.dx][u.uy+u.dy].glyph) == S_vcdoor))
-	    pline("The door actually was %s!", a_monnam(mtmp));
+/*JP	    pline("The door actually was %s!", a_monnam(mtmp));*/
+	    pline("扉は実際には%sだった！", a_monnam(mtmp));
 	else if (glyph_is_object(levl[u.ux+u.dx][u.uy+u.dy].glyph) &&
 		glyph_to_obj(levl[u.ux+u.dx][u.uy+u.dy].glyph) == GOLD_PIECE)
-	    pline("That gold was %s!", a_monnam(mtmp));
+/*JP	    pline("That gold was %s!", a_monnam(mtmp));*/
+	    pline("金塊は%sだった！", a_monnam(mtmp));
 	else {
-	    pline("Wait!  That's %s!", a_monnam(mtmp));
+/*JP	    pline("Wait!  That's %s!", a_monnam(mtmp));*/
+	    pline("ちょっとまった！%sだ！", a_monnam(mtmp));
 	}
 
 	wakeup(mtmp);	/* clears mimicing */
@@ -1645,15 +1805,19 @@ struct monst *mon;
 	if (!u.umconf || mon->mconf) return;
 	if (u.umconf == 1) {
 		if (Blind)
-			Your("%s stop tingling.", hands);
+/*JP			Your("%s stop tingling.", hands);*/
+			Your("%sは痺れがとれた",hands);
 		else
-			Your("%s stop glowing %s.", hands,
+/*JP			Your("%s stop glowing %s.", hands,*/
+			Your("%sの%s輝きはなくなった．", hands,
 				Hallucination ? hcolor() : red);
 	} else {
 		if (Blind)
-			pline("The tingling in your %s lessens.", hands);
+/*JP			pline("The tingling in your %s lessens.", hands);*/
+			pline("%sの痺れがとれてきた．",hands);
 		else
-			Your("%s no longer glow so brightly %s.", hands,
+/*JP			Your("%s no longer glow so brightly %s.", hands,*/
+			Your("%sの%s輝きがなくなってきた．",hands,
 				Hallucination ? hcolor() : red);
 	}
 	u.umconf--;

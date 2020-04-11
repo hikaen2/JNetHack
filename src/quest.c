@@ -2,6 +2,13 @@
 /*	Copyright 1991, M. Stephenson		  */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifdef MULDGN
@@ -139,9 +146,11 @@ not_pure()
 #ifdef WIZARD
 	if(wizard && (u.ualign.record < MIN_QUEST_ALIGN)) {
 
-	   You("are currently %d and require %d.",
+/*JP	   You("are currently %d and require %d.",*/
+	   Your("属性値は現在%dで%d必要だ．",
 		 u.ualign.record, MIN_QUEST_ALIGN);
-	   if(yn_function("adjust?", NULL, 'y') == 'y')
+/*JP	   if(yn_function("adjust?", NULL, 'y') == 'y')*/
+	   if(yn_function("直しますか？", NULL, 'y') == 'y')
 		u.ualign.record = MIN_QUEST_ALIGN;
 	}
 #endif

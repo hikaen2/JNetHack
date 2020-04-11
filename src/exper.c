@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifdef LINT
@@ -123,7 +130,8 @@ losexp() {	/* hit by drain life attack */
 #endif
 
 	if(u.ulevel > 1) {
-		pline("Goodbye level %u.", u.ulevel--);
+/*JP		pline("Goodbye level %u.", u.ulevel--);*/
+		pline("さようならレベル%u．", u.ulevel--);
 		/* remove intrinsic abilities */
 		adjabil((int)u.ulevel+1, (int)u.ulevel);
 	} else
@@ -155,7 +163,8 @@ newexplevel() {
 
 		u.ulevel++;
 		if (u.uexp >= newuexp(u.ulevel)) u.uexp = newuexp(u.ulevel) - 1;
-		pline("Welcome to experience level %u.", u.ulevel);
+/*JP		pline("Welcome to experience level %u.", u.ulevel);*/
+		pline("レベル%uにようこそ．", u.ulevel);
 		set_uasmon();	/* set up for the new level. */
 		/* give new intrinsics */
 		adjabil((int)u.ulevel-1, (int)u.ulevel);
@@ -173,7 +182,8 @@ void
 pluslvl() {
 	register int num;
 
-	You("feel more experienced.");
+/*JP	You("feel more experienced.");*/
+	You("より経験をつんだような気がした．");
 	num = newhp();
 	u.uhpmax += num;
 	u.uhp += num;
@@ -182,7 +192,8 @@ pluslvl() {
 	u.uen += num;
 	if(u.ulevel < MAXULEV) {
 		u.uexp = newuexp(u.ulevel);
-		pline("Welcome to experience level %u.", ++u.ulevel);
+/*JP		pline("Welcome to experience level %u.", ++u.ulevel);*/
+		pline("レベル%uにようこそ．", ++u.ulevel);
 		adjabil((int)u.ulevel-1, (int)u.ulevel);
 	}
 	flags.botl = 1;

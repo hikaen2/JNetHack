@@ -4,6 +4,13 @@
 
 /* Ball & Chain =============================================================*/
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 static int NDECL(bc_order);
@@ -17,7 +24,8 @@ ballfall()
 	gets_hit = (((uball->ox != u.ux) || (uball->oy != u.uy)) &&
 		    ((uwep == uball)? FALSE : (boolean)rn2(5)));
 	if (carried(uball)) {
-		pline("Startled, you drop the iron ball.");
+/*JP		pline("Startled, you drop the iron ball.");*/
+		pline("驚いてあなたは鉄球を落した．");
 		if (uwep == uball)
 			setuwep((struct obj *)0);
 		if (uwep != uball)
@@ -25,16 +33,21 @@ ballfall()
 	}
 	if(gets_hit){
 		int dmg = rn1(7,25);
-		pline("The iron ball falls on your %s.",
+/*JP		pline("The iron ball falls on your %s.",*/
+		pline("鉄球はあなたの%sの上に落ちた．",
 			body_part(HEAD));
 		if (uarmh)
 		    if(is_metallic(uarmh)) {
-			pline("Fortunately, you are wearing a hard helmet.");
+/*JP			pline("Fortunately, you are wearing a hard helmet.");*/
+			pline("幸運にも，あなたは固い兜を身につけていた．");
 			dmg = 3;
 		    } else if (flags.verbose)
-			Your("%s does not protect you.", xname(uarmh));
-		losehp(dmg, "Crunched in the head by an iron ball",
-			NO_KILLER_PREFIX);
+/*JP			Your("%s does not protect you.", xname(uarmh));*/
+			Your("%sはあなたを守れきれなかった．", xname(uarmh));
+/*JP		losehp(dmg, "Crunched in the head by an iron ball",
+			NO_KILLER_PREFIX);*/
+		losehp(dmg, "鉄球で頭を打って",
+			KILLED_BY);
 	}
 }
 
@@ -376,8 +389,10 @@ xchar *ballx, *bally, *chainx, *chainy;
 	}
 
 	if (near_capacity() > SLT_ENCUMBER) {
-	    You("cannot %sdrag the heavy iron ball.",
-			    invent ? "carry all that and also " : "");
+/*JP	    You("cannot %sdrag the heavy iron ball.",
+			    invent ? "carry all that and also " : "");*/
+	    You("重い鉄球を%s引きずって歩けない．",
+			    invent ? "持ちあげて，かつ" : "");
 	    nomul(0);
 	    return FALSE;
 	}
@@ -393,12 +408,14 @@ xchar *ballx, *bally, *chainx, *chainy;
 			 t->ttyp == TRAPDOOR)) ) {
 
 	    if (Levitation) {
-		You("feel a tug from the iron ball.");
+/*JP		You("feel a tug from the iron ball.");*/
+		You("鉄球に引っぱられた．");
 		if (t) t->tseen = 1;
 	    } else {
 		struct monst *victim;
 
-		You("are jerked back by the iron ball!");
+/*JP		You("are jerked back by the iron ball!");*/
+		You("鉄球にぐいと引っぱられた！");
 		if ((victim = m_at(uchain->ox, uchain->oy)) != 0) {
 		    int tmp;
 
@@ -471,29 +488,39 @@ xchar x, y;
 
     if (x != u.ux || y != u.uy) {
 	struct trap *t;
-	const char *pullmsg = "The ball pulls you out of the %s!";
+/*JP	const char *pullmsg = "The ball pulls you out of the %s!";*/
+	const char *pullmsg = "鉄球は%sからあなたを引っぱり出した！";
 
 	if (u.utrap && u.utraptype != TT_INFLOOR) {
 	    switch(u.utraptype) {
 	    case TT_PIT:
-		pline(pullmsg, "pit");
+/*JP		pline(pullmsg, "pit");*/
+		pline(pullmsg, "落し穴");
 		break;
 	    case TT_WEB:
-		pline(pullmsg, "web");
-		pline("The web is destroyed!");
+/*JP		pline(pullmsg, "web");*/
+		pline(pullmsg, "蜘蛛の巣");
+/*JP		pline("The web is destroyed!");*/
+		pline("蜘蛛の巣はこなごなになった！");
 		deltrap(t_at(u.ux,u.uy));
 		break;
 	    case TT_LAVA:
-		pline(pullmsg, "lava");
+/*JP		pline(pullmsg, "lava");*/
+		pline(pullmsg, "溶岩");
 		break;
 	    case TT_BEARTRAP: {
 		register long side = rn2(3) ? LEFT_SIDE : RIGHT_SIDE;
-		pline(pullmsg, "bear trap");
-		Your("%s %s is severely damaged.",
+/*JP		pline(pullmsg, "bear trap");*/
+		pline(pullmsg, "熊の罠");
+/*JP		Your("%s %s is severely damaged.",
 					(side == LEFT_SIDE) ? "left" : "right",
+					body_part(LEG));*/
+		Your("%s%sは致命的な傷を負った．",
+					(side == LEFT_SIDE) ? "左" : "右",
 					body_part(LEG));
 		set_wounded_legs(side, rn1(1000, 500));
-		losehp(2, "leg damage from being pulled out of a bear trap",
+/*JP		losehp(2, "leg damage from being pulled out of a bear trap",*/
+		losehp(2, "熊の罠から抜けようと足を引っぱって",
 					KILLED_BY);
 		break;
 	      }
@@ -547,8 +574,10 @@ litter()
 			if (otmp == uwep)
 				setuwep((struct obj *)0);
 			if ((otmp != uwep) && (canletgo(otmp, ""))) {
-				Your("%s you down the stairs.",
-				     aobjnam(otmp, "follow"));
+/*JP				Your("%s you down the stairs.",
+				     aobjnam(otmp, "follow"));*/
+				You("%sと一緒に階段を降りた．",
+				     xname(otmp));
 				dropx(otmp);
 			}
 		}
@@ -574,26 +603,35 @@ drag_down()
 	forward = carried(uball) && (uwep == uball || !uwep || !rn2(3));
 
 	if (carried(uball)) 
-		You("lose your grip on the iron ball.");
+/*JP		You("lose your grip on the iron ball.");*/
+		You("鉄球を手から落してしまった．");
 
 	if (forward) {
 		if(rn2(6)) {
-			pline("The iron ball drags you downstairs!");
-			losehp(rnd(6), "dragged downstairs by an iron ball",
-				NO_KILLER_PREFIX);
+/*JP			pline("The iron ball drags you downstairs!");*/
+			You("鉄球によって階段をころがり落ちた！");
+/*JP			losehp(rnd(6), "dragged downstairs by an iron ball",
+				NO_KILLER_PREFIX);*/
+			losehp(rnd(6), "鉄球により階段をころがり落ちて",
+				KILLED_BY);
 			litter();
 		}
 	} else {
 		if(rn2(2)) {
-			pline("The iron ball smacks into you!");
-			losehp(rnd(20), "iron ball collision", KILLED_BY_AN);
+/*JP			pline("The iron ball smacks into you!");*/
+			pline("鉄球はあなたにガシャーンとぶつかった！");
+/*JP			losehp(rnd(20), "iron ball collision", KILLED_BY_AN);*/
+			losehp(rnd(20), "鉄球の衝突で", KILLED_BY_AN);
 			exercise(A_STR, FALSE);
 			dragchance -= 2;
 		} 
 		if( (int) dragchance >= rnd(6)) {
-			pline("The iron ball drags you downstairs!");
-			losehp(rnd(3), "dragged downstairs by an iron ball",
-				NO_KILLER_PREFIX);
+/*JP			pline("The iron ball drags you downstairs!");*/
+			You("鉄球によって階段をころがり落ちた！");
+/*JP			losehp(rnd(3), "dragged downstairs by an iron ball",
+				NO_KILLER_PREFIX);*/
+			losehp(rnd(3), "鉄球により階段をころがり落ちて",
+				KILLED_BY);
 			exercise(A_STR, FALSE);
 			litter();
 		}
@@ -601,3 +639,4 @@ drag_down()
 }
 
 /*ball.c*/
+

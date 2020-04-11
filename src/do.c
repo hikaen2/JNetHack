@@ -4,6 +4,13 @@
 
 /* Contains code for 'd', 'D' (drop), '>', '<' (up, down) */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "lev.h"
 
@@ -49,7 +56,8 @@ dodrop()
 	int result;
 
 	if (*u.ushops) sellobj_state(TRUE);
-	result = drop(getobj(drop_types, "drop"));
+/*JP	result = drop(getobj(drop_types, "drop"));*/
+	result = drop(getobj(drop_types, "置く"));
 	if (*u.ushops) sellobj_state(FALSE);
 	reset_occupations();
 
@@ -73,7 +81,8 @@ boolean pushing;
 	    impossible("Not a boulder?");
 	else if (!Is_waterlevel(&u.uz) && (is_pool(rx,ry) || is_lava(rx,ry))) {
 	    boolean lava = is_lava(rx,ry), fills_up;
-	    const char *what = lava ? "lava" : "water";
+/*JP	    const char *what = lava ? "lava" : "water";*/
+	    const char *what = lava ? "溶岩" : "水中";
 	    schar ltyp = levl[rx][ry].typ;
 	    int chance = rn2(10);		/* water: 90%; lava: 10% */
 	    fills_up = lava ? chance == 0 : chance != 0;
@@ -88,9 +97,11 @@ boolean pushing;
 		bury_objs(rx, ry);
 		newsym(rx,ry);
 		if (pushing) {
-		    You("push %s into the %s.", the(xname(otmp)), what);
+/*JP		    You("push %s into the %s.", the(xname(otmp)), what);*/
+		    You("%sを%sの中へ押しこんだ．", the(xname(otmp)), what);
 		    if (flags.verbose && !Blind)
-			pline("Now you can cross it!");
+/*JP			pline("Now you can cross it!");*/
+			pline("さぁ渡れるぞ！");
 		    /* no splashing in this case */
 		}
 	    }
@@ -100,12 +111,18 @@ boolean pushing;
 			boolean moat = (ltyp != WATER) &&
 			    !Is_medusa_level(&u.uz) && !Is_waterlevel(&u.uz);
 
-			pline("There is a large splash as %s %s the %s.",
+/*JP			pline("There is a large splash as %s %s the %s.",
 			      the(xname(otmp)), fills_up? "fills":"falls into",
 			      lava ? "lava" : ltyp==POOL ? "pool" :
-			      moat ? "moat" : "water");
+			      moat ? "moat" : "water");*/
+			pline("%sを%sに%sと大きな水しぶきがあがった．",
+			      the(xname(otmp)),
+			      lava ? "溶岩" : ltyp==POOL ? "水たまり" :
+			      moat ? "堀" : "水中",
+			      fills_up? "埋め込む":"落す" );
 		    } else if (flags.soundok)
-			You("hear a%s splash.", lava ? " sizzling" : "");
+/*JP			You("hear a%s splash.", lava ? " sizzling" : "");*/
+			You("%sと言う音を聞いた．",lava ? "シューッ" : "パシャッ");
 		    wake_nearby();
 		}
 
@@ -113,15 +130,20 @@ boolean pushing;
 		    u.uinwater = 0;
 		    docrt();
 		    vision_full_recalc = 1;
-		    You("find yourself on dry land again!");
+/*JP		    You("find yourself on dry land again!");*/
+		    You("いつのまにか乾いた場所にいた！");
 		} else if (lava && distu(rx,ry) <= 2) {
-		    You("are hit by molten lava%c",
-			Fire_resistance ? '.' : '!');
+/*JP		    You("are hit by molten lava%c",
+			Fire_resistance ? '.' : '!');*/
+		    You("どろどろの溶岩でダメージを受けた%s",
+			Fire_resistance ? "．" : "！");
 		    losehp(d((Fire_resistance ? 1 : 3), 6),
-			   "molten lava", KILLED_BY);
+/*JP			   "molten lava", KILLED_BY);*/
+			   "どろどろの溶岩で", KILLED_BY);
 		} else if (!fills_up && flags.verbose &&
 			   (pushing ? !Blind : cansee(rx,ry)))
-		    pline("It sinks without a trace!");
+/*JP		    pline("It sinks without a trace!");*/
+		    pline("それは見えなくなるまで沈んだ！");
 	    }
 
 	    /* boulder is now gone */
@@ -159,8 +181,10 @@ const char *verb;
 		    (u.utrap && x==u.ux && y==u.uy)) {
 		    /* u.utrap = 0;     /* player remains trapped. See trap.c */
 		    if (*verb)
-			pline("The boulder %ss into the pit%s.", verb,
-				(mtmp) ? "" : " with you");
+/*JP			pline("The boulder %ss into the pit%s.", verb,*/
+			pline("岩は%s落し穴へ%s．",
+				(mtmp) ? "" : "あなたといっしょに",
+			      jconj(verb,"た"));
 		    if (mtmp) {
 			if (!passes_walls(mtmp->data) && !throws_rocks(mtmp->data))
 				if (hmon(mtmp, obj, TRUE))
@@ -170,22 +194,31 @@ const char *verb;
 			if (!passes_walls(uasmon) && !throws_rocks(uasmon))
 #endif
 			{
-				losehp(rnd(15), "squished under a boulder",
-					NO_KILLER_PREFIX);
+
+/*JP				losehp(rnd(15), "squished under a boulder",
+					NO_KILLER_PREFIX);*/
+				losehp(rnd(15), "岩の下で潰されて",
+					KILLED_BY);
 				return FALSE;
 			}
 		}
 		if (*verb) {
 			if (Blind) {
 				if ((x == u.ux) && (y == u.uy))
-					You("hear a CRASH! beneath you.");
+/*JP					You("hear a CRASH! beneath you.");*/
+					You("足元で何かが砕ける音を聞いた．");
 				else
-					You("hear the boulder %s.", verb);
+/*JP					You("hear the boulder %s.", verb);*/
+					You("岩が%s音を聞いた", verb);
 			} else if (cansee(x, y)) {
-				pline("The boulder %sfills a %s.",
+/*JP				pline("The boulder %sfills a %s.",
 					 t->tseen ? "" : "triggers and ",
 					 t->ttyp == TRAPDOOR ?
-					 "trap door" : "pit");
+					 "trap door" : "pit");*/
+				pline("岩は%s%sを埋めた．",
+					 t->tseen ? "" : "落ちて",
+					 t->ttyp == TRAPDOOR ?
+					 "罠" : "落し穴");
 			}
 		}
 		deltrap(t);
@@ -208,15 +241,20 @@ doaltarobj(obj)  /* obj is an object dropped on an altar */
 {
 	if (Blind) return;
 	if (obj->blessed || obj->cursed) {
-		pline("There is %s flash as %s hit%s the altar.",
+/*JP		pline("There is %s flash as %s hit%s the altar.",
 			an(Hallucination ? hcolor() :
 				obj->blessed ? amber : Black),
 			doname(obj),
-			(obj->quan == 1L) ? "s" : "");
+			(obj->quan == 1L) ? "s" : "");*/
+		pline("%sが祭壇に触れると%s光った．",
+			doname(obj),
+			an(jconj_adj(Hallucination ? hcolor() :
+				obj->blessed ? amber : Black)));
 		if (!Hallucination) obj->bknown = 1;
 	} else {
-		pline("%s land%s on the altar.", Doname2(obj),
-			(obj->quan == 1L) ? "s" : "");
+/*JP		pline("%s land%s on the altar.", Doname2(obj),
+			(obj->quan == 1L) ? "s" : "");*/
+		pline("%sを祭壇の上に置いた．", Doname2(obj));
 		obj->bknown = 1;
 	}
 }
@@ -240,13 +278,15 @@ register struct obj *obj;
 	register struct obj *otmp,*otmp2;
 	register boolean ideed = TRUE;
 
-	You("drop %s down the drain.", doname(obj));
+/*JP	You("drop %s down the drain.", doname(obj));*/
+	You("%sを排水口に落した．", doname(obj));
 #ifndef NO_SIGNAL
 	obj->in_use = TRUE;	/* block free identification via interrupt */
 #endif
 	switch(obj->otyp) {	/* effects that can be noticed without eyes */
 	    case RIN_SEARCHING:
-		You("thought your %s got lost in the sink, but there it is!",
+/*JP		You("thought your %s got lost in the sink, but there it is!",*/
+		You("%sを失った気がしたが，気のせいだった！",
 			xname(obj));
 #ifndef NO_SIGNAL
 		obj->in_use = FALSE;
@@ -255,31 +295,41 @@ register struct obj *obj;
 		trycall(obj);
 		return;
 	    case RIN_LEVITATION:
-		pline("The sink quivers upward for a moment.");
+/*JP		pline("The sink quivers upward for a moment.");*/
+		pline("流し台は一瞬，上下に震えた．");
 		break;
 	    case RIN_POISON_RESISTANCE:
 #ifdef TUTTI_FRUTTI
-		You("smell rotten %s.", makeplural(pl_fruit));
+/*JP		You("smell rotten %s.", makeplural(pl_fruit));*/
+		pline("腐った%sのような匂いがした．", makeplural(pl_fruit));
 #else
-		You("smell rotten fruit.");
+/*JP		You("smell rotten fruit.");*/
+		pline("腐った果物のような匂いがした．");
 #endif
 		break;
 	    case RIN_AGGRAVATE_MONSTER:
-		pline("Several flies buzz angrily around the sink.");
+/*JP		pline("Several flies buzz angrily around the sink.");*/
+		pline("数匹のハエがブンブン流し台の回りを飛びまわった．");
 		break;
 	    case RIN_SHOCK_RESISTANCE:
-		pline("Static electricity surrounds the sink.");
+/*JP		pline("Static electricity surrounds the sink.");*/
+		pline("流し台がピリピリしはじめた．");
 		break;
 	    case RIN_CONFLICT:
-		You("hear loud noises coming from the drain.");
+/*JP		You("hear loud noises coming from the drain.");*/
+		pline("排水口から大きな音が聞こえてきた．");
 		break;
 	    case RIN_GAIN_STRENGTH:
-		pline("The water flow seems %ser now.",
-			(obj->spe<0) ? "weak" : "strong");
+/*JP		pline("The water flow seems %ser now.",*/
+/*JP			(obj->spe<0) ? "weak" : "strong");*/
+		pline("水の流れが%sなったように見えた．",
+			(obj->spe<0) ? "弱く" : "強く");
 		break;
 	    case RIN_INCREASE_DAMAGE:
-		pline("The water's force seems %ser now.",
-			(obj->spe<0) ? "small" : "great");
+/*JP		pline("The water's force seems %ser now.",
+			(obj->spe<0) ? "small" : "great");*/
+		pline("水の力が%sなったように見えた．",
+			(obj->spe<0) ? "弱く" : "強く");
 		break;
 	    default:
 		ideed = FALSE;
@@ -289,26 +339,32 @@ register struct obj *obj;
 	    ideed = TRUE;
 	    switch(obj->otyp) {		/* effects that need eyes */
 		case RIN_ADORNMENT:
-		    pline("The faucets flash brightly for a moment.");
+/*JP		    pline("The faucets flash brightly for a moment.");*/
+		    pline("蛇口は一瞬明るく輝いた．");
 		    break;
 		case RIN_REGENERATION:
-		    pline("The sink looks as good as new.");
+/*JP		    pline("The sink looks as good as new.");*/
+		    pline("流し台が新品のように見えた．");
 		    break;
 		case RIN_INVISIBILITY:
-		    You("don't see anything happen to the sink.");
+/*JP		    You("don't see anything happen to the sink.");*/
+		    pline("流し台に何が起きたのか見えなかった．");
 		    break;
 		case RIN_SEE_INVISIBLE:
-		    You("see some air in the sink.");
+/*JP		    You("see some air in the sink.");*/
+		    You("流し台の上に何らかの気体が見えた．");
 		    break;
 		case RIN_STEALTH:
-		pline("The sink seems to blend into the floor for a moment.");
+/*JP		pline("The sink seems to blend into the floor for a moment.");*/
+		pline("一瞬，流し台が床に溶けこんだように見えた．");
 		    break;
 		case RIN_HUNGER:
 		    ideed = FALSE;
 		    for(otmp = level.objects[u.ux][u.uy]; otmp; otmp = otmp2) {
 			otmp2 = otmp->nexthere;
 			if(otmp != uball && otmp != uchain) {
-			    pline("Suddenly, %s vanishes from the sink!",
+/*JP			    pline("Suddenly, %s vanishes from the sink!",*/
+			    pline("突然，%sは流し台から消えた！",
 							doname(otmp));
 			    delobj(otmp);
 			    ideed = TRUE;
@@ -316,35 +372,46 @@ register struct obj *obj;
 		    }
 		    break;
 		case RIN_FIRE_RESISTANCE:
-		pline("The hot water faucet flashes brightly for a moment.");
+/*JP		pline("The hot water faucet flashes brightly for a moment.");*/
+		pline("一瞬，熱湯の蛇口が明るく輝いた．");
 		    break;
 		case RIN_COLD_RESISTANCE:
-		pline("The cold water faucet flashes brightly for a moment.");
+		pline("一瞬，冷水の蛇口が明るく輝いた．");
 		    break;
 		case RIN_PROTECTION_FROM_SHAPE_CHAN:
-		    pline("The sink looks nothing like a fountain.");
+/*JP		    pline("The sink looks nothing like a fountain.");*/
+		    pline("流し台は消え，泉のようになった．");
 		    break;
 		case RIN_PROTECTION:
-		    pline("The sink glows %s for a moment.",
+/*JP		    pline("The sink glows %s for a moment.",
 			    Hallucination ? hcolor() :
-			    (obj->spe<0) ? Black : silver);
+			    (obj->spe<0) ? Black : silver);*/
+		    pline("流し台は一瞬%s輝いた．",
+			    jconj_adj(Hallucination ? hcolor() :
+			    (obj->spe<0) ? Black : silver));
 		    break;
 		case RIN_WARNING:
-		    pline("The sink glows %s for a moment.",
-			    Hallucination ? hcolor() : White);
+/*JP		    pline("The sink glows %s for a moment.",
+			    Hallucination ? hcolor() : White);*/
+		    pline("流し台は一瞬%s輝いた．",
+			    jconj_adj(Hallucination ? hcolor() : White));
 		    break;
 		case RIN_TELEPORTATION:
-		    pline("The sink momentarily vanishes.");
+/*JP		    pline("The sink momentarily vanishes.");*/
+		    pline("流し台は一瞬消えた．");
 		    break;
 		case RIN_TELEPORT_CONTROL:
-	    pline("The sink looks like it is being beamed aboard somewhere.");
+/*JP	    pline("The sink looks like it is being beamed aboard somewhere.");*/
+	    pline("流し台はどこかに電波を放出しているように見えた．");
 		    break;
 #ifdef POLYSELF
 		case RIN_POLYMORPH:
-		    pline("The sink momentarily looks like a fountain.");
+/*JP		    pline("The sink momentarily looks like a fountain.");*/
+		    pline("流し台は一瞬泉のように見えた．");
 		    break;
 		case RIN_POLYMORPH_CONTROL:
-	pline("The sink momentarily looks like a regularly erupting geyser.");
+/*JP	pline("The sink momentarily looks like a regularly erupting geyser.");*/
+	pline("流し台は一瞬よくある湯沸かし機のように燃えた．");
 		    break;
 #endif
 	    }
@@ -352,9 +419,11 @@ register struct obj *obj;
 	if(ideed)
 	    trycall(obj);
 	else
-	    You("hear the ring bouncing down the drainpipe.");
+/*JP	    You("hear the ring bouncing down the drainpipe.");*/
+	    You("指輪が排水口に当りながら落る音を聞いた．");
 	if (!rn2(20)) {
-		pline("The sink backs up, leaving %s.", doname(obj));
+/*JP		pline("The sink backs up, leaving %s.", doname(obj));*/
+		pline("しかし，流し台に%sは流れてない．", doname(obj));
 #ifndef NO_SIGNAL
 		obj->in_use = FALSE;
 #endif
@@ -376,13 +445,16 @@ register const char *word;
 {
 	if(obj->owornmask & (W_ARMOR | W_RING | W_AMUL | W_TOOL)){
 		if (*word)
-			Norep("You cannot %s something you are wearing.",word);
+/*JP			Norep("You cannot %s something you are wearing.",word);*/
+			Norep("あなたが身につけているものを%sことはできない．",word);
 		return(FALSE);
 	}
 	if (obj->otyp == LOADSTONE && obj->cursed) {
 		if (*word)
-			pline("For some reason, you cannot %s the stone%s!",
-				word, plur(obj->quan));
+/*JP			pline("For some reason, you cannot %s the stone%s!",
+				word, plur(obj->quan));*/
+			pline("どういうわけか，あなたは石を%sことはできない．",
+				word);
 		/* Kludge -- see invent.c */
 		if (obj->corpsenm) {
 			struct obj *otmp;
@@ -400,7 +472,8 @@ register const char *word;
 #ifdef WALKIES
 	if (obj->otyp == LEASH && obj->leashmon != 0) {
 		if (*word)
-			pline ("The leash is tied around your %s.",
+/*JP			pline ("The leash is tied around your %s.",*/
+			pline ("紐があなたの%sに結びつけられている．",
 					body_part(HAND));
 		return(FALSE);
 	}
@@ -414,7 +487,8 @@ drop(obj)
 register struct obj *obj;
 {
 	if(!obj) return(0);
-	if(!canletgo(obj,"drop"))
+/*JP	if(!canletgo(obj,"drop"))*/
+	if(!canletgo(obj,"置く"))
 		return(0);
 	if(obj == uwep) {
 		if(welded(uwep)) {
@@ -433,7 +507,8 @@ register struct obj *obj;
 #endif
 	if (Levitation && !(Is_airlevel(&u.uz) || Is_waterlevel(&u.uz) ||
 			    is_pool(u.ux, u.uy) || u.uswallow)) {
-	    if(flags.verbose) You("drop %s.", doname(obj));
+/*JP	    if(flags.verbose) You("drop %s.", doname(obj));*/
+	    if(flags.verbose) You("%sを置いた．", doname(obj));
 	    if (obj->otyp != GOLD_PIECE) freeinv(obj);
 	    (void) snuff_candle(obj);
 	    hitfloor(obj);
@@ -442,7 +517,8 @@ register struct obj *obj;
 	if (IS_ALTAR(levl[u.ux][u.uy].typ) && !u.uswallow) {
 		doaltarobj(obj);	/* set bknown */
 	} else
-		if(flags.verbose) You("drop %s.", doname(obj));
+/*JP		if(flags.verbose) You("drop %s.", doname(obj));*/
+		if(flags.verbose) You("%sを置いた．", doname(obj));
 	dropx(obj);
 	return(1);
 }
@@ -464,7 +540,8 @@ void
 dropy(obj)
 register struct obj *obj;
 {
-	if (!u.uswallow && flooreffects(obj,u.ux,u.uy,"drop")) return;
+/*JP	if (!u.uswallow && flooreffects(obj,u.ux,u.uy,"drop")) return;*/
+	if (!u.uswallow && flooreffects(obj,u.ux,u.uy,"落ちる")) return;
 	if(obj->otyp == CRYSKNIFE)
 		obj->otyp = WORM_TOOTH;
 	(void) snuff_candle(obj);
@@ -495,7 +572,8 @@ doddrop()
 	int result;
 
 	if (*u.ushops) sellobj_state(TRUE);
-	result = ggetobj("drop", drop, 0);
+/*JP	result = ggetobj("drop", drop, 0);*/
+	result = ggetobj("置く", drop, 0);
 	if (*u.ushops) sellobj_state(FALSE);
 	reset_occupations();
 
@@ -520,41 +598,54 @@ dodown()
 	  ) {
 		if (!(trap = t_at(u.ux,u.uy)) || trap->ttyp != TRAPDOOR
 			|| !Can_fall_thru(&u.uz) || !trap->tseen) {
-			You("can't go down here.");
+/*JP			You("can't go down here.");*/
+			You("ここでは降りることができない．");
 			return(0);
 		}
 	}
 	if(u.ustuck) {
-		You("are being held, and cannot go down.");
+/*JP		You("are being held, and cannot go down.");*/
+		You("つかまえられていて降りることができない．");
 		return(1);
 	}
 	if(Levitation) {
-		pline("You're floating high above the %s.",
+/*JP		pline("You're floating high above the %s.",
 			levl[u.ux][u.uy].typ == STAIRS ? "stairs" :
 			levl[u.ux][u.uy].typ == LADDER ? "ladder" :
-			"trap door");
+			"trap door");*/
+		You("%sのはるか上方に浮いている．",
+			levl[u.ux][u.uy].typ == STAIRS ? "階段" :
+			levl[u.ux][u.uy].typ == LADDER ? "はしご" :
+			"落し扉");
 		return(0);
 	}
 	if (on_level(&valley_level, &u.uz) && !u.uevent.gehennom_entered) {
-		You("are standing at the gate to Gehennom.");
-		pline("Unspeakable cruelty and harm lurk down there.");
-		if (yn("Are you sure you want to enter?") != 'y')
+/*JP		You("are standing at the gate to Gehennom.");*/
+		You("ゲヘナの門の前に立っている．");
+/*JP		pline("Unspeakable cruelty and harm lurk down there.");*/
+		pline("何とも言えない残虐と惨事がこの下に潜んでいる．");
+/*JP		if (yn("Are you sure you want to enter?") != 'y')*/
+		if (yn("本当に入りますか？") != 'y')
 			return(0);
-		else pline("So be it.");
+/*JP		else pline("So be it.");*/
+		else pline("運命は決まった．");
 		u.uevent.gehennom_entered = 1;	/* don't ask again */
 	}
 
 #ifdef WALKIES
 	if(!next_to_u()) {
-		You("are held back by your pet!");
+/*JP		You("are held back by your pet!");*/
+		You("ペットを呼びもどした！");
 		return(0);
 	}
 #endif
 	if (trap)
 #ifdef POLYSELF
-		You("%s into the trap door.", locomotion(uasmon, "jump"));
+/*JP		You("%s into the trap door.", locomotion(uasmon, "jump"));*/
+		You("%s落し扉に入った．", jconj(locomotion(uasmon, "飛ぶ"),"て"));
 #else
-		You("jump into the trap door.");
+/*JP		You("jump into the trap door.");*/
+		You("飛んで落し扉に入った．");
 #endif
 	if (levl[u.ux][u.uy].typ == LADDER) at_ladder = TRUE;
 	next_level(!trap);
@@ -570,26 +661,32 @@ doup()
 	     && (!sstairs.sx || u.ux != sstairs.sx || u.uy != sstairs.sy
 			|| !sstairs.up)
 	  ) {
-		You("can't go up here.");
+/*JP		You("can't go up here.");*/
+		You("ここでは上ることができない．");
 		return(0);
 	}
 	if(u.ustuck) {
-		You("are being held, and cannot go up.");
+/*JP		You("are being held, and cannot go up.");*/
+		You("つかまえられていて上ることができない．");
 		return(1);
 	}
 	if(near_capacity() > SLT_ENCUMBER) {
 		/* No levitation check; inv_weight() already allows for it */
-		Your("load is too heavy to climb the %s.",
-			levl[u.ux][u.uy].typ == STAIRS ? "stairs" : "ladder");
+/*JP		Your("load is too heavy to climb the %s.",
+			levl[u.ux][u.uy].typ == STAIRS ? "stairs" : "ladder");*/
+		You("物を持ちすぎて%sを上ることができない．",
+			levl[u.ux][u.uy].typ == STAIRS ? "階段" : "はしご");
 		return(1);
 	}
 	if(ledger_no(&u.uz) == 1) {
-		if (yn("Beware, there will be no return! Still climb?") != 'y')
+/*JP		if (yn("Beware, there will be no return! Still climb?") != 'y')*/
+		if (yn("気をつけろ，戻れないかもしれないぞ！それでも上りますか？") != 'y')
 			return(0);
 	}
 #ifdef WALKIES
 	if(!next_to_u()) {
-		You("are held back by your pet!");
+/*JP		You("are held back by your pet!");*/
+		You("ペットを呼びもどした！");
 		return(0);
 	}
 #endif
@@ -621,7 +718,8 @@ currentlevel_rewrite()
 		 * Another possibility is that the directory was not
 		 * writable.
 		 */
-		pline("Cannot create level file for level %d.",
+/*JP		pline("Cannot create level file for level %d.",*/
+		pline("地下%d階のファイルを作れない．",
 						ledger_no(&u.uz));
 		return -1;
 	}
@@ -630,8 +728,10 @@ currentlevel_rewrite()
 	if (!savelev(fd, ledger_no(&u.uz), COUNT_SAVE)) {
 		(void) close(fd);
 		delete_levelfile(ledger_no(&u.uz));
-		pline("NetHack is out of disk space for making levels!");
-		You("can save, quit, or continue playing.");
+/*JP		pline("NetHack is out of disk space for making levels!");
+		You("can save, quit, or continue playing.");*/
+		pline("ディスクが足りない！");
+		You("セーブし終了し，あとで続行できる．");
 		return -1;
 	}
 #endif
@@ -701,7 +801,8 @@ register boolean at_stairs, falling, portal;
 		    else
 			assign_rnd_level(newlevel, &u.uz, rnd(3));
 
-		    pline("A mysterious force momentarily surrounds you...");
+/*JP		    pline("A mysterious force momentarily surrounds you...");*/
+		    pline("一瞬奇妙な力があなたを包んだ．．．");
 		    if (on_level(newlevel, &u.uz)) {
 			(void) safe_teleds();
 #ifdef WALKIES
@@ -717,7 +818,8 @@ register boolean at_stairs, falling, portal;
 	 */
 	if (on_level(&u.uz, &qstart_level) && !newdungeon && !ok_to_quest()) {
 
-		pline("A mysterious force prevents you from descending.");
+/*JP		pline("A mysterious force prevents you from descending.");*/
+		pline("奇妙な力があなたを降りるのを防いだ．");
 		return;
 	}
 #endif
@@ -778,9 +880,12 @@ register boolean at_stairs, falling, portal;
 	} else {
 		fd = open_levelfile(ledger_no(&u.uz));
 		if (fd < 0) {
-			pline("Cannot open file (#%d) for level %d (errno %d).",
-					ledger_no(&u.uz), depth(&u.uz), errno);
-			pline("Probably someone removed it.");
+/*JP			pline("Cannot open file (#%d) for level %d (errno %d).",
+					ledger_no(&u.uz), depth(&u.uz), errno);*/
+			pline("地下%d階のファイルを開けない(#%d)(errono %d)．",
+					depth(&u.uz), ledger_no(&u.uz), errno);
+/*JP			pline("Probably someone removed it.");*/
+			pline("おそらく誰かが削除したのだろう．");
 			done(TRICKED);
 		}
 		minit();	/* ZEROCOMP */
@@ -820,10 +925,13 @@ register boolean at_stairs, falling, portal;
 		}
 		/* Remove bug which crashes with levitation/punishment  KAA */
 		if (Punished && !Levitation) {
-			pline("With great effort you climb the %s.",
-				at_ladder ? "ladder" : "stairs");
+/*JP			pline("With great effort you climb the %s.",
+				at_ladder ? "ladder" : "stairs");*/
+			pline("やっとこさ%sを上った．",
+				at_ladder ? "はしご" : "階段");
 		} else if (at_ladder)
-		    You("climb up the ladder.");
+/*JP		    You("climb up the ladder.");*/
+		    You("はしごを上った．");
 	    } else {	/* down */
 		if (at_ladder) {
 		    u.ux = xupladder;
@@ -834,7 +942,8 @@ register boolean at_stairs, falling, portal;
 		}
 		if (u.dz &&
 		    (near_capacity() > UNENCUMBERED || Punished || Fumbling)) {
-		    You("fall down the %s.", at_ladder ? "ladder" : "stairs");
+/*JP		    You("fall down the %s.", at_ladder ? "ladder" : "stairs");*/
+		    You("%sを転げ落ちた．", at_ladder ? "はしご" : "階段");
 		    if (Punished) {
 			drag_down();
 			if (carried(uball)) {
@@ -843,10 +952,13 @@ register boolean at_stairs, falling, portal;
 			    freeinv(uball);
 			}
 		    }
-		    losehp(rnd(3), "falling downstairs", KILLED_BY);
-		    selftouch("Falling, you");
+/*JP		    losehp(rnd(3), "falling downstairs", KILLED_BY);
+		    selftouch("Falling, you");*/
+		    losehp(rnd(3), "階段を転げ落ちて", KILLED_BY);
+		    selftouch("落ちながら，あなたは");
 		} else if (u.dz && at_ladder)
-		    You("climb down the ladder.");
+/*JP		    You("climb down the ladder.");*/
+		    You("はしごを降りた．");
 	    }
 	} else {	/* trap door or level_tele or In_endgame */
 	    if (up)
@@ -863,7 +975,8 @@ register boolean at_stairs, falling, portal;
 				LR_DOWNTELE, (d_level *) 0);
 	    if (falling) {
 		if (Punished) ballfall();
-		selftouch("Falling, you");
+/*JP		selftouch("Falling, you");*/
+		selftouch("落ちながら，あなたは");
 	    }
 	}
 
@@ -897,13 +1010,17 @@ register boolean at_stairs, falling, portal;
 	 */
 	if(!In_hell(&u.uz0) && Inhell) {
 	    if(Is_valley(newlevel)) {
-		You("arrive at the Valley of the Dead...");
-		pline("The odor of burnt flesh and decay pervades the air.");
+/*JP		You("arrive at the Valley of the Dead...");*/
+		You("死の谷に到達した．．．");
+/*JP		pline("The odor of burnt flesh and decay pervades the air.");*/
+		pline("死肉や腐肉の燃える悪臭がただよっている．");
 #ifdef MICRO
 		display_nhwindow(WIN_MESSAGE, FALSE);
 #endif
-		You("hear groans and moans everywhere.");
-	    } else pline("It is hot here.  You smell smoke...");
+/*JP		You("hear groans and moans everywhere.");*/
+		pline("うめき声やうなり声があちこちから聞こえる．");
+/*JP	    } else pline("It is hot here.  You smell smoke...");*/
+	    } else pline("ここは暑い．煙りの匂いがした．．．");
 	}
 
 #ifdef REINCARNATION
@@ -911,14 +1028,16 @@ register boolean at_stairs, falling, portal;
 	 *  Move all plines beyond the screen reset.
 	 */
 	if (new && Is_rogue_level(&u.uz))
-	    You("enter what seems to be an older, more primitive world.");
+/*JP	    You("enter what seems to be an older, more primitive world.");*/
+	    You("とても古くさく見える部屋に入った，ずいぶん単純な世界だ．");
 #endif
 	/* Final confrontation */
 	if (In_endgame(&u.uz) && newdungeon && u.uhave.amulet &&
 						   flags.no_of_wizards == 0)
 		resurrect();
 	if (newdungeon && In_tower(&u.uz))
-		pline("The heat and smoke are gone.");
+/*JP		pline("The heat and smoke are gone.");*/
+		pline("熱と煙りは消えさった．");
 #ifdef MULDGN
 	/* the message from your quest leader */
 	if (!In_quest(&u.uz0) && at_dgn_entrance("The Quest") &&
@@ -935,8 +1054,10 @@ register boolean at_stairs, falling, portal;
 	if(Is_knox(&u.uz)) {
 		register struct monst *mtmp;
 
-		You("penetrated a high security area!");
-		pline("An alarm sounds!");
+/*JP		You("penetrated a high security area!");*/
+		You("最高機密の場所へ踏み込んだ！");
+/*JP		pline("An alarm sounds!");*/
+		pline("警報がなった！");
 		for(mtmp = fmon; mtmp; mtmp = mtmp->nmon)
 		    if(mtmp->msleep) mtmp->msleep = 0;
 	}
@@ -955,7 +1076,8 @@ register boolean at_stairs, falling, portal;
 		if (Conflict) {
 		    coord mm;
 		    int i = rnd(4);
-	pline("A voice booms: \"Thy desire for conflict shall be fulfilled!\"");
+/*JP	pline("A voice booms: \"Thy desire for conflict shall be fulfilled!\"");*/
+	pline("声が響いた:「汝の論争への望，かなえられるべし！」");
 		    while(i--) {
 			mm.x = u.ux;
 			mm.y = u.uy;
@@ -967,7 +1089,8 @@ register boolean at_stairs, falling, portal;
 		} else if(u.ualign.record > 8 /* fervent */) {
 		    coord mm;
 
-		pline("A voice whispers: \"Thou hast been worthy of me!\"");
+/*JP		pline("A voice whispers: \"Thou hast been worthy of me!\"");*/
+		pline("ささやき声が聞こえた:「汝，我が評価を得た！」");
 		    mm.x = u.ux;
 		    mm.y = u.uy;
 		    if (enexto(&mm, mm.x, mm.y, &mons[PM_ANGEL])) {
@@ -976,9 +1099,11 @@ register boolean at_stairs, falling, portal;
 			    register struct obj *otmp;
 
 			    if (!Blind)
-				pline("An angel appears near you.");
+/*JP				pline("An angel appears near you.");*/
+				pline("天使があなたのそばに現われた．");
 			    else
-			You("feel the presence of a friendly angel near you.");
+/*JP			You("feel the presence of a friendly angel near you.");*/
+			You("近くに友好的な天使の存在を感じた．");
 			    /* guardian angel -- the one case mtame doesn't
 			     * imply an edog structure, so we don't want to
 			     * call tamedog().
@@ -1053,16 +1178,19 @@ boolean mark_as_old;
 	if (carried(corpse)) {
 	    if (corpse == uwep) {
 		if ((mtmp = revive(corpse,TRUE)) != 0)
-		    pline("The %s%s %s writhes out of your grasp!",
+/*JP		    pline("The %s%s %s writhes out of your grasp!",
 			(mtmp->mhp < mtmp->mhpmax) ? "bite-covered ":"",
-				mtmp->data->mname, xname(corpse));
+				mtmp->data->mname, xname(corpse));*/
+		    pline("%sはもがいた！",xname(corpse));
 	    } else if ((mtmp = revive(corpse,TRUE)) != 0)
-		You("feel squirming in your backpack!");
+/*JP		You("feel squirming in your backpack!");*/
+		You("背負い袋で何かがもがいているのを感じた！");
 	} else {
 	    if ((mtmp = revive(corpse,FALSE)) && cansee(mtmp->mx,mtmp->my))
-		pline("%s rises from the dead!",
-		    (mtmp->mhp==mtmp->mhpmax) ? Monnam(mtmp)
-			: Adjmonnam(mtmp, "bite-covered"));
+/*JP		pline("%s rises from the dead!",*/
+		pline("%sが蘇えった！",Monnam(mtmp));
+/*JP		    (mtmp->mhp==mtmp->mhpmax) ? Monnam(mtmp)
+			: Adjmonnam(mtmp, "bite-covered"));*/
 	}
     }
 }
@@ -1156,13 +1284,15 @@ wipeoff()
 	if (Blinded < 4)	Blinded = 0;
 	else			Blinded -= 4;
 	if (!Blinded) {
-		pline("You've got the glop off.");
+/*JP		pline("You've got the glop off.");*/
+		You("%sから粘りつくものがとれた．", body_part(FACE));
 		u.ucreamed = 0;
 		Blinded = 1;
 		make_blinded(0L,TRUE);
 		return(0);
 	} else if (!u.ucreamed) {
-		Your("%s feels clean now.", body_part(FACE));
+/*JP		Your("%s feels clean now.", body_part(FACE));*/
+		Your("%sはきれいになった．", body_part(FACE));
 		return(0);
 	}
 	return(1);		/* still busy */
@@ -1174,14 +1304,16 @@ dowipe()
 	if(u.ucreamed)  {
 		static NEARDATA char buf[39];
 
-		Sprintf(buf, "wiping off your %s", body_part(FACE));
+/*JP		Sprintf(buf, "wiping off your %s", body_part(FACE));*/
+		Sprintf(buf, "%sを拭いている", body_part(FACE));
 		set_occupation(wipeoff, buf, 0);
 		/* Not totally correct; what if they change back after now
 		 * but before they're finished wiping?
 		 */
 		return(1);
 	}
-	Your("%s is already clean.", body_part(FACE));
+/*JP	Your("%s is already clean.", body_part(FACE));*/
+	Your("%sは汚れていない．", body_part(FACE));
 	return(1);
 }
 
@@ -1240,10 +1372,12 @@ heal_legs()
 		}
 
 		if((Wounded_legs & BOTH_SIDES) == BOTH_SIDES) {
-			Your("%s feel somewhat better.",
+/*JP			Your("%s feel somewhat better.",*/
+			Your("両%sはいくぶん回復した．",
 				makeplural(body_part(LEG)));
 		} else {
-			Your("%s feels somewhat better.",
+/*JP			Your("%s feels somewhat better.",*/
+			Your("%sはいくぶん回復した．",
 				body_part(LEG));
 		}
 		Wounded_legs = 0;

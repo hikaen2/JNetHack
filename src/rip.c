@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 static void FDECL(center, (int, char *));
@@ -13,9 +20,12 @@ extern const char *killed_by_prefix[];
 static const char *rip_txt[] = {
 "                       ----------",
 "                      /          \\",
-"                     /    REST    \\",
+/*JP"                     /    REST    \\",
 "                    /      IN      \\",
-"                   /     PEACE      \\",
+"                   /     PEACE      \\",*/
+"                     /            \\",
+"                    /   安らかに   \\",
+"                   /      眠れ      \\",
 "                  /                  \\",
 "                  |                  |", /* Name of player */
 "                  |                  |", /* Amount of $ */
@@ -86,12 +96,12 @@ int how;
 	switch (killer_format) {
 		default: impossible("bad killer format?");
 		case KILLED_BY_AN:
-			Strcpy(buf, killed_by_prefix[how]);
-			Strcat(buf, an(killer));
+			Strcpy(buf, an(killer));
+			Strcat(buf, killed_by_prefix[how]);
 			break;
 		case KILLED_BY:
-			Strcpy(buf, killed_by_prefix[how]);
-			Strcat(buf, killer);
+			Strcpy(buf, killer);
+			Strcat(buf, killed_by_prefix[how]);
 			break;
 		case NO_KILLER_PREFIX:
 			Strcpy(buf, killer);
@@ -102,12 +112,39 @@ int how;
 	for (line=DEATH_LINE, dpx = buf; line<YEAR_LINE; line++) {
 		register int i,i0;
 		char tmpchar;
+/*JP		*/
+		unsigned char *uc;
+		int jstone_line;
 
-		if ( (i0=strlen(dpx)) > STONE_LINE_LEN) {
+		if ((i0=strlen(dpx))<= STONE_LINE_LEN)
+		  jstone_line = STONE_LINE_LEN;
+		else if (i0/2 <= STONE_LINE_LEN )
+		  jstone_line = ((i0+3)/4)*2;
+		else if (i0/3 <= STONE_LINE_LEN )
+		  jstone_line = ((i0+5)/6)*2;
+		else
+		  jstone_line = ((i0+7)/8)*2;
+
+/*JP		if ( (i0=strlen(dpx)) > STONE_LINE_LEN) {
 				for(i = STONE_LINE_LEN;
-				    ((i0 > STONE_LINE_LEN) && i); i--)
+				    ((i0 > STONE_LINE_LEN) && i); i--)*/
+		if ( i0 > jstone_line) {
+				for(i = jstone_line;
+				    ((i0 > jstone_line) && i); i--)
 					if(dpx[i] == ' ') i0 = i;
-				if(!i) i0 = STONE_LINE_LEN;
+/*JP*/
+/*				if(!i) i0 = STONE_LINE_LEN;*/
+				if(!i){
+				  i0=0;
+/*JP				  while(i0<STONE_LINE_LEN){*/
+				  while(i0<jstone_line){
+				    uc = (unsigned char *)(dpx+i0);
+				    if(*uc <128)
+				      ++i0;
+				    else
+				      i0+=2;
+				  }
+				}
 		}
 		tmpchar = dpx[i0];
 		dpx[i0] = 0;

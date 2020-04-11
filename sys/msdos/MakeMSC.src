@@ -66,8 +66,9 @@ MAKEBIN = make45l	# Make Utility
 # the CL environment variable as the total lenth of the compiler
 # command line exceeds the MSDOS 128 character limit.
 #
-CFLAGS	= /c
-LFLAGS	= /noi /seg:512 /map /st:5120 /DYNAMIC:1052 /INFO
+CFLAGS	= /AL /c /Oso /Gs /G2 /Gt10 /Zp1 /W0 /I$(INCL)
+#CFLAGS	= /c
+LFLAGS	= /noi /seg:512 /map /st:5120 /DYNAMIC:1200 /farcall /packcode
 OVLMUCKING =	# None required
 MSC6MUCK =	# None required
 OVERLAY =	# None required
@@ -141,8 +142,8 @@ RANDOM	= $(OBJ)\random.o
 # comment out the upper line and uncomment the lower.  Make sure 
 # that TERMLIB contains the full pathname to the termcap library. 
 
-TERMLIB =
-#TERMLIB = $(SSYS)\termcap.lib
+#TERMLIB =
+TERMLIB = $(SSYS)\termcap.lib
 
 #
 #	Nothing below this line should have to be changed.
@@ -229,14 +230,27 @@ YOUPROP_H  = $(PERMONST_H)	$(MONDATA_H)		$(INCL)\prop.h	\
 #	Overlay Objects.
 #
 
-ROOT =	$(OVERLAY) $(OBJ)\main.o $(OBJ)\msdos.0 $(OBJ)\dungeon.0 \
-	$(OBJ)\alloc.o $(OBJ)\random.o $(OBJ)\decl.o $(OBJ)\dbridge.0 \
-	$(OBJ)\objects.o $(OBJ)\invent.0 $(OBJ)\mkobj.0 $(OBJ)\mkroom.0 \
-	$(OBJ)\rnd.0 $(OBJ)\video.0 $(OBJ)\mondata.0 $(OBJ)\muse.o \
-	$(OBJ)\engrave.0 $(OBJ)\explode.o $(OBJ)\display.o $(OBJ)\vision.o \
-	$(OBJ)\attrib.0 $(OBJ)\rect.o $(OBJ)\vis_tab.o $(OBJ)\hacklib.0 \
-	$(OBJ)\monst.o $(OBJ)\hack.3 $(OBJ)\topl.0 $(OBJ)\trap.0 \
-	$(OBJ)\termcap.0 $(OBJ)\wintty.o $(OBJ)\monmove.0 $(OBJ)\dogmove.0
+#ROOT =	$(OVERLAY) $(OBJ)\main.o $(OBJ)\msdos.0 $(OBJ)\dungeon.0 \
+#	$(OBJ)\alloc.o $(OBJ)\random.o $(OBJ)\decl.o $(OBJ)\dbridge.0 \
+#	$(OBJ)\objects.o $(OBJ)\invent.0 $(OBJ)\mkobj.0 $(OBJ)\mkroom.0 \
+#	$(OBJ)\rnd.0 $(OBJ)\video.0 $(OBJ)\mondata.0 $(OBJ)\muse.o \
+#	$(OBJ)\engrave.0 $(OBJ)\explode.o $(OBJ)\display.o $(OBJ)\vision.o \
+#	$(OBJ)\attrib.0 $(OBJ)\rect.o $(OBJ)\vis_tab.o $(OBJ)\hacklib.0 \
+#	$(OBJ)\monst.o $(OBJ)\hack.3 $(OBJ)\topl.0 $(OBJ)\trap.0 \
+#	$(OBJ)\termcap.0 $(OBJ)\wintty.o $(OBJ)\monmove.0 $(OBJ)\dogmove.0
+
+ROOT =	$(OVERLAY) $(OBJ)\main.o $(OBJ)\dungeon.0\
+	$(OBJ)\decl.o $(OBJ)\invent.0 $(OBJ)\engrave.0 $(OBJ)\explode.o \
+	$(OBJ)\vision.o $(OBJ)\rect.o $(OBJ)\vis_tab.o $(OBJ)\hacklib.0 \
+	$(OBJ)\monst.o $(OBJ)\hack.3 $(OBJ)\trap.0 $(OBJ)\monmove.0 \
+	$(OBJ)\dogmove.0 $(OBJ)\msdos.0 $(OBJ)\video.0 $(OBJ)\termcap.0 \
+	$(OBJ)\wintty.o $(OBJ)\display.o $(OBJ)\jconj.o
+
+OVL0X = $(OBJ)\random.o $(OBJ)\rnd.0 $(OBJ)\alloc.o $(OBJ)\emalloc.o \
+	$(OBJ)\jtrns.o
+
+OVL0Y =	$(OBJ)\mkobj.0 $(OBJ)\mkroom.0 $(OBJ)\topl.0 $(OBJ)\attrib.0 \
+	$(OBJ)\objects.o $(OBJ)\mondata.0 $(OBJ)\muse.o $(OBJ)\dbridge.0
 
 # These could use to go in root, but are in OLV1 to make
 # the game loadable in under 512 free ram.
@@ -338,7 +352,8 @@ OVL63 = $(OBJ)\do.2 $(OBJ)\dog.2 $(OBJ)\extralev.o \
 #	Make Objects.
 #
 
-MOBJ = $(OVL01) $(OVL02) $(OVL03) $(OVL04) $(OVL05) $(OVL06) $(OVL07) $(OVL08)\
+MOBJ = $(OVL0X) $(OVL0Y) \
+       $(OVL01) $(OVL02) $(OVL03) $(OVL04) $(OVL05) $(OVL06) $(OVL07) $(OVL08)\
        $(OVL09) $(OVL10) $(OVL11) $(OVL12) $(OVL13) $(OVL14) $(OVL15) $(OVL16)\
        $(OVL17) $(OVL18) $(OVL19) $(OVL20) $(OVL21) $(OVL22) $(OVL23) $(OVL24)\
        $(OVL25) $(OVL26) $(OVL27) $(OVL28) $(OVL29) $(OVL30) $(OVL31) $(OVL32)\
@@ -351,7 +366,8 @@ VOBJ = $(ROOT)	$(MOBJ)
 
 HOBJ = $(VOBJ)	$(OBJ)\version.o
 
-OVERLAYS = ($(OVL01)) ($(OVL02)) ($(OVL03)) ($(OVL04)) ($(OVL05)) ($(OVL06)) \
+OVERLAYS = ($(OVL0X)) ($(OVL0Y)) \
+	   ($(OVL01)) ($(OVL02)) ($(OVL03)) ($(OVL04)) ($(OVL05)) ($(OVL06)) \
 	   ($(OVL07)) ($(OVL08)) ($(OVL09)) ($(OVL10)) ($(OVL11)) ($(OVL12)) \
 	   ($(OVL13)) ($(OVL14)) ($(OVL15)) ($(OVL16)) ($(OVL17)) ($(OVL18)) \
 	   ($(OVL19)) ($(OVL20)) ($(OVL21)) ($(OVL22)) ($(OVL23)) ($(OVL24)) \
@@ -488,6 +504,15 @@ $(OBJ)\video.2-b: $(HACK_H) $(INCL)\wintty.h $(SYS)\video.c
 
 $(OBJ)\exesmurf.o: $(SYS)\exesmurf.c
 	$(CC) $(CFLAGS) /Fo$@ $(SYS)\exesmurf.c
+
+$(OBJ)\jconj.o: ..\japanese\jconj.c
+	$(CC) $(CFLAGS) /Fo$@ ..\japanese\jconj.c
+
+$(OBJ)\jtrns.o: ..\japanese\jtrns.c
+	$(CC) $(CFLAGS) /Fo$@ ..\japanese\jtrns.c
+
+$(OBJ)\emalloc.o: ..\japanese\emalloc.c ..\japanese\emalloc.h
+	$(CC) $(CFLAGS) /Fo$@ ..\japanese\emalloc.c
 
 #
 #	$(SSYS) files.

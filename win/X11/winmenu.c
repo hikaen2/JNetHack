@@ -224,6 +224,10 @@ X11_select_menu(window)
     Widget viewport_widget;
     Dimension pixel_height, top_margin, spacing;
     XFontStruct *fs;
+#ifdef XI18N
+    XFontSet fontset;
+    XFontSetExtents *extent;
+#endif
 
     check_winid(window);
     wp = &window_list[window];
@@ -294,6 +298,10 @@ X11_select_menu(window)
     XtSetArg(args[num_args], XtNlist, menu_info->list_pointer);	num_args++;
     XtSetArg(args[num_args], XtNtranslations,
 		XtParseTranslationTable(menu_translations));	num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 
     wp->w = XtCreateManagedWidget(
 		"menu_list",		/* name */
@@ -308,15 +316,27 @@ X11_select_menu(window)
 
     /* Get the font and margin information. */
     num_args = 0;
+#ifndef XI18N
     XtSetArg(args[num_args], XtNfont,	      &fs);	 	num_args++;
+#else
+    XtSetArg(args[num_args], XtNfontSet,      &fontset); 	num_args++;
+#endif
     XtSetArg(args[num_args], XtNinternalHeight, &top_margin);	num_args++;
     XtSetArg(args[num_args], XtNrowSpacing,     &spacing);	num_args++;
     XtGetValues(wp->w, args, num_args);
 
     /* font height is ascent + descent */
+#ifndef XI18N
     pixel_height = top_margin +
 	((menu_info->count + 4) *
 	 (fs->max_bounds.ascent + fs->max_bounds.descent + spacing));
+#else
+    extent = XExtentsOfFontSet(fontset);
+    pixel_height = top_margin +
+	((menu_info->count + 4) *
+	 (extent->max_logical_extent.height + spacing));
+#endif
+
 
     /* if viewport will be bigger than the screen, limit its height */
     if ((Dimension) XtScreen(wp->w)->height <= pixel_height) {

@@ -36,6 +36,8 @@ LIBS = -lpc
 
 YACC  = bison -y
 LEX   = flex
+# lex is required 8bit through for japanese. 
+LEXOPT = -8
 
 YTABC  = y_tab.c
 YTABH  = y_tab.h
@@ -144,7 +146,7 @@ all:   utility.tag
 
 utility.tag: $(INCL)\trap.h    $(INCL)\onames.h        \
              $(INCL)\pm.h      $(SRC)\monstr.c   $(SRC)\vis_tab.c  \
-             lev_comp.exe      dgn_comp.exe    recover.exe
+             lev_comp.exe      dgn_comp.exe    recover.exe $(INCL)\jdata.h
     echo utilities made > utility.tag
 
 clean:
@@ -182,6 +184,10 @@ $(SRC)\vis_tab.h: makedefs.exe
 
 $(SRC)\vis_tab.c: makedefs.exe
     .\makedefs -z
+
+#JP by issei(94/07/13)
+$(INCL)\jdata.h: makedefs.exe
+	.\makedefs -j
 
 #
 #  Makedefs Stuff
@@ -225,7 +231,7 @@ lev_yacc.c:  lev_comp.y
 
 
 lev_$(LEX).c:  lev_comp.l
-    $(LEX) lev_comp.l
+    $(LEX) $(LEXOPT) lev_comp.l
     copy $(LEXYYC) lev_$(LEX).c
     del $(LEXYYC)
 
@@ -258,7 +264,7 @@ dgn_yacc.c: dgn_comp.y
     del $(YTABH)
 
 dgn_$(LEX).c:  dgn_comp.l
-    $(LEX) dgn_comp.l
+    $(LEX) $(LEXOPT) dgn_comp.l
     copy $(LEXYYC) dgn_$(LEX).c
     del $(LEXYYC)
 

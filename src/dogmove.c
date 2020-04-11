@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #include "mfndpos.h"
@@ -94,7 +101,8 @@ int x, y;
 	mtmp->mconf = 0;
 	if (mtmp->mtame < 20) mtmp->mtame++;
 	if(cansee(x,y))
-	    pline("%s eats %s.", Monnam(mtmp), (obj->oclass==FOOD_CLASS)
+/*JP	    pline("%s eats %s.", Monnam(mtmp), (obj->oclass==FOOD_CLASS)*/
+	    pline("%sは%sを食べている．", Monnam(mtmp), (obj->oclass==FOOD_CLASS)
 		? singular(obj, doname) : doname(obj));
 	/* It's a reward if it's DOGFOOD and the player dropped/threw it. */
 	/* We know the player had it if invlet is set -dlc */
@@ -136,7 +144,8 @@ register struct edog *edog;
 		    mtmp->mhp = mtmp->mhpmax;
 		if (mtmp->mhp < 1) goto dog_died;
 		if (cansee(mtmp->mx, mtmp->my))
-		    pline("%s is confused from hunger.", Monnam(mtmp));
+/*JP		    pline("%s is confused from hunger.", Monnam(mtmp));*/
+		    pline("%sは空腹のため混乱している．", Monnam(mtmp));
 #ifdef SOUNDS
 		else if (couldsee(mtmp->mx, mtmp->my))
 		    beg(mtmp);
@@ -144,24 +153,30 @@ register struct edog *edog;
 		else {
 		    char buf[BUFSZ];
 
-		    Strcpy(buf, "the ");
-		    You("feel worried about %s.", mtmp->mnamelth ?
+/*JP		    Strcpy(buf, "the ");*/
+/*JP		    You("feel worried about %s.", mtmp->mnamelth ?*/
+		    You("%sが心配になった．", mtmp->mnamelth ?
 			NAME(mtmp) : strcat(buf, Hallucination
-			? rndmonnam() : mtmp->data->mname));
+			? rndmonnam() : jtrns_mon(mtmp->data->mname)));
 		}
 	    } else if (moves > edog->hungrytime + 750 || mtmp->mhp < 1) {
 	    dog_died:
 #ifdef WALKIES
 		if (mtmp->mleashed)
-		    Your("leash goes slack.");
+/*JP		    Your("leash goes slack.");*/
+		    Your("紐はたるんだ．");
 		else
 #endif
 		if (cansee(mtmp->mx, mtmp->my))
-		    pline("%s dies%s.", Monnam(mtmp),
-			    (mtmp->mhp >= 1) ? "" : " from hunger");
+/*JP		    pline("%s dies%s.", Monnam(mtmp),
+			    (mtmp->mhp >= 1) ? "" : " from hunger");*/
+		    pline("%sは%s死んだ．", Monnam(mtmp),
+			    (mtmp->mhp >= 1) ? "" : "飢餓のため");
 		else
-		    You("feel %s for a moment.",
-			Hallucination ? "bummed" : "sad");
+/*JP		    You("feel %s for a moment.",
+			Hallucination ? "bummed" : "sad");*/
+		    You("%s気分におそわれた．",
+			Hallucination ? "がっかりした" : "悲しい");
 		mondied(mtmp);
 		return(TRUE);
 	    }
@@ -208,7 +223,8 @@ int udist;
 		    if(rn2(20) < edog->apport+3)
 			if(rn2(udist) || !rn2((int) edog->apport)) {
 			    if (cansee(omx, omy) && flags.verbose)
-				pline("%s picks up %s.", Monnam(mtmp),
+/*JP				pline("%s picks up %s.", Monnam(mtmp),*/
+				pline("%sは%sを拾った．", Monnam(mtmp),
 				    distant_name(obj, doname));
 			    freeobj(obj);
 			    newsym(omx,omy);
@@ -427,8 +443,10 @@ register int after;	/* this is extra fast monster movement */
 		 * it disappears, angrily, and sends in some nasties
 		 */
 		if (canseemon(mtmp) || sensemon(mtmp)) {
-		    pline("%s rebukes you, saying:", Monnam(mtmp));
-		    verbalize("Since you desire conflict, have some more!");
+/*JP		    pline("%s rebukes you, saying:", Monnam(mtmp));*/
+		    pline("%sはあなたを非難した：", Monnam(mtmp));
+/*JP		    verbalize("Since you desire conflict, have some more!");*/
+		    verbalize("論争したいなら，もっと頑張れ！");
 		}
 		mongone(mtmp);
 		i = rnd(4);
@@ -594,7 +612,8 @@ newdogpos:
 		if (info[chi] & ALLOW_U) {
 #ifdef WALKIES
 			if (mtmp->mleashed) { /* play it safe */
-				pline("%s breaks loose of %s leash!",
+/*JP				pline("%s breaks loose of %s leash!",*/
+				pline("%sは%sの紐で自由を奪われた！",
 				      Monnam(mtmp), his[pronoun_gender(mtmp)]);
 				m_unleash(mtmp);
 			}
@@ -606,7 +625,8 @@ newdogpos:
 		remove_monster(omx, omy);
 		place_monster(mtmp, nix, niy);
 		if (cursemsg && (cansee(omx,omy) || cansee(nix,niy)))
-			pline("%s moves only reluctantly.", Monnam(mtmp));
+/*JP			pline("%s moves only reluctantly.", Monnam(mtmp));*/
+			pline("%sはいやいや動いた．", Monnam(mtmp));
 		for (j=MTSZ-1; j>0; j--) mtmp->mtrack[j] = mtmp->mtrack[j-1];
 		mtmp->mtrack[0].x = omx;
 		mtmp->mtrack[0].y = omy;

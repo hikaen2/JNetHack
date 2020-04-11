@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "epri.h"
 #include "emin.h"
@@ -547,7 +554,8 @@ register struct	monst	*mtmp;
 			cat = mksobj(CORPSE, FALSE, FALSE);
 			cat->corpsenm = PM_HOUSECAT;
 			cat->owt = weight(cat);
-			cat = oname(cat, "Schroedinger's Cat", FALSE);
+/*JP			cat = oname(cat, "Schroedinger's Cat", FALSE);*/
+			cat = oname(cat, "シュレディンガーの猫", FALSE);
 			cat->nobj = otmp->cobj;
 			otmp->cobj = cat;
 			otmp->owt = weight(otmp);
@@ -1256,7 +1264,11 @@ register struct monst *victim;
 	if ((int) (++mtmp->m_lev) >= mons[newtype].mlevel
 					&& newtype != monsndx(ptr)) {
 		if (mons[newtype].geno & G_GENOD) { /* allow G_EXTINCT */
-			pline("As %s grows up into %s, %s dies!",
+/*JP			pline("As %s grows up into %s, %s dies!",
+				mon_nam(mtmp),
+				an(mons[newtype].mname),
+				mon_nam(mtmp));*/
+			pline("%sが成長して%sになると，%sは死んだ！",
 				mon_nam(mtmp),
 				an(mons[newtype].mname),
 				mon_nam(mtmp));

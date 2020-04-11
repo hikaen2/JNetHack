@@ -28,14 +28,14 @@
 # endif
 
 # define SHELL           /* via exec of COMMAND.COM */
-/* # define TERMLIB        /* enable use of termcap file /etc/termcap */
+# define TERMLIB        /* enable use of termcap file /etc/termcap */
 			/* or ./termcap for MSDOS (SAC) */
 			/* compile and link in Fred Fish's termcap library, */
 			/* enclosed in TERMCAP.ARC, to use this */
 
 /* # define ANSI_DEFAULT    /* allows NetHack to run without a ./termcap */
 
-# define NO_TERMS	/* Allows Nethack to run without ansi.sys by linking */
+/* # define NO_TERMS	/* Allows Nethack to run without ansi.sys by linking */
 			/* screen routines into the .exe     */
 
 # ifdef NO_TERMS	/* if NO_TERMS select one screen package below */
@@ -43,7 +43,7 @@
 /* #define SCREEN_DJGPPFAST	/* Use djgpp fast screen routines       */
 # endif
 
-/*# define PC9801	/* Allows NetHack to run on NEC PC-9801 machines */
+# define PC9801	/* Allows NetHack to run on NEC PC-9801 machines */
 			/* Yamamoto Keizo */
 
 # define RANDOM		/* have Berkeley random(3) */

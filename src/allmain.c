@@ -4,6 +4,13 @@
 
 /* various code that was replicated in *main.c */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifndef NO_SIGNAL
@@ -143,7 +150,8 @@ moveloop()
 			    if(u.uhp > 1) {
 				u.uhp--;
 			    } else {
-				pline("You pass out from exertion!");
+/*JP				pline("You pass out from exertion!");*/
+				pline("疲労で意識を失った！");
 				exercise(A_CON, FALSE);
 				nomul(-10);
 				u.usleep = 1;
@@ -225,7 +233,8 @@ moveloop()
 		if(multi < 0) {
 			if(!++multi){
 				pline(nomovemsg ? nomovemsg :
-					(const char *)"You can move again.");
+/*JP					(const char *)"You can move again.");*/
+					(const char *)"あなたはまた動けるようになった．");
 				nomovemsg = 0;
 				u.usleep = 0;
 				if(afternmv) (*afternmv)();
@@ -294,11 +303,14 @@ moveloop()
 			u.utrap -= 1<<8;
 			if(u.utrap < 1<<8) {
 			    killer_format = KILLED_BY;
-			    killer = "molten lava";
-			    You("sink below the surface and suffocate.");
+/*JP			    killer = "molten lava";*/
+			    killer = "どろどろの溶岩で";
+/*JP			    You("sink below the surface and suffocate.");*/
+			    You("溶岩に深く沈み，窒息した．");
 			    done(DROWNING); /*whatever*/
 			} else if(didmove && !u.umoved) {
-			    Norep("You sink deeper into the lava.");
+/*JP			    Norep("You sink deeper into the lava.");*/
+			    Norep("溶岩に深く沈んだ．");
 			    u.utrap += rnd(4);
 			}
 		    }
@@ -340,7 +352,8 @@ void
 stop_occupation()
 {
 	if(occupation) {
-		You("stop %s.", occtxt);
+/*JP		You("stop %s.", occtxt);*/
+		You("%sのを中断した．", occtxt);
 		occupation = 0;
 /* fainting stops your occupation, there's no reason to sync.
 		sync_hunger();

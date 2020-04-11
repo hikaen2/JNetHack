@@ -4,6 +4,13 @@
 
 /* shknam.c -- initialize a shop */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "eshk.h"
 
@@ -25,6 +32,8 @@ static const char *shkliquors[] = {
     /* Schweiz */
     "Leuk", "Brig", "Brienz", "Thun", "Sarnen", "Burglen", "Elm",
     "Flims", "Vals", "Schuls", "Zum Loch",
+/*JP*/
+    "…Õ≈ƒ",
     ""
 };
 
@@ -36,6 +45,8 @@ static const char *shkbooks[] = {
     "Cahersiveen", "Glenbeigh", "Kilmihil", "Kiltamagh",
     "Droichead Atha", "Inniscrone", "Clonegal", "Lisnaskea",
     "Culdaff", "Dunfanaghy", "Inishbofin", "Kesh",
+/*JP*/
+    "æ¬≈ƒ",
     ""
 };
 
@@ -47,6 +58,8 @@ static const char *shkarmors[] = {
     "Bayburt", "Ayancik", "Zonguldak", "Balya", "Tefenni",
     "Artvin", "Kars", "Makharadze", "Malazgirt", "Midyat",
     "Birecik", "Kirikkale", "Alaca", "Polatli", "Nallihan",
+/*JP*/
+    "∆£ªﬁ",
     ""
 };
 
@@ -61,6 +74,8 @@ static const char *shkwands[] = {
     "Kerloch", "Beinn a Ghlo", "Drumnadrochit", "Morven",
     "Uist", "Storr", "Sgurr na Ciche", "Cannich", "Gairloch",
     "Kyleakin", "Dunvegan",
+/*JP*/
+    "µ‹≤º",
     ""
 };
 
@@ -74,6 +89,8 @@ static const char *shkrings[] = {
     "Rastegaisa", "Varjag Njarga", "Kautekeino", "Abisko",
     "Enontekis", "Rovaniemi", "Avasaksa", "Haparanda",
     "Lulea", "Gellivare", "Oeloe", "Kajaani", "Fauske",
+/*JP*/
+    "∏≈æÏ",
     ""
 };
 
@@ -86,6 +103,7 @@ static const char *shkfoods[] = {
     "Trenggalek", "Karangkobar", "Njalindoeng", "Pasawahan",
     "Pameunpeuk", "Patjitan", "Kediri", "Pemboeang", "Tringanoe",
     "Makin", "Tipor", "Semai", "Berhala", "Tegal", "Samoe",
+    "¡∞≈ƒ",
     ""
 };
 
@@ -97,6 +115,8 @@ static const char *shkweapons[] = {
     "Cazelon", "Eypau", "Carignan", "Monbazillac", "Jonzac",
     "Pons", "Jumilhac", "Fenouilledes", "Laguiolet", "Saujon",
     "Eymoutiers", "Eygurande", "Eauze", "Labouheyre",
+/*JP*/
+    "≥ﬁ∏∂",
     ""
 };
 
@@ -125,6 +145,8 @@ static const char *shktools[] = {
 #ifdef VMS
     "Lez-tneg", "Ytnu-haled", "Niknar",
 #endif
+/*JP*/
+    "∞¿ƒ≈",
     ""
 };
 
@@ -137,6 +159,8 @@ static const char *shklight[] = {
     "Silistra", "Tulovo", "Panagyuritshte", "Smolyan", "Kirklareli",
     "Pernik", "Lom", "Haskovo", "Dobrinishte", "Varvara", "Oryahovo",
     "Troyan", "Lovech", "Sliven",
+/*JP*/
+    "«Ú¿–",
     ""
 };
 
@@ -155,6 +179,8 @@ static const char *shkgeneral[] = {
     /* Iceland */
     "Akureyri", "Kopasker", "Budereyri", "Akranes", "Bordeyri",
     "Holmavik",
+/*JP*/
+    "Kunedog",
     ""
 };
 
@@ -175,38 +201,49 @@ static const char *shkgeneral[] = {
  */
 
 const struct shclass shtypes[] = {
-	{"general store", RANDOM_CLASS, 44,
+/*JP	{"general store", RANDOM_CLASS, 44,*/
+	{"ª®≤ﬂ≤∞", RANDOM_CLASS, 44,
 	    D_SHOP, {{100, RANDOM_CLASS}, {0, 0}, {0, 0}}, shkgeneral},
-	{"used armor dealership", ARMOR_CLASS, 14,
+/*JP	{"used armor dealership", ARMOR_CLASS, 14,*/
+	{"√Ê∏≈≥ªæ¶≤Ò", ARMOR_CLASS, 14,
 	    D_SHOP, {{90, ARMOR_CLASS}, {10, WEAPON_CLASS}, {0, 0}},
 	     shkarmors},
-	{"second-hand bookstore", SCROLL_CLASS, 10, D_SHOP,
+/*JP	{"second-hand bookstore", SCROLL_CLASS, 10, D_SHOP,*/
+	{"¥¨ ™≤∞", SCROLL_CLASS, 10, D_SHOP,
 	    {{90, SCROLL_CLASS}, {10, SPBOOK_CLASS}, {0, 0}}, shkbooks},
-	{"liquor emporium", POTION_CLASS, 10, D_SHOP,
+/*JP	{"liquor emporium", POTION_CLASS, 10, D_SHOP,*/
+	{"§™ºÚ§Œ…¥≤ﬂ≈π", POTION_CLASS, 10, D_SHOP,
 	    {{100, POTION_CLASS}, {0, 0}, {0, 0}}, shkliquors},
-	{"antique weapons outlet", WEAPON_CLASS, 5, D_SHOP,
+/*JP	{"antique weapons outlet", WEAPON_CLASS, 5, D_SHOP,*/
+	{"∏≈…¥Ô¿ÏÃÁæÆ«‰≈π", WEAPON_CLASS, 5, D_SHOP,
 	    {{90, WEAPON_CLASS}, {10, ARMOR_CLASS}, {0, 0}}, shkweapons},
-	{"delicatessen", FOOD_CLASS, 5, D_SHOP,
+/*JP	{"delicatessen", FOOD_CLASS, 5, D_SHOP,*/
+	{"ø©… ≈π", FOOD_CLASS, 5, D_SHOP,
 	    {{95, FOOD_CLASS}, {5, POTION_CLASS}, {0, 0}}, shkfoods},
-	{"jewelers", RING_CLASS, 3, D_SHOP,
+/*JP	{"jewelers", RING_CLASS, 3, D_SHOP,*/
+	{" ı¿–≈π", RING_CLASS, 3, D_SHOP,
 	    {{85, RING_CLASS}, {10, GEM_CLASS}, {5, AMULET_CLASS}, {0, 0}},
 	    shkrings},
-	{"quality apparel and accessories", WAND_CLASS, 3, D_SHOP,
+/*JP	{"quality apparel and accessories", WAND_CLASS, 3, D_SHOP,*/
+	{"§™•∑•„•Ï§ ÕŒ… ≈π", WAND_CLASS, 3, D_SHOP,
 	    {{90, WAND_CLASS}, {5, -LEATHER_GLOVES}, {5, -ELVEN_CLOAK}, {0, 0}},
 	     shkwands},
-	{"hardware store", TOOL_CLASS, 3, D_SHOP,
+/*JP	{"hardware store", TOOL_CLASS, 3, D_SHOP,*/
+	{"∆ª∂Ò≤∞", TOOL_CLASS, 3, D_SHOP,
 	    {{100, TOOL_CLASS}, {0, 0}, {0, 0}}, shktools},
 	/* Actually shktools is ignored; the code specifically chooses a
 	 * random implementor name (along with candle shops having
 	 * random shopkeepers)
 	 */
-	{"rare books", SPBOOK_CLASS, 3, D_SHOP,
+/*JP	{"rare books", SPBOOK_CLASS, 3, D_SHOP,*/
+	{"∏∏§ŒÀ‹≤∞", SPBOOK_CLASS, 3, D_SHOP,
 	    {{90, SPBOOK_CLASS}, {10, SCROLL_CLASS}, {0, 0}}, shkbooks},
 	/* Shops below this point are "unique".  That is they must all have a
 	 * probability of zero.  They are only created via the special level
 	 * loader.
 	 */
-	{"lighting store", TOOL_CLASS, 0, D_SHOP,
+/*JP	{"lighting store", TOOL_CLASS, 0, D_SHOP,*/
+	{"æ»Ã¿≈π", TOOL_CLASS, 0, D_SHOP,
 	    {{32, -WAX_CANDLE}, {50, -TALLOW_CANDLE},
 	     {5, -BRASS_LANTERN}, {10, -OIL_LAMP}, {3, -MAGIC_LAMP}}, shklight},
 	{NULL, 0, 0, 0, {{0, 0}, {0, 0}, {0, 0}}, 0}
@@ -441,7 +478,8 @@ register struct mkroom *sroom;
 	    else if(inside_shop(sx-1,sy)) m++;
 	    if(inside_shop(sx,sy+1)) n--;
 	    else if(inside_shop(sx,sy-1)) n++;
-	    Sprintf(buf, "Closed for inventory");
+/*JP	    Sprintf(buf, "Closed for inventory");*/
+	    Sprintf(buf, "√™≤∑§∑§Œ§ø§· ƒ≈π");
 	    make_engr_at(m, n, buf, 0L, DUST);
     }
 

@@ -2,227 +2,402 @@
 #	The demons are all listed first because makedefs used to have to give
 #	them special handling for #ifndef INFERNO; it doesn't matter any more.
 balrog
-		...  It came to the edge of the fire and the light  faded as
-		if a  cloud had  bent over it.  Then  with a rush it  leaped
-		the fissure.  The flames roared up to greet it, and wreathed
-		about  it; and a black smoke swirled in the air. Its stream-
-		ing  mane kindled,  and blazed behind it.  In its right hand
-		was a  blade like a stabbing tongue of fire;  in its left it
-		held a whip of many thongs.
-		'Ai, ai!'  wailed Legolas. 'A Balrog!  A Balrog is come!'
+#		...  It came to the edge of the fire and the light  faded as
+#		if a  cloud had  bent over it.  Then  with a rush it  leaped
+#		the fissure.  The flames roared up to greet it, and wreathed
+#		about  it; and a black smoke swirled in the air. Its stream-
+#		ing  mane kindled,  and blazed behind it.  In its right hand
+#		was a  blade like a stabbing tongue of fire;  in its left it
+#		held a whip of many thongs.
+#		'Ai, ai!'  wailed Legolas. 'A Balrog!  A Balrog is come!'
+#			   [ The Fellowship of the Ring, by J.R.R. Tolkien ]
+		そのものは火のきわまでやって来ました．火はまるで雲がかぶさ
+		ってきたかのように，光がうすれました．ついでその物は一跳び
+		で割れめを越えました．焔は迎えるようにごうごうと燃えたけり，
+		それにからみつきました．黒い煙が渦を巻いて立ち上りました．
+		たなびくたてがみに火がついて，その者の背後に赤々と燃え上が
+		りました．その者の右手には切っ先鋭い火の舌のような刃が握ら
+		れ，左手にはたくさんの皮紐のついた鞭が握られていました．
+		「ああ！ああ！」レゴラスが声をふりしぼりました．「バルログ
+		だ！バルログが来た！」
 			   [ The Fellowship of the Ring, by J.R.R. Tolkien ]
+						      [ 評論社, 瀬田貞二訳 ]
+
 horned devil
-		Horned devils lack any real special abilities,  though  they
-		are quite difficult to kill.
+#		Horned devils lack any real special abilities,  though  they
+#		are quite difficult to kill.
+		角のある悪魔には特殊な能力が全くない．しかし倒すのは非常に困
+		難である．
+
 incubus
 succubus
-		The incubus and succubus are male and female versions of the
-		same  demon, one who lies with a human for its own purposes,
-		usually to the detriment of the mortals who  are  unwise  in
-		their dealings with them.
+#		The incubus and succubus are male and female versions of the
+#		same  demon, one who lies with a human for its own purposes,
+#		usually to the detriment of the mortals who  are  unwise  in
+#		their dealings with them.
+		インキュバスとサキュバスは同じ種類の魔神で，それぞれ男性と女
+		性である．意図的に人間といっしょに寝る．接しかたがわるいと，
+		通常，害を与える．
+
 erinyes
-		These female-seeming devils  attack hand to hand  and poison
-		their unwary victims as well.
+#		These female-seeming devils  attack hand to hand  and poison
+#		their unwary victims as well.
+		女性の姿をしたこの悪魔は，不注意な犠牲者につかみかかっ
+		たり，毒をくらわす．
+
 marilith
-		The marilith, a type V demon, has a torso shaped  like  that
-		of  a human female, and the lower body of a great snake.  It
-		has multiple arms, and can freely attack with all  of  them.
-		Since it is intelligent enough to use weapons, this means it
-		can cause great damage.
+#		The marilith, a type V demon, has a torso shaped  like  that
+#		of  a human female, and the lower body of a great snake.  It
+#		has multiple arms, and can freely attack with all  of  them.
+#		Since it is intelligent enough to use weapons, this means it
+#		can cause great damage.
+		第V種の悪魔であるマリリスの上半身は人間の女性で，下半身はと大
+		蛇である．複数の腕を自由にあやつり攻撃をしかけてくる．武器を
+		扱えるだけの知能もあるので，マリリスは非常に大きいダメージを
+		あたえうる．
+
 barbed devil
-		Barbed devils lack any real special abilities,  though  they
-		are quite difficult to kill.
+#		Barbed devils lack any real special abilities,  though  they
+#		are quite difficult to kill.
+		髭のある悪魔には特殊能力が全くない．しかし倒すのは非常に困難
+		である．
+
 vrock
-		The vrock is one of the weaker forms of demon, being only  a
-		type  I.   It  resembles a cross between a human being and a
-		vulture and does physical damage by biting and by using  the
-		claws on both its arms and feet.
+#		The vrock is one of the weaker forms of demon, being only  a
+#		type  I.   It  resembles a cross between a human being and a
+#		vulture and does physical damage by biting and by using  the
+#		claws on both its arms and feet.
+		ヴァロックは第I種の悪魔でしかなく，悪魔としては比較的弱い．人
+		間とコンドルの混血に似ている．噛んだり手足の爪で攻撃してくる．
+
 hezrou
-		``Hezrou'' is the common name for the type II demon.  It  is
-		among the weaker of demons, but still quite formidable.
+#		``Hezrou'' is the common name for the type II demon.  It  is
+#		among the weaker of demons, but still quite formidable.
+		ヘズロウは第II種の魔神の総称である．悪魔の中では比較的弱いほ
+		うであるが，それでも，十分に手ごわい．
+
 bone devil
-		Bone devils attack with weapons and with a great hooked tail
-		which causes a loss of strength to those they sting.
+#		Bone devils attack with weapons and with a great hooked tail
+#		which causes a loss of strength to those they sting.
+		骨の悪魔は武器と，大きな鈎のついた尾で攻撃してくる．この鈎が
+		刺さると，強さが吸い取られてしまう．
+
 nalfeshnee
-		Not only do these demons, which are of type IV, do  physical
-		damage  with  their  claws and bite, but they are capable of
-		using magic as well.
+#		Not only do these demons, which are of type IV, do  physical
+#		damage  with  their  claws and bite, but they are capable of
+#		using magic as well.
+		この第IV種の魔神たちには爪や牙による物理的な攻撃だけでなく，
+		魔法による攻撃の能力もある．
+
 ice devil
-		Ice devils  are  large  semi-insectoid  creatures,  who  are
-		equally  at home in the fires of Hell and the cold of Limbo,
-		and who can cause the traveller to feel the latter with just
-		a touch of their tail.
+#		Ice devils  are  large  semi-insectoid  creatures,  who  are
+#		equally  at home in the fires of Hell and the cold of Limbo,
+#		and who can cause the traveller to feel the latter with just
+#		a touch of their tail.
+		氷の悪魔は，大きな昆虫に似た生物で，地獄の業火にも煉獄の極冷
+		にも平気である．旅行者に煉獄の極冷を，あたかも氷の悪魔の尻尾
+		が触れたくらいでしかないように感じさせることができる．
+
 pit fiend
-		Pit fiends are among the more powerful of devils, capable of
-		attacking  twice with weapons as well as grabbing and crush-
-		ing the life out of  those  unwary  enough  to  enter  their
-		domains.
+#		Pit fiends are among the more powerful of devils, capable of
+#		attacking  twice with weapons as well as grabbing and crush-
+#		ing the life out of  those  unwary  enough  to  enter  their
+#		domains.
+		穴の悪霊は，悪魔の中でも強力で，武器で２度攻撃でき，なわばり
+		に入り込む不注意な者の命をつかみだし，握りつぶしてしまう．
+
 juiblex
 jubilex
-		Little is known about the Faceless Lord,  even  the  correct
-		spelling  of  his name.  He does not have a physical form as
-		we know it, and those who have peered into his  realm  claim
-		he  is  a  slime-like  creature who swallows other creatures
-		alive, spits acidic secretions, and causes  disease  in  his
-		victims which can be almost instantly fatal.
+#		Little is known about the Faceless Lord,  even  the  correct
+#		spelling  of  his name.  He does not have a physical form as
+#		we know it, and those who have peered into his  realm  claim
+#		he  is  a  slime-like  creature who swallows other creatures
+#		alive, spits acidic secretions, and causes  disease  in  his
+#		victims which can be almost instantly fatal.
+		顔の無い貴族については，その名前の正確な綴りすらほとんど分か
+		っていない．知られているように，物理的な形態がなく，そのあた
+		りをじっと観察したものの報告によると，スライム様の生物である．
+		他の生物を生きたまま飲み込み，腐食性の分泌液を放出する．これ
+		を浴びた犠牲者は病気になり，即死してしまうこともある．
+
 yeenoghu
-		Yeenoghu, the demon lord of gnolls,  still  exists  although
-		all his followers have been wiped off the face of the earth.
-		He casts magic projectiles at those close to him, and a mere
-		gaze  into  his  piercing  eyes  may  hopelessly confuse the
-		battle-weary adventurer.
+#		Yeenoghu, the demon lord of gnolls,  still  exists  although
+#		all his followers have been wiped off the face of the earth.
+#		He casts magic projectiles at those close to him, and a mere
+#		gaze  into  his  piercing  eyes  may  hopelessly confuse the
+#		battle-weary adventurer.
+		イーノグはノールの支配者であり，その手下が地表から一掃されて
+		しまったにもかかわらず，いまだに存在している．近付くと魔術弾
+		を発射する．その鋭い目を単にちらりと見ただけでも，戦いにつか
+		れた冒険者はどうしようもなく混乱してしまうかもしれない．
+
 orcus
-		Orcus, Prince of the Undead, has a rams head  and  a  poison
-		stinger.   He is most feared, though, for his powerful magic
-		abilities.  His wand causes death to those he chooses.
+#		Orcus, Prince of the Undead, has a rams head  and  a  poison
+#		stinger.   He is most feared, though, for his powerful magic
+#		abilities.  His wand causes death to those he chooses.
+		死霊の皇子であるオーケスには羊の頭と毒針がある．しかしながら，
+		恐ろしいのは何よりその強力な魔力である．その杖は狙いをはずさ
+		ず，死をもたらす．
+
 geryon
-		Geryon is an arch-devil sometimes  called  the  Wild  Beast,
-		attacking  with  his claws and poison sting.  His ranking in
-		Hell is rumored to be quite low.
+#		Geryon is an arch-devil sometimes  called  the  Wild  Beast,
+#		attacking  with  his claws and poison sting.  His ranking in
+#		Hell is rumored to be quite low.
+		ゲーリュオーンはときに野獣と呼ばれる大悪魔であり，爪と毒針で
+		攻撃してくる．地獄での階級は極めて低いと云われている．
+
 dispater
-		Dispater is an arch-devil who rules the city of Dis.  He  is
-		a powerful mage.
+#		Dispater is an arch-devil who rules the city of Dis.  He  is
+#		a powerful mage.
+		デスペーターは冥府を統べる大悪魔で，強力な魔術師である．
+
 baalzebub
-		Baalzebub has been known as the lord of the flies.  His bite
-		drips  poison,  and a mere glance into his eyes can stun the
-		hapless invader of his realm.
+#		Baalzebub has been known as the lord of the flies.  His bite
+#		drips  poison,  and a mere glance into his eyes can stun the
+#		hapless invader of his realm.
+		ベルゼブブは蝿の支配者として知られている．噛みつくと，毒を注
+		入する．そのなわばりを破った哀れな侵入者は，その目を単にちら
+		りと見ただけで，気絶してしまう．
+
 asmodeus
-		It is said that Asmodeus is the overlord over all  of  hell.
-		His  appearance,  unlike  many  other  demons and devils, is
-		human apart from his horns and tail.  He  can  freeze  flesh
-		with a touch.
+#		It is said that Asmodeus is the overlord over all  of  hell.
+#		His  appearance,  unlike  many  other  demons and devils, is
+#		human apart from his horns and tail.  He  can  freeze  flesh
+#		with a touch.
+		アスモデウスは，地獄全体の総支配者であると言われている．その
+		外見は，他の悪魔と違い，角と尻尾以外は人間と同じである．触ら
+		れると，肉体は凍りついてしまう．
+
 demogorgon
-		Demogorgon, the prince of demons, wallows in filth  and  can
-		spread  a quickly fatal illness to his victims while rending
-		them.  He is a mighty spellcaster, and he can drain the life
-		of mortals with a touch of his tail.
+#		Demogorgon, the prince of demons, wallows in filth  and  can
+#		spread  a quickly fatal illness to his victims while rending
+#		them.  He is a mighty spellcaster, and he can drain the life
+#		of mortals with a touch of his tail.
+		デモゴルゴンは悪魔の皇子で，汚物にまみれ，犠牲者を速やかに死
+		に至らせる毒を撒き散らす．強力な魔術師でもあり，人間の生命を，
+		尻尾で触れることにより吸いとることができる．
+
 athame
-		The  consecrated ritual knife of  a Wiccan  initiate (one of
-		four  basic  tools,  together  with the  wand,  chalice  and
-		pentacle).   Traditionally, the  athame  is  a double-edged,
-		black-handled,  cross-hilted   dagger  of  between  six  and
-		eighteen inches length.
+#		The  consecrated ritual knife of  a Wiccan  initiate (one of
+#		four  basic  tools,  together  with the  wand,  chalice  and
+#		pentacle).   Traditionally, the  athame  is  a double-edged,
+#		black-handled,  cross-hilted   dagger  of  between  six  and
+#		eighteen inches length.
+		神聖なWiccanの儀式を始めるためのナイフ(4つの基本道具の１つ，
+		杖，聖杯，五芒星と一緒に使う)．伝統的にアサメは両刃，
+		黒い握り，交差した柄をもつ6インチから8インチの長さの
+		短剣である．
+
 *centaur
-		Of all the monsters put together by  the  Greek  imagination
-		the  Centaurs (Kentauroi) constituted a class in themselves.
-		Despite a strong streak  of  sensuality  in  their  make-up,
-		their  normal  behaviour  was  moral, and they took a kindly
-		thought of man's welfare. The attempted outrage of Nessos on
-		Deianeira,  and  that  of the whole tribe of Centaurs on the
-		Lapith women,  are more than offset  by the  hospitality  of
-		Pholos and  by  the  wisdom of Cheiron,  physician, prophet,
-		lyrist,  and the instructor of Achilles.  Further,  the Cen-
-		taurs  were  peculiar in that their nature, which united the
-		body of a horse with the trunk and head of a  man,  involved
-		an  unthinkable  duplication  of  vital organs and important
-		members.  So grotesque a combination seems almost  un-Greek.
-		These  strange creatures  were said to live in the caves and
-		clefts of the mountains, myths associating  them  especially
-		with the hills of Thessaly and the range of Erymanthos.
+		ギリシャ人の想像したケンタウロスはそれ自身１つのクラスを構成
+		する．かなりの好色気質にもかかわらず，普段のふるまいは道徳的
+		で，人間には親切である．
+#		Of all the monsters put together by  the  Greek  imagination
+#		the  Centaurs (Kentauroi) constituted a class in themselves.
+#		Despite a strong streak  of  sensuality  in  their  make-up,
+#		their  normal  behaviour  was  moral, and they took a kindly
+#		thought of man's welfare. The attempted outrage of Nessos on
+#		Deianeira,  and  that  of the whole tribe of Centaurs on the
+#		Lapith women,  are more than offset  by the  hospitality  of
+#		Pholos and  by  the  wisdom of Cheiron,  physician, prophet,
+#		lyrist,  and the instructor of Achilles.  Further,  the Cen-
+#		taurs  were  peculiar in that their nature, which united the
+#		body of a horse with the trunk and head of a  man,  involved
+#		an  unthinkable  duplication  of  vital organs and important
+#		members.  So grotesque a combination seems almost  un-Greek.
+#		These  strange creatures  were said to live in the caves and
+#		clefts of the mountains, myths associating  them  especially
+#		with the hills of Thessaly and the range of Erymanthos.
 			     [ Mythology of all races, Vol. 1, pp. 270-271 ]
 cockatrice
-		Once in a great while, when the positions of the  stars  are
-		just right, a seven-year-old rooster will lay an egg.  Then,
-		along will come a snake, to coil around the egg, or a  toad,
-		to  squat  upon  the  egg, keeping it warm and helping it to
-		hatch.  When it hatches, out comes a creature called  basil-
-		isk, or cockatrice, the most deadly of all creatures. A sin-
-		gle glance from its yellow, piercing toad's eyes  will  kill
-		both man  and beast.  Its power of destruction is said to be
-		so great that sometimes simply to hear its  hiss  can  prove
-		fatal.  Its  breath is so venomous  that it causes all vege-
-		tation to wither.
-	
-		There is, however, one  creature  which  can  withstand  the
-		basilisk's deadly gaze, and this is the weasel. No one knows
-		why this is so, but although the fierce weasel can slay  the
-		basilisk, it will itself be killed in the struggle.  Perhaps
-		the weasel knows the basilisk's fatal weakness:  if it  ever
-		sees  its own reflection in a mirror it will perish instant-
-		ly.  But even a dead basilisk is dangerous, for  it is  said
-		that merely touching its lifeless body can cause a person to
-		sicken and die.
-		[ Mythical Beasts by Deirdre Headon (The Leprechaun Library)
-		  and other sources ]
+#		Once in a great while, when the positions of the  stars  are
+#		just right, a seven-year-old rooster will lay an egg.  Then,
+#		along will come a snake, to coil around the egg, or a  toad,
+#		to  squat  upon  the  egg, keeping it warm and helping it to
+#		hatch.  When it hatches, out comes a creature called  basil-
+#		isk, or cockatrice, the most deadly of all creatures. A sin-
+#		gle glance from its yellow, piercing toad's eyes  will  kill
+#		both man  and beast.  Its power of destruction is said to be
+#		so great that sometimes simply to hear its  hiss  can  prove
+#		fatal.  Its  breath is so venomous  that it causes all vege-
+#		tation to wither.
+#	
+#		There is, however, one  creature  which  can  withstand  the
+#		basilisk's deadly gaze, and this is the weasel. No one knows
+#		why this is so, but although the fierce weasel can slay  the
+#		basilisk, it will itself be killed in the struggle.  Perhaps
+#		the weasel knows the basilisk's fatal weakness:  if it  ever
+#		sees  its own reflection in a mirror it will perish instant-
+#		ly.  But even a dead basilisk is dangerous, for  it is  said
+#		that merely touching its lifeless body can cause a person to
+#		sicken and die.
+#		[ Mythical Beasts by Deirdre Headon (The Leprechaun Library)
+#		  and other sources ]
+#
+		何百年に一度，星々の位置が正しい位置にあるとき，7歳の雄鳥が卵
+		を産む．そして，蛇がやってきて卵に巻きついたり，ヒキガエルが
+		卵の上に乗ったりして温め，孵化するのを手伝う．それが孵化した
+		とき，出てきた生き物をバジリスクとかコカトリスとか呼ぶ．最も
+		危険な生き物である．その黄色い凍てつくようなヒキガエルの目を
+		ちらりと見ることは，人間と獣の両方に死をもたらす．その破壊の
+		力は，強力すぎるので，時々そのシーッと言う声を聞くだけで死な
+		ることがあると言う．言われている．その息は猛毒で，全ての植物
+		を枯らす．
+
+		しかしながら，バジリスクの死の眈みに絶えることができるある種
+		の生き物がいる．これはイタチである．誰も何故そういうことなの
+		か知らないが，兇暴なイタチはバジリスクを殺すことができる．バ
+		ジリスクはもがきながら死んでいく．このようにイタチはバジリス
+		クを瀕死にするものとして知られている．もしそれが見ているなら，
+		鏡でその姿を反射させることにより直ちに死をもたらすことだろう．
+		しかし死んだバジリスクもまた危険である．その生命のない体にさ
+		わるることは，たまに人間を病気や死をもたらすと言われている．
+			    [ 神話の生物, Deirede Headon(レプレコーン図書) ]
+
 *dragon
-		In the West  the dragon was  the  natural  enemy   of   man.
-		Although  preferring  to live in bleak and desolate regions,
-		whenever it was seen among men it left in its wake a   trail
-		of   destruction   and disease. Yet any attempt to slay this
-		beast was a perilous undertaking. For the dragon's assailant
-		had  to  contend not  only  with clouds of  sulphurous fumes
-		pouring from its fire-breathing nostrils, but also with  the
-		thrashings  of  its  tail,  the  most   deadly  part  of its
-		serpent-like body.
-		[Mythical Beasts by Deirdre Headon (The Leprechaun Library)]
+#		In the West  the dragon was  the  natural  enemy   of   man.
+#		Although  preferring  to live in bleak and desolate regions,
+#		whenever it was seen among men it left in its wake a   trail
+#		of   destruction   and disease. Yet any attempt to slay this
+#		beast was a perilous undertaking. For the dragon's assailant
+#		had  to  contend not  only  with clouds of  sulphurous fumes
+#		pouring from its fire-breathing nostrils, but also with  the
+#		thrashings  of  its  tail,  the  most   deadly  part  of its
+#		serpent-like body.
+#		[Mythical Beasts by Deirdre Headon (The Leprechaun Library)]
+		西洋では，ドラゴンは人間の敵である．荒れた寂しい場所に住むこ
+		とを好むのだが，人間に見られると必ず，破壊や病気の後を遺して
+		いく．この獣を殺そうと言うありとあらゆる挑戦は危険な仕事であ
+		る．ドラゴンを攻撃するものには，硫黄の臭気のガスだけでなく，
+		最も危険な蛇のように激しく動く尻尾とも格闘せねばならない．
+			    [ 神話の生物, Deirede Headon(レプレコーン図書) ]
 *elemental
-		Elementals are manifestations of the  basic  nature  of  the
-		universe.   There  are four known forms of elementals:  air,
-		fire, water, and earth.  Some mystics  have  postulated  the
-		necessity  for  a fifth type, the spirit elemental, but none
-		have ever been encountered, at least on this  plane  of  ex-
-		istence.
+#		Elementals are manifestations of the  basic  nature  of  the
+#		universe.   There  are four known forms of elementals:  air,
+#		fire, water, and earth.  Some mystics  have  postulated  the
+#		necessity  for  a fifth type, the spirit elemental, but none
+#		have ever been encountered, at least on this  plane  of  ex-
+#		istence.
+		エレメンタルとは全宇宙の基本現象の現れである．風，火，水，地
+		の4つのエレメンタルが知られている．何人かの神秘主義者は5番目
+		のタイプ，すなわち霊であるが，の必要性を主張しているが，少な
+		くとも存在するこの地では誰も遭遇したことがない．
+
 *giant
 giant humanoid
-		Giants have always walked the earth, though they are rare in
-		these times.  They range in size from  little over nine feet
-		to a towering twenty feet or more.  The larger ones use huge
-		boulders as weapons, hurling them over large distances.  All
-		types of giants share a love for men  -  roasted, boiled, or
-		fried.  Their table manners are legendary.
+#		Giants have always walked the earth, though they are rare in
+#		these times.  They range in size from  little over nine feet
+#		to a towering twenty feet or more.  The larger ones use huge
+#		boulders as weapons, hurling them over large distances.  All
+#		types of giants share a love for men  -  roasted, boiled, or
+#		fried.  Their table manners are legendary.
+		巨人はいつも大地を歩いていたが，最近では彼らは非常に希な存在
+		となっている．彼らのサイズと言ったら，9フィートたらずのから
+		空にもそびえる20フィート以上のものまでいる．大きなものは巨大
+		な岩を武器として使い，遠くからでもそれを投げつける．全ての種
+		類の巨人は人間（焼いたり，煮たり，揚げたりしたもの）が大好き
+		という点で共通している．彼らのテーブルマナーは伝説的だ．
+
 gnome*
 gnomish wizard
-		...  And then a gnome came by,  carrying a bundle,   an  old
-		fellow three times  as large as an imp  and wearing  clothes
-		of a sort, especially a hat.  And he was  clearly   just  as
-		frightened   as  the  imps  though  he could not go so fast.
-		Ramon Alonzo saw that there must be some great trouble  that
-		was  vexing  magical  things;   and,  since gnomes speak the
-		language of men, and will answer if spoken  to  gently,   he
-		raised  his  hat,   and  asked  of the gnome  his name.  The
-		gnome did not  stop  his  hasty  shuffle  a  moment   as  he
-		answered 'Alaraba' and grabbed the rim of his hat but forgot
-		to doff it.
-		'What is the trouble, Alaraba?' said Ramon Alonzo.
-		'White magic. Run!' said the gnome ...
+#		...  And then a gnome came by,  carrying a bundle,   an  old
+#		fellow three times  as large as an imp  and wearing  clothes
+#		of a sort, especially a hat.  And he was  clearly   just  as
+#		frightened   as  the  imps  though  he could not go so fast.
+#		Ramon Alonzo saw that there must be some great trouble  that
+#		was  vexing  magical  things;   and,  since gnomes speak the
+#		language of men, and will answer if spoken  to  gently,   he
+#		raised  his  hat,   and  asked  of the gnome  his name.  The
+#		gnome did not  stop  his  hasty  shuffle  a  moment   as  he
+#		answered 'Alaraba' and grabbed the rim of his hat but forgot
+#		to doff it.
+#		'What is the trouble, Alaraba?' said Ramon Alonzo.
+#		'White magic. Run!' said the gnome ...
+		... そのあとから，小鬼(インプ)の三倍もほどもある土鬼(ノーム)
+		が，荷物をかついで駆けてきた．独特の服，それにとりわけ独特の
+		帽子をかぶったやつだ．この土鬼は小鬼ほど足が早くないが，怯え
+		ていることに変りはなかった．こうした魔法の民をおびやかすよう
+		な一大事が，森のなかでもちあがったのだ．ラモン・アランソは，
+		土鬼が人間の言葉をしゃべる上に，人間に声をかけられればかなら
+		ず答える習性をもっていたことを思いだし，帽子をふり上げて土鬼
+		の名前を尋ねた．土鬼はあわただしい駆けっこを一瞬もやめないで，
+		自分の名を「アラバマ」と教えてくれた．帽子のふちにも手をやっ
+		たけれど，脱ぐのは忘れた．
+		「何が起きたんだ，アラバマ」とラモン・アランソが訊いた．
+		「白い魔法だよ！逃げろ！」土鬼はそういって必死に走りつづけた．
 				[ The Charwoman's Shadow, by Lord Dunsany. ]
+						     [ハヤカワ文庫 荒俣宏訳]
 gold
 gold piece
-		A metal of characteristic yellow colour, the  most  precious
-		metal  used as a common commercial medium of exchange.  Sym-
-		bol, Au; at.  no. 79; at. wt. 197.2.  It is the most  malle-
-		able  and  ductile  of  all metals, and very heavy (sp. gr.,
-		19.3).  It is quite unalterable by heat, moisture, and  most
-		corrosive  agents,  and therefore well suited for its use in
-		coin and jewelry.
-				[ Webster's New International Dictionary
-				  of the English Language, Second Edition ]
+#		A metal of characteristic yellow colour, the  most  precious
+#		metal  used as a common commercial medium of exchange.  Sym-
+#		bol, Au; at.  no. 79; at. wt. 197.2.  It is the most  malle-
+#		able  and  ductile  of  all metals, and very heavy (sp. gr.,
+#		19.3).  It is quite unalterable by heat, moisture, and  most
+#		corrosive  agents,  and therefore well suited for its use in
+#		coin and jewelry.
+#				[ Webster's New International Dictionary
+#				  of the English Language, Second Edition ]
+		独特の黄色をした金属で，最も希少な金属，商業において共通の兌
+		換価値として用いられた．元素記号Au，元素番号79，原子量197.2．
+		あらゆる金属の中で，もっとも展性と延性に富み，また，かなり重
+		い(比重19.3)．熱，湿気，腐食に非常に強く，そのため貨弊や宝石
+		装飾に適する．
+						[ ウェブスター英語辞典2版 ]
+
 *golem
-		These creatures, not quite living but not  really  nonliving
-		either,   are   created from inanimate materials by powerful
-		mages or priests.
+#		These creatures, not quite living but not  really  nonliving
+#		either,   are   created from inanimate materials by powerful
+#		mages or priests.
+		この生き物は，本当は生きているのでも生きていないのでもないが，
+		強力な魔法使いや僧侶によって無生物から作られた．
+
 gremlin
-		The  gremlin is a highly  intelligent and  completely   evil
-		creature.   It lives to torment  other creatures and will go
-		to great lengths to inflict pain or cause injury.
+#		The  gremlin is a highly  intelligent and  completely   evil
+#		creature.   It lives to torment  other creatures and will go
+#		to great lengths to inflict pain or cause injury.
+		グレムリンは高い知能をもつ，ひどく邪悪な生き物である．他の生
+		き物を困らせるために生きていて，苦痛や，障害を与えようとする．
+
 grid bug
-		These  electrically based creatures are  not native  to this
-		universe.  They  appear to come from a world  whose  laws of
-		motion are radically different from ours.
+#		These  electrically based creatures are  not native  to this
+#		universe.  They  appear to come from a world  whose  laws of
+#		motion are radically different from ours.
+		この電気を帯びた生き物は，もともとこの世界にいた生き物ではな
+		い．これらは物理法則が我々の世界とは根本的に違う世界からやっ
+		てくる．
+
 gunyoki
-		The samurai's last meal  before battle.  It was usually made
-		up of cooked chestnuts, dried seaweed, and sake.
+#		The samurai's last meal  before battle.  It was usually made
+#		up of cooked chestnuts, dried seaweed, and sake.
+		侍が戦いの前に食べる究極の食事．普通，勝ち栗，コンブ，酒から
+		なる．
+
 hobbit
-		Hobbits  are  an unobtrusive  but very ancient people,  more
-		numerous formerly than they are today;  for they love  peace
-		and quiet and good tilled earth:  a  well-ordered and  well-
-		farmed countryside  was their favourite haunt.  They  do not
-		and  did  not  understand  or like machines more complicated
-		than a forge-bellows, a water-mill, or a handloom,  although
-		they  were skillful with tools.  Even  in ancient days  they
-		were, as a rule, shy of "the Big Folk", as they call us, and
-		now they avoid us with dismay and are becoming hard to find.
+#		Hobbits  are  an unobtrusive  but very ancient people,  more
+#		numerous formerly than they are today;  for they love  peace
+#		and quiet and good tilled earth:  a  well-ordered and  well-
+#		farmed countryside  was their favourite haunt.  They  do not
+#		and  did  not  understand  or like machines more complicated
+#		than a forge-bellows, a water-mill, or a handloom,  although
+#		they  were skillful with tools.  Even  in ancient days  they
+#		were, as a rule, shy of "the Big Folk", as they call us, and
+#		now they avoid us with dismay and are becoming hard to find.
+#			   [ The Fellowship of the Ring, by J.R.R. Tolkien ]
+		ホビット族は，きわめて表に出たがらない，さりながらはなはだ
+		古い種族で，以前は人数も今日とはくらべものにならないくらい，
+		実に多かった．というのも，平和と静けさとよく耕された大地を
+		愛する種族だからである．整地よく，耕作よき田園こそ，かれら
+		の好む棲処だった．かれらは道具の扱いがうまいくせに，今も昔
+		も，炉とふいご，水車，または手織ばたの類より複雑な機械はわ
+		からず，あるいは好まなかった．古代にあってすら，ホビット族
+		は一般に，かれらがいうわれわれ人間族の通称「大きい人たち」
+		をうとんじていたのだが，今日ではわれわれの姿を見ると怖れあ
+		わてて避けるので，かれらを発見することはむずかしくなってき
+		ている．		
 			   [ The Fellowship of the Ring, by J.R.R. Tolkien ]
+						      [ 評論社, 瀬田貞二訳 ]
+
 hobgoblin
 		Hobgoblin. Used by the  Puritans  and  in  later  times  for
 		wicked  goblin  spirits,  as in Bunyan's 'Hobgoblin nor foul
@@ -248,11 +423,15 @@ hobgoblin
 		heard of on the road between Hurworth and Neasham.
 		             [ Katharine Briggs, A  dictionary  of Fairies ]
 humanoid
-		Humanoids  are all approximately  the size of a human,   and
-		may  be  mistaken for one  at a distance.  They  are usually
-		of a tribal  nature, and will  fiercely defend their  lairs.
-		Usually   hostile, they  may even band  together to raid and
-		pillage human settlements.
+#		Humanoids  are all approximately  the size of a human,   and
+#		may  be  mistaken for one  at a distance.  They  are usually
+#		of a tribal  nature, and will  fiercely defend their  lairs.
+#		Usually   hostile, they  may even band  together to raid and
+#		pillage human settlements.
+		ヒューマノイドの大きさは人間とほとんど変らない．遠くに入ると
+		見間違うほどだ．彼等は自然では普通部族にわかれており，住みか
+		を強烈に守ろうとする．好ましくないものには彼らは団結し襲撃し，
+		人間の集落から略奪を行なう．
 human
 archeologist
 barbarian
@@ -266,80 +445,146 @@ samurai
 tourist
 valkyrie
 wizard
-		These strange creatures live mostly on the  surface  of  the
-		earth, gathering together in societies of various forms, but
-		occasionally a stray will descend into the depths and commit
-		mayhem  among  the  dungeon  residents who, naturally, often
-		resent the intrusion of such beasts.  They  are  capable  of
-		using  weapons  and  magic,  and it is even rumored that the
-		Wizard of Yendor is a member of this species.
+#		These strange creatures live mostly on the  surface  of  the
+#		earth, gathering together in societies of various forms, but
+#		occasionally a stray will descend into the depths and commit
+#		mayhem  among  the  dungeon  residents who, naturally, often
+#		resent the intrusion of such beasts.  They  are  capable  of
+#		using  weapons  and  magic,  and it is even rumored that the
+#		Wizard of Yendor is a member of this species.
+		この変った生き物たちはたいていは地表に住んでおり，様々な形態
+		の社会で共同生活を営んでいる．しかし，たまに，さまよい歩く者
+		が地下に潜りこんでは，当然ながらこの乱入に怒っている洞窟に住
+		みついた者たちに傷害罪を犯している．こいつらは武器や魔法を扱
+		えれる．大魔法使いイェンダーもこれらの仲間である，との噂であ
+		る．
+
 imp
-		 ... imps ... little creatures of two feet high  that  could
-		gambol and jump prodigiously; ...
+#		 ... imps ... little creatures of two feet high  that  could
+#		gambol and jump prodigiously; ...
+		小鬼(インプ)と言うのは二フィート足らずの小さな生きもので，飛
+		んだり跳ねたりすることに秀でている．
 				 [ The Charwoman's Shadow, by Lord Dunsany ]
-	
-		An 'imp' is an off-shoot or cutting.  Thus an 'ymp tree' was
-		a grafted tree, or one grown from a cutting, not from seed.
-		'Imp' properly means a small devil, an off-shoot  of  Satan,
-		but  the distinction between goblins or bogles and imps from
-		hell is hard to make, and many in the  Celtic  countries  as
-		well as the English Puritans regarded all fairies as devils.
-		The fairies of tradition often hover  uneasily  between  the
-		ghostly and the diabolic state.
+						     [ハヤカワ文庫 荒俣宏訳]
+
+#		An 'imp' is an off-shoot or cutting.  Thus an 'ymp tree' was
+#		a grafted tree, or one grown from a cutting, not from seed.
+#		'Imp' properly means a small devil, an off-shoot  of  Satan,
+#		but  the distinction between goblins or bogles and imps from
+#		hell is hard to make, and many in the  Celtic  countries  as
+#		well as the English Puritans regarded all fairies as devils.
+#		The fairies of tradition often hover  uneasily  between  the
+#		ghostly and the diabolic state.
+		インプと言う言葉は，さし木とか分枝を意味した．インプ・トリー
+		(ymp tree)というと，種からではなく，さし木や分枝から育ったも
+		のである．インプというのはサタンから分家した小悪魔を意味する．
+		しかし，ゴブリンとボギーとインプ間に区別をつけることは困難で
+		あり，イングランドのピューリタン同様，沢山のケルト族の国々は
+		すべての妖精を悪魔とみなしていた．妖精の伝説はしばしば霊的な
+		ものと魔性の間でさまよう．
 			       [ Katharine Briggs, A Dictionary of Fairies ]
 jabberwock
 vorpal*
-		"Beware the Jabberwock, my son!
-		  The jaws that bite, the claws that catch!
-		Beware the Jubjub bird, and shun
-		  The frumious Bandersnatch!"
-		
-		He took his vorpal sword in hand;
-		  Long time the manxome foe he sought --
-		So rested he by the Tumtum tree,
-		  And stood awhile in thought.
-		
-		And, as in uffish thought he stood,
-		  The Jabberwock, with eyes of flame,
-		Came whiffling through the tulgey wood,
-		  And burbled as it came!
+#		"Beware the Jabberwock, my son!
+#		  The jaws that bite, the claws that catch!
+#		Beware the Jubjub bird, and shun
+#		  The frumious Bandersnatch!"
+#		
+#		He took his vorpal sword in hand;
+#		  Long time the manxome foe he sought --
+#		So rested he by the Tumtum tree,
+#		  And stood awhile in thought.
+#		
+#		And, as in uffish thought he stood,
+#		  The Jabberwock, with eyes of flame,
+#		Came whiffling through the tulgey wood,
+#		  And burbled as it came!
+#
+#		One, two! One, two! And through and through
+#		  The vorpal blade went snicker-snack!
+#		He left it dead, and with its head
+#		  He went galumphing back.
+#					[ Jabberwocky, by Lewis Carroll ]
+		「わが子よ，ジャバーウォックに油断するなかれ！
+		  食らいつくその顎，かきむしるその爪！
+		  ジャブジャブ鳥にも心許すな，
+		  おどろしきバンダースナッチにはゆめ近寄るべからず！」
 
-		One, two! One, two! And through and through
-		  The vorpal blade went snicker-snack!
-		He left it dead, and with its head
-		  He went galumphing back.
+		けしにぐの剣，手に取りて，
+		かれ，ひとごろしき敵をば求め歩くこと久しかりしが--
+		タムタムの樹のかたえにて一息つき，
+		しばし立ちつくして思いに沈みぬ．
+
+		られられしき思いその胸に駆けめぐるときもとき，
+		見よ，らんらんたる眼燃やしたるジャバーウォック，
+		おぐらてしき森の奥より，飄飄と風切り飛びきたり，
+		ぶーぶくぶくとうなやきけり．
+
+		いち，に！いち，に！ぐっさりぐさり
+		目にも止まらぬけしにぐの剣，手錬の早業！
+		横たわりたる死体より刎ねたる首をば小脇にかかえ，
+		たからからからと帰り来たりぬ．
 					[ Jabberwocky, by Lewis Carroll ]
+					       [ 高橋康也・沢崎純之介訳 ]
+
 kabuto
-		A samurai helmet.
+#		A samurai helmet.
+		侍のヘルメット．
+
 katana
-		The katana is a long,  single-edged  samurai  sword  with  a
-		slightly curved blade.  Its long handle is designed to allow
-		it to be wielded with either one or two hands.
+#		The katana is a long,  single-edged  samurai  sword  with  a
+#		slightly curved blade.  Its long handle is designed to allow
+#		it to be wielded with either one or two hands.
+		刀は，長くて片刃の刀身が軽くそりかえった侍の剣である．その長
+		い柄は，片手でも両手でも刀を振り回せるようにできている．
+
 *kobold*
-		The race of kobolds are reputed to be an artificial creation
-		of a master wizard (demi-god?).  They are about 3' tall with
-		a vaguely dog-like face.  They bear a violent dislike of the
-		Elven race, and  will go out  of their way to  cause trouble
-		for Elves at any time.
+#		The race of kobolds are reputed to be an artificial creation
+#		of a master wizard (demi-god?).  They are about 3' tall with
+#		a vaguely dog-like face.  They bear a violent dislike of the
+#		Elven race, and  will go out  of their way to  cause trouble
+#		for Elves at any time.
+		コボルド一族は(半ば神と化した？)偉大な魔法使いによる人工生命
+		体であるとの云われている．コボルドは3つの尾を持ち，感情のはっ
+		きりしない犬のような顔をしている．エルフを非常に嫌っており，
+		どんなときでもエルフに騒動を起こすためには我を忘れる．
+
 koto
-		A Japanese harp.
+#		A Japanese harp.
+		日本のハープ．
+
 leprechaun
-		The Irish Leprechaun is the Faeries' shoemaker and is  known
-		under  various names  in different parts of Ireland:  Cluri-
-		caune in Cork, Lurican in Kerry, Lurikeen in Kildare and Lu-
-		rigadaun  in  Tipperary.  Although he works for the Faeries,
-		the Leprechaun is not of the same species.  He is small, has
-		dark  skin  and wears strange clothes.  His nature has some-
-		thing of the manic-depressive about it:  first he  is  quite
-		happy, whistling merrily as he nails a sole on to a shoe;  a
-		few minutes later, he is sullen and  morose,  drunk  on  his
-		home-made heather ale.  The Leprechaun's two great loves are
-		tobacco and whiskey, and he is a first-rate con-man,  impos-
-		sible  to  out-fox.  No  one, no matter how clever, has ever
-		managed to cheat him out of his hidden pot of  gold  or  his
-		magic shilling.  At the last minute he always thinks of some
-		way to divert his captor's attention  and  vanishes  in  the
-		twinkling  of  an eye.
+#		The Irish Leprechaun is the Faeries' shoemaker and is  known
+#		under  various names  in different parts of Ireland:  Cluri-
+#		caune in Cork, Lurican in Kerry, Lurikeen in Kildare and Lu-
+#		rigadaun  in  Tipperary.  Although he works for the Faeries,
+#		the Leprechaun is not of the same species.  He is small, has
+#		dark  skin  and wears strange clothes.  His nature has some-
+#		thing of the manic-depressive about it:  first he  is  quite
+#		happy, whistling merrily as he nails a sole on to a shoe;  a
+#		few minutes later, he is sullen and  morose,  drunk  on  his
+#		home-made heather ale.  The Leprechaun's two great loves are
+#		tobacco and whiskey, and he is a first-rate con-man,  impos-
+#		sible  to  out-fox.  No  one, no matter how clever, has ever
+#		managed to cheat him out of his hidden pot of  gold  or  his
+#		magic shilling.  At the last minute he always thinks of some
+#		way to divert his captor's attention  and  vanishes  in  the
+#		twinkling  of  an eye.
+		アイルランドのレプレコーンは妖精の演出者であり，アイルランド
+		の色々な場所によって色々な名前で知られている．コーク地方では
+		クルリカーン，ケリー地方ではルリカン，キルダーではルリキーン，
+		ティパラリーではリガダーンである．彼らは妖精のために仕事をす
+		るが，レプレコーンは同じ種族のものではない．それは小さく，黒
+		い皮膚を持ち，奇妙な服を着ていてる．レプレコーンは次のように
+		躁鬱的である．最初にとても幸せになり，片方の靴底を釘付けする
+		かのように陽気に口笛を吹く．数分後，陰鬱かつ不機嫌になり，自
+		家製のヒースのエールで酔いつぶれる．レプレコーンは二つのもの
+		を愛する．煙草とウィスキーだ．そしてレプレコーンはすばらしい
+		信用のあるやつで，相手を裏切ることのないやつだ．どうでもいい
+		ことだが，どんなに利口なやつでも隠された金や魔法シリングのつ
+		まったポットを騙しとったのはいない．最後には，彼を掴まえるも
+		のの注意をそらす方法について考え，目もまばたかせ消えるのであ
+		る．
 				     [ A Field Guide to the Little People
 				       by Nancy Arrowsmith & George Moorse ]
 leocrotta
@@ -350,181 +595,335 @@ leu*otta
 		hoof, the mouth slit up as far as the ears,  and one contin-
 		uous bone  instead of  teeth;  it is said,  too,  that  this
 		animal can imitate the human voice.
+		レオクロッタ，とてつもなく素早い野性の獣，野性のロバくらいの
+		大きさ，雄鹿の足，首，尻尾，ライオンの胸，穴熊の頭，2つに割れ
+		た蹄，耳のように切りさかれてる口，歯の変りに一枚の骨．この動
+		物は人間の声をまねるとも言われている．
 			       [ Curious Creatures in Zoology, John Ashton ]
 *lich
-		Once in a great  while, an evil master wizard or priest will
-		manage through use of great magics to extend his or her life
-		far beyond the normal  span of a human.  The usual effect of
-		this is to transform the human, over time, into an undead of
-		great magical power.  A Lich  hates life in any form; even a
-		touch from one of these  creatures will cause a numbing cold
-		in the victim.  They all possess the capability to use magic.
+#		Once in a great  while, an evil master wizard or priest will
+#		manage through use of great magics to extend his or her life
+#		far beyond the normal  span of a human.  The usual effect of
+#		this is to transform the human, over time, into an undead of
+#		great magical power.  A Lich  hates life in any form; even a
+#		touch from one of these  creatures will cause a numbing cold
+#		in the victim.  They all possess the capability to use magic.
+		何百年かに一度，邪悪な魔法を極めたものや僧侶が，その人生を普
+		通の人間の一生をはるかに越えるようにしようと偉大な魔法の使用
+		を使用することがある．この魔法の普通の効果は時間をかけ，人間
+		を偉大な魔法のパワーをもつアンデッドに変化させる．リッチはあ
+		らゆる形での生活を忌み嫌う．これらの生き物に触られたりするだ
+		けで，犠牲者は冷たくなり痺れてしまう．彼らはまた魔法をも使う
+		ことができる．
+
 medusa
-		This hideous  creature from  ancient Greek myth was the doom
-		of many a valiant adventurer.  It is said that one gaze from
-		its eyes  could turn a man to stone.  One bite from the nest
-		of  snakes which  crown its head could  cause instant death.
-		The only  way to kill this  monstrosity is to turn its  gaze
-		back upon itself.
+#		This hideous  creature from  ancient Greek myth was the doom
+#		of many a valiant adventurer.  It is said that one gaze from
+#		its eyes  could turn a man to stone.  One bite from the nest
+#		of  snakes which  crown its head could  cause instant death.
+#		The only  way to kill this  monstrosity is to turn its  gaze
+#		back upon itself.
+		古代ギリシア神話に登場するこの醜い生き物は勇敢な冒険者達を破
+		滅させた．その目に一眈みされると人間は石になってしまうと言わ
+		れている．頭から生えている蛇の一噛みが即死をまねくとも言われ
+		ている．この奇怪な生き物を殺すたった１つの方法は，その眈みを
+		それ自身に向けることである．
 mind flayer
-		This creature has a humanoid  body, but has tentacles around
-		its covered mouth and only three long fingers  on each hand.
-		Mind flayers are  telepathic, and love to devour intelligent
-		beings, especially humans.  If they hit their victim  with a
-		tentacle,  the mind flayer  will  slowly  drain  it  of  all
-		intelligence, eventually killing the victim.
+#		This creature has a humanoid  body, but has tentacles around
+#		its covered mouth and only three long fingers  on each hand.
+#		Mind flayers are  telepathic, and love to devour intelligent
+#		beings, especially humans.  If they hit their victim  with a
+#		tentacle,  the mind flayer  will  slowly  drain  it  of  all
+#		intelligence, eventually killing the victim.
+		この生き物は人間の体を持つが，口や両手にあるったった三本の指
+		を覆う触手を持つ．マインドフレアはテレパシーをもっており，知
+		恵のある生き物，とりわけ人間を溺愛している．触手で攻撃されよ
+		うものなら，マインドフレアはゆっくりと全ての知恵を吸いとり，
+		やがて犠牲者は死んでしまうだろう．
+	
 mithril*
-		_Mithril_!   All folk  desired it.  It could be  beaten like
-		copper, and polished like glass;  and the Dwarves could make
-		of it  a metal,  light and yet harder  than tempered  steel.
-		Its beauty was like to that of common silver, but the beauty
-		of _mithril_ did not tarnish  or grow dim.
+#		_Mithril_!   All folk  desired it.  It could be  beaten like
+#		copper, and polished like glass;  and the Dwarves could make
+#		of it  a metal,  light and yet harder  than tempered  steel.
+#		Its beauty was like to that of common silver, but the beauty
+#		of _mithril_ did not tarnish  or grow dim.
+#			   [ The Fellowship of the Ring, by J.R.R. Tolkien ]
+		ミスリル！すべての民がこれを欲しがった．これは銅のように打ち
+		延ばすことができた．またガラスのように磨くことができた．ドワ
+		ーフたちはこれを軽くしてしかも鍛えた鋼よりも堅い金属に作り上
+		げることができた．その美しさはふつうの銀のそれに似ておるが，
+		ミスリルの方はくろずむこともなく，曇ることもなかった．
 			   [ The Fellowship of the Ring, by J.R.R. Tolkien ]
+						      [ 評論社, 瀬田貞二訳 ]
+
 mumak*
-		... the Mumak of Harad was indeed  a beast of vast bulk, and
-		the like of him  does not walk now in Middle-Earth;  his kin
-		that live still in latter days are but memories of his girth
-		and  majesty.   On he came, ... his great legs  like  trees,
-		enormous sail-like ears spread out, long snout upraised like
-		a huge serpent  about to strike,  his small red eyes raging.
-		His upturned hornlike tusks ... dripped with blood.
+#		... the Mumak of Harad was indeed  a beast of vast bulk, and
+#		the like of him  does not walk now in Middle-Earth;  his kin
+#		that live still in latter days are but memories of his girth
+#		and  majesty.   On he came, ... his great legs  like  trees,
+#		enormous sail-like ears spread out, long snout upraised like
+#		a huge serpent  about to strike,  his small red eyes raging.
+#		His upturned hornlike tusks ... dripped with blood.
+#				       [ The Two Towers, by J.R.R. Tolkien ]
+		ハラドのムーマクは事実途方もなく大きな図体をした獣でした．か
+		れと同じものは今ではもう中つ国を歩いてはいません．この末の世
+		にまだ生きているその同類の中に，わずかながらありし昔のかれの
+		胴まわりと堂々たる姿の記憶が留められているに過ぎません．かれ
+		はやって来ました．．．その足ときたら大木のよう，とてつもなく
+		大きな耳は帆のように広がり，長い鼻は今にも打ってかかろうとす
+		る大蛇のように持ち上がっていました．小さな赤い目は怒り狂って
+		います．角のような形は．．．ぽとぽと血を滴らせていました．
 				       [ The Two Towers, by J.R.R. Tolkien ]
+						      [ 評論社, 瀬田貞二訳 ]
+
 *naga*
-		The naga is a mystical creature with the body of a snake and
-		the head of a man or woman.  They will fiercely  protect the
-		territory they consider their own.  Some nagas can be forced
-		to serve as a guardian by a spell caster of great power.
+#		The naga is a mystical creature with the body of a snake and
+#		the head of a man or woman.  They will fiercely  protect the
+#		territory they consider their own.  Some nagas can be forced
+#		to serve as a guardian by a spell caster of great power.
+		ナーガは蛇の体に男や女の顔を持つ神秘的な生き物である．彼らは
+		自分のテリトリーと考えるところを死守する．ある種のナーガは偉
+		大な力の魔法使いによって無理矢理番兵のように給仕させることが
+		できる．
+
 *ooze
 *pudding
-		These giant amoeboid creatures look like nothing  more  than
-		puddles  of  slime,  but they both live and move, feeding on
-		metal or wood as well as the occasional dungeon explorer  to
-		supplement their diet.
+#		These giant amoeboid creatures look like nothing  more  than
+#		puddles  of  slime,  but they both live and move, feeding on
+#		metal or wood as well as the occasional dungeon explorer  to
+#		supplement their diet.
+		この巨大なアメーバのような生き物は，粘液の水たまりにしか見え
+		ないが，金属や木，加えて即席の洞窟探検者などを食べて生きてい
+		る．
+
 orcrist
-		The  Great Goblin  gave a truly awful howl of  rage when  he
-		looked  at  it,  and  all his soldiers  gnashed their teeth,
-		clashed their shields,  and stamped.  They knew the sword at
-		once.  It had killed hundreds of goblins in  its time,  when
-		the  fair elves of Gondolin hunted them in the hills or  did
-		battle  before  their  walls.  They  had called it  Orcrist,
-		Goblin-cleaver, but the goblins called it simply Biter. They
-		hated it and hated worse any one that carried it.
+#		The  Great Goblin  gave a truly awful howl of  rage when  he
+#		looked  at  it,  and  all his soldiers  gnashed their teeth,
+#		clashed their shields,  and stamped.  They knew the sword at
+#		once.  It had killed hundreds of goblins in  its time,  when
+#		the  fair elves of Gondolin hunted them in the hills or  did
+#		battle  before  their  walls.  They  had called it  Orcrist,
+#		Goblin-cleaver, but the goblins called it simply Biter. They
+#		hated it and hated worse any one that carried it.
+#					   [ The Hobbit, by J.R.R. Tolkien ]
+		大ゴブリンは，これを見ると，しんからおそれにうたれた，いかり
+		のうめき声をあげ，いならぶ兵士たちもにな，歯をくいしばり，た
+		てをうち，足をふみならしました．ゴブリンたちは，すぐさまその
+		剣を見わけたのです．それは，ゴンドリンのよいエルフたちが山の
+		なかでゴブリンたちを追ったり，その町のかこみの前で戦いをした
+		むかし，何百何千のたくさんのゴブリンを殺した名剣です．エルフ
+		たちは，剣をオルクリスト，つまりゴブリン退治とよんでいました
+		が，ゴブリンたちはこれをただ「かみつき丸」とよびました．そし
+		てこの剣をにくみ，この剣を持った者をにくみました．
 					   [ The Hobbit, by J.R.R. Tolkien ]
+						      [ 評論社, 瀬田貞二訳 ]
+
 osaku
-		The osaku is a small tool for picking locks.
+#		The osaku is a small tool for picking locks.
+		おさくは開錠のための小さな道具である．
+
 piercer
-		Ye Piercer doth look like unto  a  stalactyte,  and  hangeth
-		from  the  roofs of caves and caverns.  Unto the height of a
-		man, and thicker than a man's thigh do  they  grow,  and  in
-		groups  do they hang.  If a creature doth pass beneath them,
-		they will by its heat and noise perceive it, and  fall  upon
-		it  to kill and devour it, though in any other way they move
-		but exceeding slow.
+#		Ye Piercer doth look like unto  a  stalactyte,  and  hangeth
+#		from  the  roofs of caves and caverns.  Unto the height of a
+#		man, and thicker than a man's thigh do  they  grow,  and  in
+#		groups  do they hang.  If a creature doth pass beneath them,
+#		they will by its heat and noise perceive it, and  fall  upon
+#		it  to kill and devour it, though in any other way they move
+#		but exceeding slow.
+		穴喰いは鍾乳石のように見えん．洞窟やほら穴の天井にぶらさがら
+		ん．この種のものは，人間の高さほどの，人間のももより厚く，成
+		長せん，生き物が下方に通りぬけるとき，熱と音により，知覚でき
+		よう，殺すために落ち，むさぼり喰うために落ちよう．他の手段に
+		て移動せしときそれらの動きは極めて遅いであろう．
 						   [ the Bestiary of Xygag ]
+
+
+
 quantum mechanic
-		These creatures are not native to this universe;  they  seem
-		to have strangely derived powers, and unknown motives.
+#		These creatures are not native to this universe;  they  seem
+#		to have strangely derived powers, and unknown motives.
+		この生き物はこの世界のものではない．どこからか不思議な力が湧
+		いて出るようである．動力も不明．
+
 quadruped
-		The woodlands and other regions  are inhabited by multitudes
-		of four-legged creatures  which cannot be simply classified.
-		They might not have fiery breath  or deadly stings,  but ad-
-		venturers  have  nevertheless  met their end  numerous times
-		due to the claws, hooves, or bites of such animals.
+#		The woodlands and other regions  are inhabited by multitudes
+#		of four-legged creatures  which cannot be simply classified.
+#		They might not have fiery breath  or deadly stings,  but ad-
+#		venturers  have  nevertheless  met their end  numerous times
+#		due to the claws, hooves, or bites of such animals.
+		森をはじめいろんな場所は，単純には分類できないような沢山の四
+		本足の生き物に適している．それらは炎のブレスや死の針を持って
+		いないが，冒険者はそれにもかかわらず，そのような動物の爪や蹄
+		や噛みつきによって何度も終焉を迎えている．
+
 rust monster
-		These strange creatures live on a   diet  of  metals.   They
-		will  turn  a  suit  of  armour into so much useless  rusted
-		scrap in no time at all.
+#		These strange creatures live on a   diet  of  metals.   They
+#		will  turn  a  suit  of  armour into so much useless  rusted
+#		scrap in no time at all.
+		この奇妙な生き物は金属を食べる．こいつらは鎧を瞬く間に錆だら
+		けの鉄クズにしてしまう．
+
 sake
-		Japanese rice wine.
+#		Japanese rice wine.
+		日本の醸造酒．
+
 sasquatch
-		An ape-like humanoid  native to densely forested  mountains,
-		the sasquatch is  also known as "bigfoot".   Normally benign
-		and rarely seen,  this creature is reputed to be  a relative
-		of the ferocious yeti.
+#		An ape-like humanoid  native to densely forested  mountains,
+#		the sasquatch is  also known as "bigfoot".   Normally benign
+#		and rarely seen,  this creature is reputed to be  a relative
+#		of the ferocious yeti.
+		山の深い森に棲む類人猿のサスカッチは「ビッグフット」としても
+		知られている．普段はおとなしく，めったに見かけないが，凶暴な
+		イエティの血縁にあたるとの噂である．
+
 shito
-		A Japanese stabbing knife.
+#		A Japanese stabbing knife.
+		日本の，刺すためのナイフ
+
 snickersnee
-		Ah, never shall I forget the cry, 
-		    or the shriek that shrieked he,
-		As I gnashed my teeth, and from my sheath
-		    I drew my Snickersnee!
-		--Koko, Lord high executioner of Titipu
-				     [ The Mikado, by Sir W.S. Gilbert ]
+#		Ah, never shall I forget the cry, 
+#		    or the shriek that shrieked he,
+#		As I gnashed my teeth, and from my sheath
+#		    I drew my Snickersnee!
+#		--Koko, Lord high executioner of Titipu
+#				     [ The Mikado, by Sir W.S. Gilbert ]
+		ああ，忘れまいぞ，
+		そが叫びし叫びを，
+		我は歯をきしらせるや，
+		すらりと抜けり，わが太刀を！
+		-- 秩父の守，狐々
+		[ ミカド, Sir W.S. Gilbert ]
+
 *soldier
 sergeant
 lieutenant
 captain
-		The soldiers  of Yendor are  well-trained in the art of war,
-		many  trained by  the Wizard himself.  Some say the soldiers
-		are explorers  who were  unfortunate enough  to be captured,
-		and  put under the Wizard's spell.  Those who have  survived
-		encounters  with  soldiers   say  they  travel  together  in
-		platoons,  and are fierce fighters.  Because of the  load of
-		their  combat gear,  however,  one can usually run away from
-		them, and doing so is considered a wise thing.
+#		The soldiers  of Yendor are  well-trained in the art of war,
+#		many  trained by  the Wizard himself.  Some say the soldiers
+#		are explorers  who were  unfortunate enough  to be captured,
+#		and  put under the Wizard's spell.  Those who have  survived
+#		encounters  with  soldiers   say  they  travel  together  in
+#		platoons,  and are fierce fighters.  Because of the  load of
+#		their  combat gear,  however,  one can usually run away from
+#		them, and doing so is considered a wise thing.
+		イェンダーの兵士達は戦いの技についてよく訓練されており，その
+		うちの多くは魔法使い直々に訓練されている．ある者が言うには，
+		兵士は不幸にして捕らえられ，魔法使いの呪文により配下におかれ
+		ている冒険者であるそうだ．兵士らに会って生き延びたものが言う
+		には，彼らは小隊に毎に行動する気性の荒い戦士である．しかしな
+		がら，彼らの戦闘用の装具の重さのため，普通は彼らから逃げ切る
+		ことができ，そうすることは賢いことだと考えられている．
 tanko
-		Samurai plate armor of the Yamato period (AD 300 - 710).
+#		Samurai plate armor of the Yamato period (AD 300 - 710).
+		大和時代(西暦300年から710年)の侍の鋼鉄の鎧．
+
 tengu
-		The tengu was the  most  troublesome  creature  of  Japanese
-		legend.   Part  bird  and part man, with red beak for a nose
-		and flashing eyes, the tengu was notorious for  stirring  up
-		feuds  and  prolonging  enmity between families. Indeed, the
-		belligerent tengus were supposed to have  been  man's  first
-		instructors in the use of arms.
-		[Mythical Beasts by Deirdre Headon (The Leprechaun Library)]
+#		The tengu was the  most  troublesome  creature  of  Japanese
+#		legend.   Part  bird  and part man, with red beak for a nose
+#		and flashing eyes, the tengu was notorious for  stirring  up
+#		feuds  and  prolonging  enmity between families. Indeed, the
+#		belligerent tengus were supposed to have  been  man's  first
+#		instructors in the use of arms.
+#		[Mythical Beasts by Deirdre Headon (The Leprechaun Library)]
+		天狗は日本の神話で最もやっかいな生き物である．半鳥半人，紅い
+		尖った鼻とらんらんと光る目を持つ．天狗は家同士の不和を煽りた
+		て，長びかせることで悪名高かった．実は，好戦的な天狗が人間に
+		始めて武器の使い方を教えたとも云われる．
+			    [ 神話の生物, Deirede Headon(レプレコーン図書) ]
+
+
 tsurugi
-		The tsurugi,  also known  as  the long samurai sword,  is an
-		extremely  sharp,  two-handed blade favored  by the samurai.
-		It  is made of hardened steel,  and is manufactured  using a
-		special  process, causing it  to never rust.  The tsurugi is
-		rumored  to  be  so  sharp  that  it  can  occasionally  cut
-		opponents in half!
+#		The tsurugi,  also known  as  the long samurai sword,  is an
+#		extremely  sharp,  two-handed blade favored  by the samurai.
+#		It  is made of hardened steel,  and is manufactured  using a
+#		special  process, causing it  to never rust.  The tsurugi is
+#		rumored  to  be  so  sharp  that  it  can  occasionally  cut
+#		opponents in half!
+		剣(ツルギ)は，素晴しく鋭い，侍の好む両手持ちの幅広の剣である．
+		それは鋼鉄から作り，特殊過程を経て作り，決して錆ない．剣は，
+		とても鋭く，敵をまっぷたつにすることができると言われている．
+
 *unicorn
 unicorn horn
-		Men have always sought the elusive unicorn, for  the  single
-		twisted  horn  which projected from its forehead was thought
-		to be a powerful talisman.  It was said that the unicorn had
-		simply  to  dip  the tip of its horn in a muddy pool for the
-		water to become pure.  Men also believed that to  drink from
-		this horn was a protection against all sickness, and that if
-		the horn was ground to a powder it would act as an  antidote
-		to all poisons.  Less than 200 years ago in France, the horn
-		of a unicorn was used in a ceremony to test the  royal  food
-		for poison.
-	
-		Although only the size of a small horse, the  unicorn  is  a
-		very  fierce  beast,  capable  of killing an elephant with a
-		single thrust from its horn.  Its  fleetness  of  foot  also
-		makes  this solitary creature difficult to capture. However,
-		it can be tamed and captured by a maiden. Made gentle by the
-		sight  of a virgin, the unicorn can be lured to lay its head
-		in her lap, and in this docile mood, the maiden  may  secure
-		it with a golden rope.
-		[Mythical Beasts by Deirdre Headon (The Leprechaun Library)]
+#		Men have always sought the elusive unicorn, for  the  single
+#		twisted  horn  which projected from its forehead was thought
+#		to be a powerful talisman.  It was said that the unicorn had
+#		simply  to  dip  the tip of its horn in a muddy pool for the
+#		water to become pure.  Men also believed that to  drink from
+#		this horn was a protection against all sickness, and that if
+#		the horn was ground to a powder it would act as an  antidote
+#		to all poisons.  Less than 200 years ago in France, the horn
+#		of a unicorn was used in a ceremony to test the  royal  food
+#		for poison.
+#	
+#		Although only the size of a small horse, the  unicorn  is  a
+#		very  fierce  beast,  capable  of killing an elephant with a
+#		single thrust from its horn.  Its  fleetness  of  foot  also
+#		makes  this solitary creature difficult to capture. However,
+#		it can be tamed and captured by a maiden. Made gentle by the
+#		sight  of a virgin, the unicorn can be lured to lay its head
+#		in her lap, and in this docile mood, the maiden  may  secure
+#		it with a golden rope.
+#		[Mythical Beasts by Deirdre Headon (The Leprechaun Library)]
+		人間はいつも捉えどころのないユニコーンを見てきた．頭の前に生
+		えている一本のねじれた角は力強い魔除けの効果があると考えられ
+		てきた．ユニコーンは泥だらけの水たまりを浄化するため，角の先
+		っぽをちょっと入れると言われている．人間はまた，この角で飲む
+		ことにより，あらゆる病気から身を守ることができ，角を煎じるこ
+		とができるのなら，それはあらゆる毒の中和剤となると信じてきた．
+		200年前のフランスではユニコーンの角は王家の食物を毒を調べる
+		セレモニーに用いられていた．		
+
+		小さい馬くらいの大きさであるが，ユニコーンは獰猛な動物で，そ
+		の角からの一突きは象をも殺す力がある．また，その足の俊敏さは
+		この群を作らない生き物を捉えることを困難にする．しかしながら，
+		ユニコーンは処女の手により手なづけ捉えることができる．ユニコ
+		ーンは処女を見ることによりおとなしくなり，頭をその女のひざに
+		押しつけ魅了させられてしまう．このとき処女は金のロープで安全
+		に捉えることができる．
+			    [ 神話の生物, Deirede Headon(レプレコーン図書) ]
 wakizashi
-		The samurai  warrior  traditionally  wears  two  swords; the
-		wakizashi is the shorter of the two.  See also katana.
+#		The samurai  warrior  traditionally  wears  two  swords; the
+#		wakizashi is the shorter of the two.  See also katana.
+		侍は伝統的に二本剣を差している．脇差しは短いほうである．刀
+		の項目も見よ．
+
 *long worm
 worm tooth
 crysknife
-		[The crysknife] is manufactured in two forms from teeth tak-
-		en  from dead sandworms.  The two forms are "fixed" and "un-
-		fixed." An unfixed  knife  requires  proximity  to  a  human
-		body's  electrical  field  to prevent disintegration.  Fixed
-		knives are treated for storage.  All are about  20  centime-
-		ters long.
+#		[The crysknife] is manufactured in two forms from teeth tak-
+#		en  from dead sandworms.  The two forms are "fixed" and "un-
+#		fixed." An unfixed  knife  requires  proximity  to  a  human
+#		body's  electrical  field  to prevent disintegration.  Fixed
+#		knives are treated for storage.  All are about  20  centime-
+#		ters long.
+		「クリスナイフ」は二つの使い方があり，死んだサンドウォームか
+		ら取った歯から作られる．二つの使い方とは，固体と粉末である．
+		粉末のナイフは粉砕を防ぐ電子のフィールドを人間の体のまわりに
+		作る．固体したナイフは貯蔵用として扱う．20センチメートルくら
+		いの長さである．
 						  [ Dune, by Frank Herbert ]
 wizard of yendor
-		No  one knows how old this mighty wizard is,  or from whence
-		he came.  It is known that,  having lived a span far greater
-		than any normal man's, he grew weary of lesser mortals;  and
-		so, spurning all human company,  he forsook the dwellings of
-		men  and  went to live in the depths of the  Earth.  He took
-		with him the dreadful artifact, the Book of the Dead,  which
-		is said to hold great power indeed. Many have sought to find
-		the  wizard and  his treasure,  but none have found  him and
-		lived to tell the tale.  Woe be to the incautious adventurer
-		who disturbs this mighty sorcerer!
+#		No  one knows how old this mighty wizard is,  or from whence
+#		he came.  It is known that,  having lived a span far greater
+#		than any normal man's, he grew weary of lesser mortals;  and
+#		so, spurning all human company,  he forsook the dwellings of
+#		men  and  went to live in the depths of the  Earth.  He took
+#		with him the dreadful artifact, the Book of the Dead,  which
+#		is said to hold great power indeed. Many have sought to find
+#		the  wizard and  his treasure,  but none have found  him and
+#		lived to tell the tale.  Woe be to the incautious adventurer
+#		who disturbs this mighty sorcerer!
+		この強大な魔法使いが何歳だとか，何処から来たのとかを知るもの
+		はいない．普通の人間より遥かに長く生きており，死なない体に退
+		屈しはじめていることが知られている．そして，人間とのつきあい
+		や人間について考えることもやめ，はるか地の奥深くに向った．彼
+		は，恐しい聖器「死者の書」をもっている．それは偉大なパワーを
+		もっていると言う．多くの人間が魔法使いとその宝を探そうとした．
+		が，誰も発見することができず，それどころか生きて話を語るもの
+		すらいない．この強大な魔法使いをかき乱す無謀な冒険者に苦痛あ
+		れ！
+
 xan
 		They sent their friend the mosquito [xan] ahead of  them  to
 		find  out  what lay ahead.  "Since you are the one who sucks
@@ -538,28 +937,50 @@ xan
 		he flew along the row stinging all the seated men  until  he
 		knew the names of all twelve.
 				[ Popul Vuh, as translated by Ralph Nelson ]
+
 ya
-		The arrow  of  choice of the samurai,  ya  are  made of very
-		straight bamboo, and are  tipped  with hardened steel.
+#		The arrow  of  choice of the samurai,  ya  are  made of very
+#		straight bamboo, and are  tipped  with hardened steel.
+		侍の使用する矢である．矢は真直な竹から作り，矢じりは堅い鉄で
+		ある．
+
 yeti
-		An ape-like humanoid  native to inaccessible  mountain tops,
-		the yeti is also known as "the abominable snowman".  Whether
-		or not the title "man" is appropriate remains unknown.
+#		An ape-like humanoid  native to inaccessible  mountain tops,
+#		the yeti is also known as "the abominable snowman".  Whether
+#		or not the title "man" is appropriate remains unknown.
+		猿のような亜人間で，未踏の山の頂上の原住民である．イェティは
+		「残虐な雪男」としても知られている．「男」と言うのが適当かど
+		うかは未だ不明である．
+	
 yugake
-		Japanese leather archery gloves.  Gloves made for use  while
-		practicing had thumbs reinforced with horn.  Those worn into
-		battle had thumbs reinforced with a double layer of leather.
+#		Japanese leather archery gloves.  Gloves made for use  while
+#		practicing had thumbs reinforced with horn.  Those worn into
+#		battle had thumbs reinforced with a double layer of leather.
+		日本の革製のアーチェリーの小手である．実際には鎧とともに，親
+		指を補強するために使われた．これらの防具は実戦では革を二重に
+		して，親指を補強したという．
+
 yumi
-		The samurai is highly  trained  with a special type  of bow,
-		the yumi.  Like the  ya, the yumi  is  made of bamboo.  With
-		the yumi-ya, the bow and arrow, the samurai is an  extremely
-		accurate and deadly warrior.
+#		The samurai is highly  trained  with a special type  of bow,
+#		the yumi.  Like the  ya, the yumi  is  made of bamboo.  With
+#		the yumi-ya, the bow and arrow, the samurai is an  extremely
+#		accurate and deadly warrior.
+		侍は高度なトレーニングを特殊な武器である弓に対して行なってい
+		る．矢の様に，弓は竹で作られている．弓矢を持つことにより、侍
+		は極めて精密な殺人戦士となる．
+
 *zombie
-		The zombi...  is a soulless human corpse,  still  dead,  but
-		taken	from  the  grave  and  endowed	by  sorcery  with  a
-		mechanical semblance of life, --  it is a dead body which is
-		made to walk and act and move as if it were alive.
-							  [ W. B. Seabrook ]
+#		The zombi...  is a soulless human corpse,  still  dead,  but
+#		taken	from  the  grave  and  endowed	by  sorcery  with  a
+#		mechanical semblance of life, --  it is a dead body which is
+#		made to walk and act and move as if it were alive.
+#							  [ W. B. Seabrook ]
+		ゾンビ．．．は魂のない人間の死体であるが墓から出て，魔術によ
+		って機械的な装いを受けている．-- さも生きているかのように歩き，
+		演じ，動くための死の体である．
+							  [ W.B. Seabrock ]
+
 zruty
-		The zruty are  wild and gigantic beings,  living in the wil-
-		dernesses of the Tatra mountains.
+#		The zruty are  wild and gigantic beings,  living in the wil-
+#		dernesses of the Tatra mountains.
+		ズルティは兇暴で巨大な生物である．タトラ山の荒地に住んでいる．

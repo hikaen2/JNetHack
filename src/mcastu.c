@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifdef OVL0
@@ -21,15 +28,19 @@ cursetxt(mtmp)
 			|| u.usym == S_MIMIC_DEF || u.uundetected
 #endif
 									)
-		pline("%s points and curses in your general direction.",
+/*JP		pline("%s points and curses in your general direction.",*/
+		pline("%sはあなたのいるあたりを指差し，呪いをかけた．",
 				Monnam(mtmp));
 	    else if (Displaced && (mtmp->mux != u.ux || mtmp->muy != u.uy))
-		pline("%s points and curses at your displaced image.",
+/*JP		pline("%s points and curses at your displaced image.",*/
+		pline("%sはあなた幻影を指差し，呪いをかけた．",
 				Monnam(mtmp));
 	    else
-		pline("%s points at you, then curses.", Monnam(mtmp));
+/*JP		pline("%s points at you, then curses.", Monnam(mtmp));*/
+		pline("%sはあなたを指差し，呪いをかけた．", Monnam(mtmp));
 	} else if((!(moves%4) || !rn2(4)) && flags.soundok) 
-		Norep("You hear a mumbled curse.");
+/*JP		Norep("You hear a mumbled curse.");*/
+		Norep("呪いの言葉をつぶやく声を聞いた．");
 }
 
 #endif /* OVL0 */
@@ -53,7 +64,8 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 				&& flags.soundok
 #endif
 							)
-		    pline("The air crackles around %s.", mon_nam(mtmp));
+/*JP		    pline("The air crackles around %s.", mon_nam(mtmp));*/
+		    pline("%sの回りの空気はピリピリしている．", mon_nam(mtmp));
 		return(0);
 	    }
 	}
@@ -69,26 +81,32 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 	switch(mattk->adtyp)   {
 
 	    case AD_FIRE:
-		pline("You're enveloped in flames.");
+/*JP		pline("You're enveloped in flames.");*/
+		You("炎につつまれた．");
 		if(Fire_resistance) {
 			shieldeff(u.ux, u.uy);
-			pline("But you resist the effects.");
+/*JP			pline("But you resist the effects.");*/
+			pline("しかし，あなたは影響を受けない．");
 			dmg = 0;
 		}
 		break;
 	    case AD_COLD:
-		pline("You're covered in frost.");
+/*JP		pline("You're covered in frost.");*/
+		You("氷に覆われた．");
 		if(Cold_resistance) {
 			shieldeff(u.ux, u.uy);
-			pline("But you resist the effects.");
+/*JP			pline("But you resist the effects.");*/
+			pline("しかし，あなたは影響を受けない．");
 			dmg = 0;
 		}
 		break;
 	    case AD_MAGM:
-		You("are hit by a shower of missiles!");
+/*JP		You("are hit by a shower of missiles!");*/
+		You("魔法の矢をくらった！");
 		if(Antimagic) {
 			shieldeff(u.ux, u.uy);
-			pline("The missiles bounce off!");
+/*JP			pline("The missiles bounce off!");*/
+			pline("魔法の矢は反射した！");
 			dmg = 0;
 		} else dmg = d((int)mtmp->m_lev/2 + 1,6);
 		break;
@@ -100,35 +118,45 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 		    case 22:
 		    case 21:
 		    case 20:
-			pline("Oh no, %s's using the touch of death!",
+/*JP			pline("Oh no, %s's using the touch of death!",
 			      humanoid(mtmp->data)
 				  ? (mtmp->female ? "she" : "he")
 				  : "it"
+			     );*/
+			pline("なんてこったい，%s死の宣告を使っている！",
+			      humanoid(mtmp->data)
+				  ? (mtmp->female ? "彼女は" : "彼は")
+				  : "何ものかが"
 			     );
 #ifdef POLYSELF
 			if (is_undead(uasmon))
-			    You("seem no deader than before.");
+/*JP			    You("seem no deader than before.");*/
+			    You("すでに死なない体のようだ．");
 			else
 #endif
 			if (!Antimagic && rn2(ml) > 12) {
 
 			    if(Hallucination)
-				You("have an out of body experience.");
+/*JP				You("have an out of body experience.");*/
+				You("幽体離脱の体験をした．");
 			    else  {
 				killer_format = KILLED_BY_AN;
-				killer = "touch of death";
-				done(DIED);
+/*JP				killer = "touch of death";*/
+				killer = "死の宣告で";
+				done(DIED2);
 			    }
 			} else {
 				if(Antimagic) shieldeff(u.ux, u.uy);
-				pline("Lucky for you, it didn't work!");
+/*JP				pline("Lucky for you, it didn't work!");*/
+				pline("運のよいことになんともなかった！");
 			}
 			dmg = 0;
 			break;
 		    case 19:
 		    case 18:
 			if(mtmp->iswiz && flags.no_of_wizards == 1) {
-				pline("Double Trouble...");
+/*JP				pline("Double Trouble...");*/
+				pline("二重苦だ．．．");
 				clonewiz();
 				dmg = 0;
 				break;
@@ -137,7 +165,8 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 		    case 16:
 		    case 15:
 			if(mtmp->iswiz)
-			    verbalize("Destroy the thief, my pets!");
+/*JP			    verbalize("Destroy the thief, my pets!");*/
+			    verbalize("盗賊を殺せ！下僕よ！");
 			nasty(mtmp);	/* summon something nasty */
 			/* fall into the next case */
 		    case 14:		/* aggravate all monsters */
@@ -155,18 +184,22 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 		    case 8:		/* destroy armor */
 			if (Antimagic) {
 				shieldeff(u.ux, u.uy);
-				pline("A field of force surrounds you!");
+/*JP				pline("A field of force surrounds you!");*/
+				pline("不思議な力があなたをとりかこんだ！");
 			} else if(!destroy_arm(some_armor()))
-				Your("skin itches.");
+/*JP				Your("skin itches.");*/
+				Your("皮膚はムズムズした．");
 			dmg = 0;
 			break;
 		    case 7:
 		    case 6:		/* drain strength */
 			if(Antimagic) {
 			    shieldeff(u.ux, u.uy);
-			    You("feel momentarily weakened.");
+/*JP			    You("feel momentarily weakened.");*/
+			    You("一瞬弱くなったような気がした．");
 			} else {
-			    You("suddenly feel weaker!");
+/*JP			    You("suddenly feel weaker!");*/
+			    You("突然弱くなったような気がした．");
 			    dmg = ml - 6;
 			    if(Half_spell_damage) dmg = (dmg+1) / 2;
 			    losestr(rnd(dmg));
@@ -179,7 +212,8 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 		    case 4:
 			if(!mtmp->minvis) {
 			    if(canseemon(mtmp) && !See_invisible)
-				pline("%s suddenly disappears!",
+/*JP				pline("%s suddenly disappears!",*/
+				pline("%sは突然消えた！",
 				      Monnam(mtmp));
 			    mtmp->minvis = 1;
 			    newsym(mtmp->mx,mtmp->my);
@@ -190,13 +224,16 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 			if(Antimagic) {
 			    shieldeff(u.ux, u.uy);
 			    if(!Stunned)
-				You("feel momentarily disoriented.");
+/*JP				You("feel momentarily disoriented.");*/
+				You("一瞬方向感覚を失った．");
 			    make_stunned(1L, FALSE);
 			} else {
 			    if (Stunned)
-				You("struggle to keep your balance.");
+/*JP				You("struggle to keep your balance.");*/
+				You("バランスを取ろうともがいた．");
 			    else
-				You("reel...");
+/*JP				You("reel...");*/
+				You("よろめいた．．．");
 			    dmg = d(ACURR(A_DEX) < 12 ? 6 : 4, 4);
 			    if(Half_spell_damage) dmg = (dmg+1) / 2;
 			    make_stunned(HStun + dmg, FALSE);
@@ -218,12 +255,15 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 		    default:		/* psi bolt */
 			if(Antimagic) {
 			    shieldeff(u.ux, u.uy);
-			    You("get a slight %sache.",body_part(HEAD));
+/*JP			    You("get a slight %sache.",body_part(HEAD));*/
+			    You("ちょっと%s痛がした．",body_part(HEAD));
 			    dmg = 1;
 			} else {
 			    if (dmg <= 10)
-				Your("brain is on fire!");
-			    else Your("%s suddenly aches!", body_part(HEAD));
+/*JP				Your("brain is on fire!");*/
+			      You("怒りにつつまれた！");
+/*JP			    else Your("%s suddenly aches!", body_part(HEAD));*/
+			    else Your("%sは突然痛みを感じた！", body_part(HEAD));
 			}
 			break;
 		}
@@ -240,7 +280,8 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 		    default:		/* confuse */
 			if(Antimagic) {
 			    shieldeff(u.ux, u.uy);
-			    You("feel momentarily dizzy.");
+/*JP			    You("feel momentarily dizzy.");*/
+			    You("一瞬めまいがした．");
 			} else {
 			    dmg = (int)mtmp->m_lev;
 			    if(Half_spell_damage) dmg = (dmg+1) / 2;
@@ -277,7 +318,8 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 		    case 6:
 		    case 7:		/* blindness */
 			if (!Blinded) {
-			    pline("Scales cover your eyes!");
+/*JP			    pline("Scales cover your eyes!");*/
+			    pline("鱗があなたの目を覆った！");
 			    make_blinded(Half_spell_damage ? 100L:200L, FALSE);
 			    dmg = 0;
 			    break;
@@ -286,10 +328,12 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 		    case 5:		/* wound */
 			if(Antimagic) {
 			    shieldeff(u.ux, u.uy);
-			    Your("skin itches badly for a moment.");
+/*JP			    Your("skin itches badly for a moment.");*/
+			    Your("皮膚は一瞬，ムスムスっとした．");
 			    dmg = 0;
 			} else {
-			    pline("Wounds appear on your body!");
+/*JP			    pline("Wounds appear on your body!");*/
+			    pline("傷があなたの体に出来た！");
 			    dmg = d(2,8) + 1;
 			    if (Half_spell_damage) dmg = (dmg+1) / 2;
 			}
@@ -298,11 +342,13 @@ castmu(mtmp, mattk)	/* monster casts spell at you */
 			if(Antimagic) {
 			    shieldeff(u.ux, u.uy);
 			    if(multi >= 0)
-				You("stiffen briefly.");
+/*JP				You("stiffen briefly.");*/
+				You("ちょっと固くなった．");
 			    nomul(-1);
 		 	} else {
 			    if (multi >= 0)	
-			        You("are frozen in place!");
+/*JP			        You("are frozen in place!");*/
+			        You("その場で動けなくなった！");
 			    dmg = 4 + (int)mtmp->m_lev;
 			    if (Half_spell_damage) dmg = (dmg+1) / 2;
 			    nomul(-dmg);
@@ -342,7 +388,8 @@ buzzmu(mtmp, mattk)		/* monster uses spell (ranged) */
 	    nomul(0);
 	    if(mattk->adtyp && (mattk->adtyp < 11)) { /* no cf unsigned >0 */
 		if(canseemon(mtmp))
-		    pline("%s zaps you with a %s!", Monnam(mtmp),
+/*JP		    pline("%s zaps you with a %s!", Monnam(mtmp),*/
+		    pline("%sは%sをあなたに向けて放った．", Monnam(mtmp),
 			  flash_types[ad_to_typ(mattk->adtyp)]);
 		buzz(-ad_to_typ(mattk->adtyp), (int)mattk->damn,
 		     mtmp->mx, mtmp->my, sgn(tbx), sgn(tby));

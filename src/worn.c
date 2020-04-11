@@ -2,6 +2,12 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright (c) Issei Numata 1994 
+**	changing point is marked `JP' (94/1/6)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 static void FDECL(rel_1_obj, (struct monst *,struct obj *));
@@ -156,7 +162,8 @@ boolean creation;
 		if (mon->misc_worn_check & flag) continue;
 			/* already wearing one */
 		if (!creation && canseemon(mon)) {
-			pline("%s puts on %s.", Monnam(mon),
+/*JP			pline("%s puts on %s.", Monnam(mon),*/
+			pline("%sは%sを身につけた．", Monnam(mon),
 						distant_name(obj, doname));
 			mon->mfrozen = objects[obj->otyp].oc_delay;
 			if (mon->mfrozen) mon->mcanmove = 0;
@@ -208,30 +215,36 @@ struct monst *mon;
 	register struct obj *otmp;
 	struct permonst *mdat = mon->data;
 	boolean vis = cansee(mon->mx, mon->my);
+/*JP
 	const char *pronoun = him[pronoun_gender(mon)],
-			*ppronoun = his[pronoun_gender(mon)];
+			*ppronoun = his[pronoun_gender(mon)];*/
 
 	if (breakarm(mdat)) {
 	    if ((otmp = which_armor(mon, W_ARM)) != 0) {
 		if (vis)
-		    pline("%s breaks out of %s armor!", Monnam(mon), ppronoun);
+/*JP		    pline("%s breaks out of %s armor!", Monnam(mon), ppronoun);*/
+		    pline("%sは鎧をやぶり出た！", Monnam(mon));
 		else
-		    You("hear a cracking sound.");
+/*JP		    You("hear a cracking sound.");*/
+		    You("バリバリと言う音を聞いた．");
 		mon->misc_worn_check &= ~W_ARM;
 		m_useup(mon, otmp);
 	    }
 	    if ((otmp = which_armor(mon, W_ARMC)) != 0) {
 		if (otmp->oartifact) {
 		    if (vis)
-			pline("%s cloak falls off!", s_suffix(Monnam(mon)));
+/*JP			pline("%s cloak falls off!", s_suffix(Monnam(mon)));*/
+			pline("%sのクロークは落ちた！", s_suffix(Monnam(mon)));
 		    mon->misc_worn_check &= ~W_ARMC;
 		    otmp->owornmask &= ~W_ARMC;
 		    rel_1_obj(mon, otmp);
 		} else {
 		    if (vis)
-			pline("%s cloak tears apart!", s_suffix(Monnam(mon)));
+/*JP			pline("%s cloak tears apart!", s_suffix(Monnam(mon)));*/
+			pline("%sのクロークはずたずたになった！", s_suffix(Monnam(mon)));
 		    else
-			You("hear a ripping sound.");
+/*JP			You("hear a ripping sound.");*/
+			You("ビリッと言う音を聞いた．");
 		    mon->misc_worn_check &= ~W_ARMC;
 		    m_useup(mon, otmp);
 		}
@@ -239,9 +252,11 @@ struct monst *mon;
 # ifdef TOURIST
 	    if ((otmp = which_armor(mon, W_ARMU)) != 0) {
 		if (vis)
-		    pline("%s shirt rips to shreds!", s_suffix(Monnam(mon)));
+/*JP		    pline("%s shirt rips to shreds!", s_suffix(Monnam(mon)));*/
+		    pline("%sのシャツはずたずたになった！", s_suffix(Monnam(mon)));
 		else
-		    You("hear a ripping sound.");
+/*JP		    You("hear a ripping sound.");*/
+		    You("ビリッと言う音を聞いた．");
 		mon->misc_worn_check &= ~W_ARMU;
 		m_useup(mon, otmp);
 	    }
@@ -249,10 +264,13 @@ struct monst *mon;
         } else if (sliparm(mdat)) {
 	    if ((otmp = which_armor(mon, W_ARM)) != 0) {
 		if (vis)
-		    pline("%s armor falls around %s!", 
-			         s_suffix(Monnam(mon)), pronoun);
+/*JP		    pline("%s armor falls around %s!",
+			         s_suffix(Monnam(mon)), pronoun);*/
+		    pline("%sの鎧が回りに落ちた！", 
+			         s_suffix(Monnam(mon)));
 		else
-		    You("hear a thud.");
+/*JP		    You("hear a thud.");*/
+		    You("ドシンと言う音を聞いた．");
 		mon->misc_worn_check &= ~W_ARM;
 		otmp->owornmask &= ~W_ARM;
 		rel_1_obj(mon, otmp);
@@ -260,11 +278,13 @@ struct monst *mon;
 	    if ((otmp = which_armor(mon, W_ARMC)) != 0) {
 		if (vis)
 		    if (is_whirly(mon->data))
-			pline("%s cloak falls, unsupported!", 
+/*JP			pline("%s cloak falls, unsupported!", */
+			pline("%sのクロークは支えきれずに落ちた！", 
 			             s_suffix(Monnam(mon)));
 		    else
-			pline("%s shrinks out of %s cloak!", Monnam(mon),
-								ppronoun);
+/*JP			pline("%s shrinks out of %s cloak!", Monnam(mon),
+								ppronoun);*/
+			pline("%sはクロークより縮んだ！", Monnam(mon));
 		mon->misc_worn_check &= ~W_ARMC;
 		otmp->owornmask &= ~W_ARMC;
 		rel_1_obj(mon, otmp);
@@ -273,11 +293,15 @@ struct monst *mon;
 	    if ((otmp = which_armor(mon, W_ARMU)) != 0) {
 		if (vis)
 		    if (sliparm(mon->data))
-			pline("%s seeps right through %s shirt!",
-					Monnam(mon), ppronoun);
+/*JP			pline("%s seeps right through %s shirt!",
+					Monnam(mon), ppronoun);*/
+			pline("%sは自分のシャツにしみ込んだ！",
+					Monnam(mon));
 		    else
-			pline("%s becomes much too small for %s shirt!",
-					Monnam(mon), ppronoun);
+/*JP			pline("%s becomes much too small for %s shirt!",
+					Monnam(mon), ppronoun);*/
+			pline("%sは自分のシャツよりずっと小さくなった！",
+					Monnam(mon));
 		mon->misc_worn_check &= ~W_ARMU;
 		otmp->owornmask &= ~W_ARMU;
 		rel_1_obj(mon, otmp);
@@ -287,8 +311,10 @@ struct monst *mon;
 	if (nohands(mdat) || verysmall(mdat)) {
 	    if ((otmp = which_armor(mon, W_ARMG)) != 0) {
 		if (vis)
-		    pline("%s drops %s gloves%s!", Monnam(mon), ppronoun,
-					MON_WEP(mon) ? " and weapon" : "");
+/*JP		    pline("%s drops %s gloves%s!", Monnam(mon), ppronoun,
+					MON_WEP(mon) ? " and weapon" : "");*/
+		    pline("%sは小手%sを落した！", Monnam(mon), 
+					MON_WEP(mon) ? "と武器" : "");
 		possibly_unwield(mon);
 		mon->misc_worn_check &= ~W_ARMG;
 		otmp->owornmask &= ~W_ARMG;
@@ -296,20 +322,24 @@ struct monst *mon;
 	    }
 	    if ((otmp = which_armor(mon, W_ARMS)) != 0) {
 		if (vis)
-		    pline("%s can no longer hold %s shield!", Monnam(mon),
-								ppronoun);
+/*JP		    pline("%s can no longer hold %s shield!", Monnam(mon),
+								ppronoun);*/
+		    pline("%sはもはや盾を持つことができない！", Monnam(mon));
 		else
-		    You("hear a clank.");
+/*JP		    You("hear a clank.");*/
+		    You("ガチャンと言う音を聞いた．");
 		mon->misc_worn_check &= ~W_ARMS;
 		otmp->owornmask &= ~W_ARMS;
 		rel_1_obj(mon, otmp);
 	    }
 	    if ((otmp = which_armor(mon, W_ARMH)) != 0) {
 		if (vis)
-		    pline("%s helmet falls to the %s!", 
+/*JP		    pline("%s helmet falls to the %s!", */
+		    pline("%sの兜は%sへ落ちた！", 
 			  s_suffix(Monnam(mon)), surface(mon->mx, mon->my));
 		else
-		    You("hear a clank.");
+/*JP		    You("hear a clank.");*/
+		    You("ガチャンと言う音を聞いた．");
 		mon->misc_worn_check &= ~W_ARMH;
 		otmp->owornmask &= ~W_ARMH;
 		rel_1_obj(mon, otmp);
@@ -320,11 +350,14 @@ struct monst *mon;
 	    if ((otmp = which_armor(mon, W_ARMF)) != 0) {
 		if (vis) {
 		    if (is_whirly(mon->data))
-			pline("%s boots fall away!", 
+/*JP			pline("%s boots fall away!", */
+			pline("%sの靴は脱げ落ちた！", 
 			               s_suffix(Monnam(mon)));
-		    else pline("%s boots %s off %s feet!", 
+/*JP		    else pline("%s boots %s off %s feet!", */
+		    else pline("%sの靴は足から%s！", 
 			s_suffix(Monnam(mon)),
-			verysmall(mdat) ? "slide" : "are pushed", ppronoun);
+/*JP			verysmall(mdat) ? "slide" : "are pushed");*/
+			verysmall(mdat) ? "滑り落ちた" : "引っぱられた");
 		}
 		mon->misc_worn_check &= ~W_ARMF;
 		otmp->owornmask &= ~W_ARMF;

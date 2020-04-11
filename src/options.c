@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #ifdef OPTION_LISTS_ONLY	/* want option lists for external program */
 #include "config.h"
 #include "objclass.h"
@@ -138,6 +145,7 @@ static struct Comp_Opt
 {
 	const char *name, *descr;
 } compopt[] = {
+#if 0 /*JP*/
 	{ "catname",  "the name of your (first) cat (e.g., catname:Tabby)," },
 	{ "disclose", "the kinds of information to disclose at end of game," },
 	{ "dogname",  "the name of your (first) dog (e.g., dogname:Fang)," },
@@ -164,6 +172,36 @@ static struct Comp_Opt
 	{ "videoshades", "gray shades to map to black/gray/white," },
 #endif
 	{ "windowtype", "windowing system to use." },
+	{ NULL, NULL }
+#endif /*JP*/
+	{ "catname",  "最初に冒険を供にする猫の名前 (例 catname:タマ)," },
+	{ "disclose", "ゲーム終了時に見る情報のタイプ,"},
+	{ "dogname",  "最初に冒険を供にする犬の名前 (例 dogname:ポチ)," },
+#ifdef TUTTI_FRUTTI
+	{ "fruit",    "好物の食べ物," },
+#endif
+	{ "graphics", "迷宮の地図を描くのに使う記号", },
+	{ "monsters", "怪物に使用する記号," },
+	{ "msghistory", "セーブする先頭行の数," },
+	{ "name",     "キャラクターの名前 (例 name:ホイミン)," },
+	{ "objects",  "物体に使用する記号," },
+	{ "packorder", "アイテム一覧の順番," },
+#ifdef CHANGE_COLOR
+	{ "palette",  "パレット(00c/880/-fff は，青/黄/白の反転)," },
+# if defined(MAC)
+	{ "hicolor",  "パレットと同じだが反転のみ," },
+# endif
+#endif
+	{ "pettype",  "最初のペットの種類," },
+	{ "pickup_types", "自動で拾う物体の種類," },
+	{ "scores",   "ゲームの最後に見るスコアの種類," },
+#ifdef VIDEOSHADES
+	{ "videocolors", "color mappings for internal screen routines," },
+	{ "videoshades", "gray shades to map to black/gray/white," },
+#endif
+	{ "windowtype", "使用するウィンドウシステム," },
+/*JP*/
+	{ "kcode","端末の漢字コード," },
 	{ NULL, NULL }
 };
 
@@ -203,6 +241,7 @@ void
 initoptions()
 {
 	register char *opts;
+	char jopts[BUFSIZ];
 	int i;
 
 	for (i = 0; boolopt[i].name; i++) {
@@ -264,14 +303,18 @@ initoptions()
 #endif
 	opts = getenv("NETHACKOPTIONS");
 	if (!opts) opts = getenv("HACKOPTIONS");
+/*JP*/
 	if (opts) {
+/* becouse str2ic() has side effects. */
+		Strcpy(jopts, str2ic(opts));
 		if (*opts == '/' || *opts == '\\' || *opts == '@') {
 			if (*opts == '@') opts++;	/* @filename */
 			/* looks like a filename */
 			read_config_file(opts);
 		} else {
 			read_config_file(NULL);
-			parseoptions(opts, TRUE, FALSE);
+/*JP			parseoptions(opts, TRUE, FALSE);*/
+			parseoptions(jopts, TRUE, FALSE);
 		}
 	} else {
 		read_config_file(NULL);
@@ -384,7 +427,8 @@ const char *optname;
 # endif
 		pline("\"%s\" settable only from %s.", optname, configfile);
 #else
-	pline("%s can be set only from NETHACKOPTIONS or %s.", optname,
+/*JP	pline("%s can be set only from NETHACKOPTIONS or %s.", optname,*/
+	pline("%sは NETHACKOPTIONSか %sでないと設定できない．", optname,
 			configfile);
 #endif
 }
@@ -396,9 +440,10 @@ const char *opts;
 	if (!initial) {
 	    if (!strncmp(opts, "h", 1) || !strncmp(opts, "?", 1))
 		option_help();
-	    else
-		pline("Bad syntax: %s.  Enter \"?g\" for help.", opts);
-	    return;
+	    else	
+/*JP		pline("Bad syntax: %s.  Enter \"?g\" for help.", opts);*/
+		pline("%s:オプションエラー！ヘルプを見るには\"?g\"とタイプせよ．", opts);
+    return;
 	}
 # ifdef AMIGA
 	if(ami_wbench_badopt(opts)) {
@@ -418,6 +463,7 @@ string_for_opt(opts, val_optional)
 char *opts;
 boolean val_optional;
 {
+	char *jopt,*p;  
 	register char *colon;
 
 	colon = index(opts, ':');
@@ -425,7 +471,18 @@ boolean val_optional;
 		if (!val_optional) badoption(opts);
 		return NULL;
 	}
-	return ++colon;
+/*	return ++colon;*/
+/*JP*/
+	++colon;
+	p = jopt = (char *)malloc(strlen(colon)+1);
+	while(*colon){
+	  if(*colon > 0 && *colon < 0x20)
+	    ++colon;
+	  else
+	    *(p++) = *(colon++);
+	}
+	*p = '\0';
+	return jopt;
 }
 
 static char *
@@ -497,9 +554,11 @@ boolean tinitial, tfrom_file;
 	}
 
 	/* strip leading and trailing white space */
-	while (isspace(*opts)) opts++;
+/*JP	while (isspace(*opts)) opts++;*/
+	while (isspace_8(*opts)) opts++;
 	op = eos(opts);
-	while (--op >= opts && isspace(*op)) *op = '\0';
+/*JP	while (--op >= opts && isspace(*op)) *op = '\0';*/
+	while (--op >= opts && isspace_8(*op)) *op = '\0';
 
 	if (!*opts) return;
 	negated = FALSE;
@@ -878,6 +937,13 @@ goodfruit:
 	    }
 	    return;
 	}
+/*JP*/
+	if (!strncmpi(opts, "kcode", 3)){
+	  if ((op = string_for_env_opt("kcode", opts, FALSE)) != 0){
+	    setkcode(*op);
+	  }
+	  return;
+	}
 
 	/* OK, if we still haven't recognized the option, check the boolean
 	 * options list
@@ -1033,7 +1099,8 @@ doset()
 	int i;
 	winid tmpwin;
 
-	switch (yn_function("Show the current settings [c], or set options [s]?",
+/*JP	switch (yn_function("Show the current settings [c], or set options [s]?",*/
+	switch (yn_function("現在の設定を見る[c]，オプションを設定する[s]?",
 			    "csq", 'q')) {
 	default:
 	case 'q':
@@ -1112,7 +1179,8 @@ doset()
 	    break;
 	case 's':
 	    clear_nhwindow(WIN_MESSAGE);
-	    getlin("What options do you want to set?", buf);
+/*JP	    getlin("What options do you want to set?", buf);*/
+	    getlin("どのオプションをセットする？", buf);
 	    if(buf[0] == '\033') return 0;
 	    need_redraw = FALSE;
 	    parseoptions(buf, FALSE, FALSE);
@@ -1148,22 +1216,31 @@ static const char *opt_intro[] = {
 #define CONFIG_SLOT 3	/* fill in next value at run-time */
 	NULL,
 #if !defined(MICRO) && !defined(MAC)
-	"or use `NETHACKOPTIONS=\"<options>\"' in your environment;",
+/*JP	"or use `NETHACKOPTIONS=\"<options>\"' in your environment;",*/
+	"または，環境変数，`NETHACKOPTIONS=\"<options>\"'を設定する．",
 # ifdef VMS
 	"-- for example, $ DEFINE NETHACKOPTIONS \"noautopickup,fruit:kumquat\"",
 # endif
 #endif
-	"or press \"O\" while playing, and type your <options> at the prompt.",
+/*JP	"or press \"O\" while playing, and type your <options> at the prompt.",
 	"In all cases, <options> is a list of options separated by commas.",
+*/
+	"またはゲーム中\"O\"コマンドでオプションを設定する．",
+	"全ての場合オプションはカンマで区切って設定する．",
 	"",
- "Boolean options (which can be negated by prefixing them with '!' or \"no\"):",
+/*JP "Boolean options (which can be negated by prefixing them with '!' or \"no\"):",*/
+ "真偽オプション(頭に'!'または\"no\"をつけることにより偽になる):",
 	NULL
 };
 
 static const char *opt_epilog[] = {
 	"",
+/*JP
  "Some of the options can be set only before the game is started.  You will",
 	"be so informed, if you attempt to set them while in the game.",
+*/
+        "いくつかのオプションはゲームスタート時にしか設定できない．",
+	"ゲーム中にセットしようとするとその旨のメッセージがでる．",
 	NULL
 };
 
@@ -1180,7 +1257,8 @@ option_help()
 	Sprintf(buf,"Set options as OPTIONS= in %s or in icon;",configfile);
     } else
 #endif
-	Sprintf(buf, "Set options as OPTIONS=<options> in %s;", configfile);
+/*JP	Sprintf(buf, "Set options as OPTIONS=<options> in %s;", configfile);*/
+	Sprintf(buf, "%sファイル内で，OPTIONS=<options>のように設定する．", configfile);
     opt_intro[CONFIG_SLOT] = (const char *) buf;
     for (i = 0; opt_intro[i]; i++)
 	putstr(datawin, 0, opt_intro[i]);
@@ -1193,7 +1271,8 @@ option_help()
     next_opt(datawin, "");
 
     /* Compound options */
-    putstr(datawin, 0, "Compound options:");
+/*JP    putstr(datawin, 0, "Compound options:");*/
+    putstr(datawin, 0, "パラメータつきオプション:");
     for (i = 0; compopt[i].name; i++) {
 	Sprintf(buf2, "`%s'", compopt[i].name);
 	Sprintf(buf, "%-14s - %s", buf2, compopt[i].descr);

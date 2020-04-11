@@ -2,6 +2,13 @@
 /*	Copyright (C) 1987, 1988, 1989 by Ken Arromdee */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 /* Polymorph self routine. */
 
 #include "hack.h"
@@ -105,12 +112,15 @@ newman()
 		    if (u.uhpmax <= 0) u.uhpmax = 1;
 		} else {
 #endif
-		    Your("new form doesn't seem healthy enough to survive.");
+/*JP		    Your("new form doesn't seem healthy enough to survive.");*/
+		    Your("新しい姿は生きてくだけの力がないようだ．");
 		    killer_format = KILLED_BY_AN;
-		    killer="unsuccessful polymorph";
-		    done(DIED);
-		    pline("Revived, you are in just as bad a shape as before.");
-		    done(DIED);
+/*JP		    killer="unsuccessful polymorph";*/
+		    killer="変化の失敗で";
+		    done(DIED2);
+/*JP		    pline("Revived, you are in just as bad a shape as before.");*/
+		    pline("生きかえったが，あなたは生前とかわらぬ酷い格好だ．");
+		    done(DIED2);
 #ifdef POLYSELF
 		}
 #endif
@@ -118,8 +128,10 @@ newman()
 #ifdef POLYSELF
 	polyman();
 #endif
-	You("feel like a new %s!",
-	    pl_character[0] == 'E' ? "elf" : flags.female ? "woman" : "man");
+/*JP	You("feel like a new %s!",
+	    pl_character[0] == 'E' ? "elf" : flags.female ? "woman" : "man");*/
+	You("別の%sになったような気がした！", 
+	    pl_character[0] == 'E' ? "エルフ" : flags.female ? "女" : "男");
 	flags.botl = 1;
 	(void) encumber_msg();
 }
@@ -141,7 +153,8 @@ polyself()
 	if(!Polymorph_control && !draconian && !iswere && !isvamp) {
 	    if (rn2(20) > ACURR(A_CON)) {
 		You(shudder_for_moment);
-		losehp(rn2(30),"system shock", KILLED_BY_AN);
+/*JP		losehp(rn2(30),"system shock", KILLED_BY_AN);*/
+		losehp(rn2(30),"システムショックで", KILLED_BY_AN);
 		exercise(A_CON, FALSE);
 		return;
 	    }
@@ -149,18 +162,22 @@ polyself()
 
 	if (Polymorph_control) {
 		do {
-			getlin("Become what kind of monster? [type the name]",
+/*JP			getlin("Become what kind of monster? [type the name]",
+				buf);*/
+			getlin("どの種の怪物になる？[英語名を入れてね]",
 				buf);
 			mntmp = name_to_mon(buf);
 			if (mntmp < 0)
-				pline("I've never heard of such monsters.");
+/*JP				pline("I've never heard of such monsters.");*/
+				pline("そんな怪物は聞いたことがない．");
 			/* Note:  humans are illegal as monsters, but an
 			 * illegal monster forces newman(), which is what we
 			 * want if they specified a human.... */
 			else if (!polyok(&mons[mntmp]) &&
 			    ((pl_character[0] == 'E') ? !is_elf(&mons[mntmp])
 						: !is_human(&mons[mntmp])) )
-				You("cannot polymorph into that.");
+/*JP				You("cannot polymorph into that.");*/
+				You("それになることはできない．");
 			else break;
 		} while(++tries < 5);
 		if (tries==5) pline(thats_enough_tries);
@@ -175,7 +192,8 @@ polyself()
 			mntmp = armor_to_dragon(uarm->otyp);
 			if (!(mons[mntmp].geno & G_GENOD)) {
 				/* allow G_EXTINCT */
-				You("merge with your scaly armor.");
+/*JP				You("merge with your scaly armor.");*/
+				You("鱗の鎧と一体化した．");
 				uskin = uarm;
 				uarm = (struct obj *)0;
 			}
@@ -209,7 +227,8 @@ polyself()
 		newman();
 	else if(!polymon(mntmp)) return;
 
-	if (!uarmg) selftouch("No longer petrify-resistant, you");
+/*JP	if (!uarmg) selftouch("No longer petrify-resistant, you");*/
+	if (!uarmg) selftouch("もう，石化抵抗力はあなたにない");
 }
 
 /* (try to) make a mntmp monster out of the player */
@@ -222,7 +241,8 @@ int	mntmp;
 	int	tmp;
 
 	if (mons[mntmp].geno & G_GENOD) {	/* allow G_EXTINCT */
-		You("feel rather %s-ish.",mons[mntmp].mname);
+/*JP		You("feel rather %s-ish.",mons[mntmp].mname);*/
+		You("%sっぽくなったような気がした",jtrns_mon(mons[mntmp].mname));
 		exercise(A_WIS, TRUE);
 		return(0);
 	}
@@ -250,15 +270,21 @@ int	mntmp;
 	}
 	if (dochange) {
 		flags.female = !flags.female;
-		You("%s %s %s!",
+/*JP		You("%s %s %s!",
 		    (u.umonnum != mntmp) ? "turn into a" : "feel like a new",
 		    flags.female ? "female" : "male",
-		    mons[mntmp].mname);
+		    mons[mntmp].mname);*/
+		You("%sの%s%s！",
+		    flags.female ? "女" : "男",
+		    jtrns_mon(mons[mntmp].mname),
+		    (u.umonnum != mntmp) ? "になった．" : "になったような気がした");
 	} else {
 		if (u.umonnum != mntmp)
-			You("turn into %s!", an(mons[mntmp].mname));
+/*JP			You("turn into %s!", an(mons[mntmp].mname));*/
+			You("%sになった！", jtrns_mon(mons[mntmp].mname));
 		else
-			You("feel like a new %s!", mons[mntmp].mname);
+/*JP			You("feel like a new %s!", mons[mntmp].mname);*/
+			You("別の%sになったような気がした！", jtrns_mon(mons[mntmp].mname));
 	}
 
 	u.umonnum = mntmp;
@@ -272,11 +298,13 @@ int	mntmp;
 
 	if (resists_ston(uasmon) && Stoned) { /* parnes@eniac.seas.upenn.edu */
 		Stoned = 0;
-		You("no longer seem to be petrifying.");
+/*JP		You("no longer seem to be petrifying.");*/
+		You("もう石化から解放されたようだ．");
 	}
 	if (u.usym == S_FUNGUS && Sick) {
 		make_sick(0L, FALSE);
-		You("no longer feel sick.");
+/*JP		You("no longer feel sick.");*/
+		You("病気から解放されたようだ．");
 	}
 
 	if (u.usym == S_DRAGON && mntmp >= PM_GRAY_DRAGON)
@@ -325,32 +353,46 @@ int	mntmp;
 	else if (sticky && !sticks(uasmon)) uunstick();
 
 	if (flags.verbose) {
-	    static const char use_thec[] = "Use the command #%s to %s.";
+/*JP	    static const char use_thec[] = "Use the command #%s to %s.";
+	    static const char monsterc[] = "monster";*/
+	    static const char use_thec[] = "#%sコマンドで%sことができる．";
 	    static const char monsterc[] = "monster";
 	    if (can_breathe(uasmon))
-		pline(use_thec,monsterc,"use your breath weapon");
+/*JP		pline(use_thec,monsterc,"use your breath weapon");*/
+		pline(use_thec,monsterc,"息を吐きかける");
 	    if (attacktype(uasmon, AT_SPIT))
-		pline(use_thec,monsterc,"spit venom");
+/*JP		pline(use_thec,monsterc,"spit venom");*/
+		pline(use_thec,monsterc,"毒を吐く");
 	    if (u.usym == S_NYMPH)
-		pline(use_thec,monsterc,"remove an iron ball");
+/*JP		pline(use_thec,monsterc,"remove an iron ball");*/
+		pline(use_thec,monsterc,"鉄球をはずす");
 	    if (u.usym == S_UMBER)
-		pline(use_thec,monsterc,"confuse monsters");
+/*JP		pline(use_thec,monsterc,"confuse monsters");*/
+		pline(use_thec,monsterc,"怪物を混乱させる");
 	    if (is_hider(uasmon))
-		pline(use_thec,monsterc,"hide");
+/*JP		pline(use_thec,monsterc,"hide");*/
+		pline(use_thec,monsterc,"隠れる");
 	    if (is_were(uasmon))
-		pline(use_thec,monsterc,"summon help");
+/*JP		pline(use_thec,monsterc,"summon help");*/
+		pline(use_thec,monsterc,"仲間を召喚する");
 	    if (webmaker(uasmon))
-		pline(use_thec,monsterc,"spin a web");
+/*JP		pline(use_thec,monsterc,"spin a web");*/
+		pline(use_thec,monsterc,"蜘蛛の巣を張る");
 	    if (u.umonnum == PM_GREMLIN)
-		pline(use_thec,monsterc,"multiply in a fountain");
+/*JP		pline(use_thec,monsterc,"multiply in a fountain");*/
+		pline(use_thec,monsterc,"泉の中で分裂する");
 	    if (u.usym == S_UNICORN)
-		pline(use_thec,monsterc,"use your horn");
+/*JP		pline(use_thec,monsterc,"use your horn");*/
+		pline(use_thec,monsterc,"角を使う");
 	    if (u.umonnum == PM_MIND_FLAYER)
-		pline(use_thec,monsterc,"emit a mental blast");
+/*JP		pline(use_thec,monsterc,"emit a mental blast");*/
+		pline(use_thec,monsterc,"精神波を発生させる");
 	    if (uasmon->msound == MS_SHRIEK) /* worthless, actually */
-		pline(use_thec,monsterc,"shriek");
+/*JP		pline(use_thec,monsterc,"shriek");*/
+		pline(use_thec,monsterc,"金切り声をあげる");
 	    if ((lays_eggs(uasmon) || u.umonnum==PM_QUEEN_BEE) && flags.female)
-		pline(use_thec,"sit","lay an egg");
+/*JP		pline(use_thec,"sit","lay an egg");*/
+		pline(use_thec,"座る","卵を産む");
 	}
 	find_ac();
 	if((!Levitation && !u.ustuck && !is_flyer(uasmon) &&
@@ -359,10 +401,12 @@ int	mntmp;
 	    spoteffects();
 	if (passes_walls(uasmon) && u.utrap && u.utraptype == TT_INFLOOR) {
 	    u.utrap = 0;
-	    pline("The rock seems to no longer trap you.");
+/*JP	    pline("The rock seems to no longer trap you.");*/
+	    pline("もう岩はあなたを閉じ込めないようだ．");
 	}
 	if ((amorphous(uasmon) || is_whirly(uasmon)) && Punished) {
-	    You("slip out of the iron chain.");
+/*JP	    You("slip out of the iron chain.");*/
+	    You("鉄球から解放された．");
 	    unpunish();
 	}
 	flags.botl = 1;
@@ -381,47 +425,56 @@ break_armor()
     if (breakarm(uasmon)) {
 	if ((otmp = uarm) != 0) {
 		if (donning(otmp)) cancel_don();
-		You("break out of your armor!");
+/*JP		You("break out of your armor!");*/
+		You("鎧を壊しやぶった！");
 		exercise(A_STR, FALSE);
 		(void) Armor_gone();
 		useup(otmp);
 	}
 	if ((otmp = uarmc) != 0) {
 	    if(otmp->oartifact) {
-		Your("cloak falls off!");
+/*JP		Your("cloak falls off!");*/
+		Your("クロークは脱げ落ちた！");
 		(void) Cloak_off();
 		dropx(otmp);
 	    } else {
-		Your("cloak tears apart!");
+/*JP		Your("cloak tears apart!");*/
+		Your("クロークはずたずたに引き裂かれた！");
 		(void) Cloak_off();
 		useup(otmp);
 	    }
 	}
 #ifdef TOURIST
 	if (uarmu) {
-		Your("shirt rips to shreds!");
+/*JP		Your("shirt rips to shreds!");*/
+		Your("シャツは引き裂かれた！");
 		useup(uarmu);
 	}
 #endif
     } else if (sliparm(uasmon)) {
 	if ((otmp = uarm) != 0) {
 		if (donning(otmp)) cancel_don();
-		Your("armor falls around you!");
+/*JP		Your("armor falls around you!");*/
+		Your("鎧はあなたのまわりに落ちた！");
 		(void) Armor_gone();
 		dropx(otmp);
 	}
 	if ((otmp = uarmc) != 0) {
 		if (is_whirly(uasmon))
-			Your("cloak falls, unsupported!");
-		else You("shrink out of your cloak!");
+/*JP			Your("cloak falls, unsupported!");*/
+			Your("クロークはすーっと落ちた！");
+/*JP		else You("shrink out of your cloak!");*/
+		else You("クロークから縮み出た！");
 		(void) Cloak_off();
 		dropx(otmp);
 	}
 #ifdef TOURIST
 	if ((otmp = uarmu) != 0) {
 		if (is_whirly(uasmon))
-			You("seep right through your shirt!");
-		else You("become much too small for your shirt!");
+/*JP			You("seep right through your shirt!");*/
+			You("シャツからしみ出た！");
+/*JP		else You("become much too small for your shirt!");*/
+		else You("シャツよりずっと小さくなった！");
 		setworn((struct obj *)0, otmp->owornmask & W_ARMU);
 		dropx(otmp);
 	}
@@ -431,19 +484,22 @@ break_armor()
 	if ((otmp = uarmg) != 0) {
 	    if (donning(otmp)) cancel_don();
 	    /* Drop weapon along with gloves */
-	    You("drop your gloves%s!", uwep ? " and weapon" : "");
+/*JP	    You("drop your gloves%s!", uwep ? " and weapon" : "");*/
+	    You("小手%sを落した！", uwep ? "や武器" : "");
 	    drop_weapon(0);
 	    (void) Gloves_off();
 	    dropx(otmp);
 	}
 	if ((otmp = uarms) != 0) {
-	    You("can no longer hold your shield!");
+/*JP	    You("can no longer hold your shield!");*/
+	    You("もう盾を持ってられない！");
 	    (void) Shield_off();
 	    dropx(otmp);
 	}
 	if ((otmp = uarmh) != 0) {
 	    if (donning(otmp)) cancel_don();
-	    Your("helmet falls to the %s!", surface(u.ux, u.uy));
+/*JP	    Your("helmet falls to the %s!", surface(u.ux, u.uy));*/
+	    Your("兜は%sに落ちた！", surface(u.ux, u.uy));
 	    (void) Helmet_off();
 	    dropx(otmp);
 	}
@@ -453,9 +509,12 @@ break_armor()
 	if ((otmp = uarmf) != 0) {
 	    if (donning(otmp)) cancel_don();
 	    if (is_whirly(uasmon))
-		Your("boots fall away!");
-	    else Your("boots %s off your feet!",
-			verysmall(uasmon) ? "slide" : "are pushed");
+/*JP		Your("boots fall away!");*/
+		Your("靴は脱げ落ちた！");
+/*JP	    else Your("boots %s off your feet!",
+			verysmall(uasmon) ? "slide" : "are pushed");*/
+	    else Your("靴はあなたの足から%s",
+			verysmall(uasmon) ? "滑り落ちた" : "脱げ落ちた");
 	    (void) Boots_off();
 	    dropx(otmp);
 	}
@@ -473,7 +532,8 @@ int alone;
 	   * wear gloves but can wield weapons
 	   */
 	  if (!alone || cantwield(uasmon)) {
-	       if (alone) You("find you must drop your weapon!");
+/*JP	       if (alone) You("find you must drop your weapon!");*/
+	       if (alone) You("武器を落したことに気がついた！");
 	       uwepgone();
 	       dropx(otmp);
 	  }
@@ -484,10 +544,12 @@ void
 rehumanize()
 {
 	polyman();
-	You("return to %sn form!", (pl_character[0] == 'E')? "elve" : "huma");
+/*JP	You("return to %sn form!", (pl_character[0] == 'E')? "elve" : "huma");*/
+	You("%sに戻った！", (pl_character[0] == 'E')? "エルフ" : "人間");
 
 	if (u.uhp < 1)	done(DIED);
-	if (!uarmg) selftouch("No longer petrify-resistant, you");
+/*JP	if (!uarmg) selftouch("No longer petrify-resistant, you");*/
+	if (!uarmg) selftouch("もう石化抵抗力はあなたにはない");
 	nomul(0);
 
 	flags.botl = 1;
@@ -498,12 +560,14 @@ rehumanize()
 int
 dobreathe() {
 	if (Strangled) {
-	    You("can't breathe.  Sorry.");
+/*JP	    You("can't breathe.  Sorry.");*/
+	    You("息を吐くことができない．残念．");
 	    return(0);
 	}
 	if (!getdir(NULL)) return(0);
 	if (rn2(4))
-	    You("produce a loud and noxious belch.");
+/*JP	    You("produce a loud and noxious belch.");*/
+	    You("有毒な大きなげっぷをした．");
 	else {
 	    register struct attack *mattk;
 	    register int i;
@@ -532,7 +596,8 @@ dospit() {
 int
 doremove() {
 	if (!Punished) {
-		You("are not chained to anything!");
+/*JP		You("are not chained to anything!");*/
+		You("何もつながれていない！");
 		return(0);
 	}
 	unpunish();
@@ -546,11 +611,13 @@ dospinweb()
 
 	if (Levitation || Is_airlevel(&u.uz)
 	    || Underwater || Is_waterlevel(&u.uz)) {
-		You("must be on the ground to spin a web.");
+/*JP		You("must be on the ground to spin a web.");*/
+		You("蜘蛛の巣を張るには地面の上にいなくてはならない．");
 		return(0);
 	}
 	if (u.uswallow) {
-		You("release web fluid inside %s.", mon_nam(u.ustuck));
+/*JP		You("release web fluid inside %s.", mon_nam(u.ustuck));*/
+		You("%s内の蜘蛛の巣を吐き出した．", mon_nam(u.ustuck));
 		if (is_animal(u.ustuck->data)) {
 			expels(u.ustuck, u.ustuck->data, TRUE);
 			return(0);
@@ -569,48 +636,59 @@ dospinweb()
 				sweep[0] = '\0';
 				switch(u.ustuck->data->mattk[i].adtyp) {
 					case AD_FIRE:
-						Strcpy(sweep, "ignites and ");
+/*JP						Strcpy(sweep, "ignites and ");*/
+						Strcpy(sweep, "発火し");
 						break;
 					case AD_ELEC:
-						Strcpy(sweep, "fries and ");
+/*JP						Strcpy(sweep, "fries and ");*/
+						Strcpy(sweep, "焦げ");
 						break;
 					case AD_COLD:
 						Strcpy(sweep,
-						      "freezes, shatters and ");
+/*JP						      "freezes, shatters and ");*/
+						      "凍りつき，こなごなになり");
 						break;
 				}
-				pline("The web %sis swept away!", sweep);
+/*JP				pline("The web %sis swept away!", sweep);*/
+				pline("蜘蛛の巣は%sなくなった！", sweep);
 			}
 			return(0);
 		}		     /* default: a nasty jelly-like creature */
-		pline("The web dissolves into %s.", mon_nam(u.ustuck));
+/*JP		pline("The web dissolves into %s.", mon_nam(u.ustuck));*/
+		pline("蜘蛛の巣は分解して%sになった．", mon_nam(u.ustuck));
 		return(0);
 	}
 	if (u.utrap) {
-		You("cannot spin webs while stuck in a trap.");
+/*JP		You("cannot spin webs while stuck in a trap.");*/
+		You("罠にはまっている間は蜘蛛の巣を張れない．");
 		return(0);
 	}
 	exercise(A_DEX, TRUE);
 	if (ttmp) switch (ttmp->ttyp) {
 		case PIT:
-		case SPIKED_PIT: You("spin a web, covering up the pit.");
+/*JP		case SPIKED_PIT: You("spin a web, covering up the pit.");*/
+		case SPIKED_PIT: You("蜘蛛の巣を張り，落し穴を覆った．");
 			deltrap(ttmp);
 			bury_objs(u.ux, u.uy);
 			if (Invisible) newsym(u.ux, u.uy);
 			return(1);
-		case SQKY_BOARD: pline("The squeaky board is muffled.");
+/*JP		case SQKY_BOARD: pline("The squeaky board is muffled.");*/
+		case SQKY_BOARD: pline("きしむ板は覆われた．");
 			deltrap(ttmp);
 			if (Invisible) newsym(u.ux, u.uy);
 			return(1);
 		case TELEP_TRAP:
 		case LEVEL_TELEP:
 		case MAGIC_PORTAL:
-			Your("webbing vanishes!");
+/*JP			Your("webbing vanishes!");*/
+			Your("蜘蛛の巣は消えた！");
 			return(0);
-		case WEB: You("make the web thicker.");
+/*JP		case WEB: You("make the web thicker.");*/
+		case WEB: You("より厚い蜘蛛の巣を作った．");
 			return(1);
 		case TRAPDOOR:
-			You("web over the trap door.");
+/*JP			You("web over the trap door.");*/
+			You("落し扉を蜘蛛の巣で覆った．");
 			deltrap(ttmp);
 			if (Invisible) newsym(u.ux, u.uy);
 			return 1;
@@ -623,7 +701,8 @@ dospinweb()
 		case MAGIC_TRAP:
 		case ANTI_MAGIC:
 		case POLY_TRAP:
-			You("have triggered a trap!");
+/*JP			You("have triggered a trap!");*/
+			You("罠を始動させてしまった！");
 			dotrap(ttmp);
 			return(1);
 		default:
@@ -639,10 +718,12 @@ dospinweb()
 int
 dosummon()
 {
-	You("call upon your brethren for help!");
+/*JP	You("call upon your brethren for help!");*/
+	You("仲間を呼んだ！");
 	exercise(A_WIS, TRUE);
 	if (!were_summon(uasmon,TRUE))
-		pline("But none arrive.");
+/*JP		pline("But none arrive.");*/
+		pline("しかし，何も来ない．");
 	return(1);
 }
 
@@ -654,30 +735,36 @@ doconfuse()
 	char qbuf[QBUFSZ];
 
 	if (Blind) {
-		You("can't see anything to gaze at.");
+/*JP		You("can't see anything to gaze at.");*/
+		You("目が見えないので，睨めない．");
 		return 0;
 	}
 	for (mtmp = fmon; mtmp; mtmp = mtmp->nmon) {
 	    if (canseemon(mtmp)) {
 		looked = 1;
 		if (Invis && !perceives(mtmp->data))
-		    pline("%s seems not to notice your gaze.", Monnam(mtmp));
+/*JP		    pline("%s seems not to notice your gaze.", Monnam(mtmp));*/
+		    pline("%sはあなたの睨みに気がついてない．", Monnam(mtmp));
 		else if (mtmp->minvis && !See_invisible)
-		    You("can't see where to gaze at %s.", Monnam(mtmp));
+/*JP		    You("can't see where to gaze at %s.", Monnam(mtmp));*/
+		    You("%sは見えないので，睨めない", Monnam(mtmp));
 		else if (mtmp->m_ap_type == M_AP_FURNITURE
 			|| mtmp->m_ap_type == M_AP_OBJECT)
 		    continue;
 		else if (flags.safe_dog && !Confusion && !Hallucination
 		  && mtmp->mtame) {
 		    if (mtmp->mnamelth)
-			You("avoid gazing at %s.", NAME(mtmp));
+/*JP			You("avoid gazing at %s.", NAME(mtmp));*/
+			You("%sから目をそらしてしまった．", NAME(mtmp));
 		    else
-			You("avoid gazing at your %s.",
-						mtmp->data->mname);
+/*JP			You("avoid gazing at your %s.",*/
+			You("%sを睨むのをやめた．",
+						jtrns_mon(mtmp->data->mname));
 		} else {
 		    if (flags.confirm && mtmp->mpeaceful && !Confusion
 							&& !Hallucination) {
-			Sprintf(qbuf, "Really confuse %s?", mon_nam(mtmp));
+/*JP			Sprintf(qbuf, "Really confuse %s?", mon_nam(mtmp));*/
+			Sprintf(qbuf, "本当に%sを混乱させますか？", mon_nam(mtmp));
 			if (yn(qbuf) != 'y') continue;
 			setmangry(mtmp);
 		    }
@@ -685,16 +772,20 @@ doconfuse()
 					!mtmp->mcansee || !haseyes(mtmp->data))
 			continue;
 #ifdef MUSE
-		    if (!mon_reflects(mtmp, "Your gaze is reflected by %s %s."))
+/*JP		    if (!mon_reflects(mtmp, "Your gaze is reflected by %s %s."))*/
+		    if (!mon_reflects(mtmp, "あなたの睨みは%sの%sで反射された．"))
 #endif
 		    if (!mtmp->mconf)
-			Your("gaze confuses %s!", mon_nam(mtmp));
+/*JP			Your("gaze confuses %s!", mon_nam(mtmp));*/
+			Your("睨みは%sを混乱させた！", mon_nam(mtmp));
 		    else
-			pline("%s is getting more and more confused.",
+/*JP			pline("%s is getting more and more confused.",*/
+			pline("%sはますます混乱した！",
 							Monnam(mtmp));
 		    mtmp->mconf = 1;
 		    if ((mtmp->data==&mons[PM_FLOATING_EYE]) && !mtmp->mcan) {
-			You("are frozen by %s gaze!", 
+/*JP			You("are frozen by %s gaze!", */
+			You("%sの睨みで動けなくなった！", 
 			                 s_suffix(mon_nam(mtmp)));
 			nomul((u.ulevel > 6 || rn2(4)) ?
 				-d((int)mtmp->m_lev+1,
@@ -703,15 +794,20 @@ doconfuse()
 			return 1;
 		    }
 		    if ((mtmp->data==&mons[PM_MEDUSA]) && !mtmp->mcan) {
-			pline("Gazing at the awake Medusa is not a very good idea.");
+/*JP			pline("Gazing at the awake Medusa is not a very good idea.");*/
+			pline("目を覚ましているメデューサを睨むのは賢いことじゃない．");
 			/* as if gazing at a sleeping anything is fruitful... */
-			You("turn to stone...");
+/*JP			You("turn to stone...");*/
+			killer = "メデューサを睨んで";
+			killer_format = KILLED_BY;
+			You("石化した．．．");
 			done(STONING);
 		    }
 		}
 	    }
 	}
-	if (!looked) You("gaze at no place in particular.");
+/*JP	if (!looked) You("gaze at no place in particular.");*/
+	if (!looked) You("実際には何も睨めなかった．");
 	return 1;
 }
 
@@ -719,7 +815,8 @@ int
 dohide()
 {
 	if (u.uundetected || u.usym == S_MIMIC_DEF) {
-		You("are already hiding.");
+/*JP		You("are already hiding.");*/
+		You("もう隠れている．");
 		return(0);
 	}
 	if (u.usym == S_MIMIC) {
@@ -736,9 +833,11 @@ domindblast()
 {
 	struct monst *mtmp, *nmon;
 
-	You("concentrate.");
+/*JP	You("concentrate.");*/
+	You("集中した．");
 	if (rn2(3)) return 0;
-	pline("A wave of psychic energy pours out.");
+/*JP	pline("A wave of psychic energy pours out.");*/
+	pline("精神エネルギー波が放散した．");
 	for(mtmp=fmon; mtmp; mtmp = nmon) {
 		int u_sen;
 
@@ -749,10 +848,14 @@ domindblast()
 			continue;
 		u_sen = telepathic(mtmp->data) && !mtmp->mcansee;
 		if (u_sen || (telepathic(mtmp->data) && rn2(2)) || !rn2(10)) {
-			pline("You lock in on %s's %s.", mon_nam(mtmp),
+/*JP			pline("You lock in on %s's %s.", mon_nam(mtmp),
 				u_sen ? "telepathy" :
 				telepathic(mtmp->data) ? "latent telepathy" :
-				"mind");
+				"mind");*/
+			pline("%sの%s．", mon_nam(mtmp),
+				u_sen ? "精神に入り込んだ" :
+				telepathic(mtmp->data) ? "潜在的精神に入り込んだ" :
+				"深層意識に潜り込んだ");
 			mtmp->mhp -= rnd(15);
 			if (mtmp->mhp <= 0)
 				killed(mtmp);
@@ -764,7 +867,8 @@ domindblast()
 static void
 uunstick()
 {
-	pline("%s is no longer in your clutches.", Monnam(u.ustuck));
+/*JP	pline("%s is no longer in your clutches.", Monnam(u.ustuck));*/
+	pline("%sはあなたの手から逃れた．", Monnam(u.ustuck));
 	u.ustuck = 0;
 }
 
@@ -772,7 +876,8 @@ static void
 skinback()
 {
 	if (uskin) {
-		Your("skin returns to its original form.");
+/*JP		Your("skin returns to its original form.");*/
+		Your("皮膚はそれ本来の姿に戻った．");
 		uarm = uskin;
 		uskin = (struct obj *)0;
 	}
@@ -789,36 +894,66 @@ int part;
 	 * plus the trailing null, after pluralizing (since sometimes a
 	 * buffer is made a fixed size and must be able to hold it)
 	 */
-	static NEARDATA const char *humanoid_parts[] = { "arm", "eye", "face", "finger",
+
+/*JP	static NEARDATA const char *humanoid_parts[] = { "arm", "eye", "face", "finger",
 		"fingertip", "foot", "hand", "handed", "head", "leg",
-		"light headed", "neck", "spine", "toe" };
+		"light headed", "neck", "spine", "toe" };*/
+	static NEARDATA const char *humanoid_parts[] = { "腕", "目", "顔", "指",
+		"指先", "足", "手", "手にした", "頭", "足",
+		"めまいがした", "首", "背骨", "爪先" };
 #ifdef POLYSELF
-	static NEARDATA const char *jelly_parts[] = { "pseudopod", "dark spot", "front",
+/*JP	static NEARDATA const char *jelly_parts[] = { "pseudopod", "dark spot", "front",
 		"pseudopod extension", "pseudopod extremity",
 		"pseudopod root", "grasp", "grasped", "cerebral area",
 		"lower pseudopod", "viscous", "middle", "surface",
-		"pseudopod extremity" },
-	*animal_parts[] = { "forelimb", "eye", "face", "foreclaw", "claw tip",
+		"pseudopod extremity" },*/
+	static NEARDATA const char *jelly_parts[] = { "擬似触手", "黒い斑点", "前面",
+		"擬似触手の先", "擬似触手",
+		"擬似触手の幹", "触手", "握った", "脳の領域",
+		"下方の擬似触手", "ねばねばしてきた", "中間領域", "表面",
+		"擬似触手" },
+/*JP	*animal_parts[] = { "forelimb", "eye", "face", "foreclaw", "claw tip",
 		"rear claw", "foreclaw", "clawed", "head", "rear limb",
-		"light headed", "neck", "spine", "rear claw tip" },
-	*horse_parts[] = { "forelimb", "eye", "face", "forehoof", "hoof tip",
+		"light headed", "neck", "spine", "rear claw tip" },*/
+	*animal_parts[] = { "前足", "目", "顔", "前爪", "爪先",
+		"後爪", "前爪", "ひっかけた", "頭", "後足",
+		"めまいがした", "首", "背骨", "後爪先" },
+/*JP	*horse_parts[] = { "forelimb", "eye", "face", "forehoof", "hoof tip",
 		"rear hoof", "foreclaw", "hooved", "head", "rear limb",
-		"light headed", "neck", "backbone", "rear hoof tip" },
-	*sphere_parts[] = { "appendage", "optic nerve", "body", "tentacle",
+		"light headed", "neck", "backbone", "rear hoof tip" },*/
+	*horse_parts[] = { "前足", "目", "顔", "前蹄", "蹄",
+		"後蹄", "前爪", "蹄にはさんだ", "頭", "後足",
+		"めまいがした", "首", "背骨", "後爪先" },
+/*JP	*sphere_parts[] = { "appendage", "optic nerve", "body", "tentacle",
 		"tentacle tip", "lower appendage", "tentacle", "tentacled",
 		"body", "lower tentacle", "rotational", "equator", "body",
-		"lower tentacle tip" },
-	*fungus_parts[] = { "mycelium", "visual area", "front", "hypha",
+		"lower tentacle tip" },*/
+	*sphere_parts[] = { "突起", "視覚神経", "体", "触手",
+		"触手の先", "下の突起", "触手", "触手に持った",
+		"体", "下の触手", "回転した", "中心線", "体",
+		"下の触手の先" },
+/*JP	*fungus_parts[] = { "mycelium", "visual area", "front", "hypha",
 		"hypha", "root", "strand", "stranded", "cap area",
-		"rhizome", "sporulated", "stalk", "root", "rhizome tip" },
-	*vortex_parts[] = { "region", "eye", "front", "minor current",
+		"rhizome", "sporulated", "stalk", "root", "rhizome tip" },*/
+	*fungus_parts[] = { "菌糸体", "視覚領域", "前", "菌糸",
+		"菌糸", "根", "触手", "触手はからみついた", "傘",
+		"根茎", "混乱する", "軸", "根", "根茎の先" },
+/*JP	*vortex_parts[] = { "region", "eye", "front", "minor current",
 		"minor current", "lower current", "swirl", "swirled",
 		"central core", "lower current", "addled", "center",
-		"currents", "edge" },
-	*snake_parts[] = { "vestigial limb", "eye", "face", "large scale",
+		"currents", "edge" },*/
+	*vortex_parts[] = { "領域", "目", "前", "小さい流れ",
+		"小さい流れ", "下部の流れ", "渦巻", "渦に巻かれた",
+		"渦の中心", "下部の流れ", "混乱した", "中心部",
+		"流れ", "外周" },
+/*JP	*snake_parts[] = { "vestigial limb", "eye", "face", "large scale",
 		"large scale tip", "rear region", "scale gap", "scale gapped",
 		"head", "rear region", "light headed", "neck", "length",
-		"rear scale" };
+		"rear scale" };*/
+	*snake_parts[] = { "退化した足", "目", "顔", "大きな鱗",
+		"大きな鱗の先", "後部分", "鱗の隙間", "鱗の隙間につけられた",
+		"頭", "後部分", "めまいがした", "首", "体",
+		"後部分の鎧" };
 
 	if (humanoid(uasmon) && (part==ARM || part==FINGER || part==FINGERTIP
 		|| part==HAND || part==HANDED)) return humanoid_parts[part];
@@ -890,7 +1025,8 @@ int damtype, dam;
 		u.mh += heal;
 		if (u.mh > u.mhmax) u.mh = u.mhmax;
 		flags.botl = 1;
-		pline("Strangely, you feel better than before.");
+/*JP		pline("Strangely, you feel better than before.");*/
+		pline("奇妙なことに，前より気分がよくなった．");
 		exercise(A_STR, TRUE);
 	}
 }

@@ -2,6 +2,13 @@
 /*	Copyright (C) 1990 by Ken Arromdee */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 /* Note: Arrays are column first, while the screen is row first */
@@ -41,7 +48,8 @@ char olet;
 	switch(abs(type) % 10) {
 		default: impossible("explosion base type %d?", type); return;
 
-		case 1: str = (olet == SCROLL_CLASS ? "tower of flame" : "fireball"); adtyp = AD_FIRE; break;
+/*JP		case 1: str = (olet == SCROLL_CLASS ? "tower of flame" : "fireball"); adtyp = AD_FIRE; break;*/
+		case 1: str = (olet == SCROLL_CLASS ? "火柱" : "火の玉"); adtyp = AD_FIRE; break;
 		/* case 3: str = "ball of cold"; adtyp = AD_COLD; break; */
 		/* case 5: str = "ball lightning"; adtyp = AD_ELEC; break; */
 		/* case 7: str = "acid ball"; adtyp = AD_ACID; break; */
@@ -129,7 +137,8 @@ char olet;
 		    delay_output();
 		}
 
-	} else You("hear a blast.");
+/*JP	} else You("hear a blast.");*/
+	} else You("爆風の音を聞いた！");
 
 
 	for(i=0; i<3; i++) for(j=0; j<3; j++) {
@@ -144,14 +153,18 @@ char olet;
 		if (!mtmp) continue;
 		if (u.uswallow && mtmp == u.ustuck) {
 			if (is_animal(u.ustuck->data))
-				pline("%s gets heartburn!",
+/*JP				pline("%s gets heartburn!",*/
+				pline("%sは胸やけがした！",
 				      Monnam(u.ustuck));
 			else
-				pline("%s gets slightly toasted!",
+/*JP				pline("%s gets slightly toasted!",*/
+				pline("%sはちょっと焦げた！",
 				      Monnam(u.ustuck));
 		} else
-		pline("%s is caught in the %s!",
-			cansee(i+x-1, j+y-1) ? Monnam(mtmp) : "It", str);
+/*JP		pline("%s is caught in the %s!",*/
+		pline("%sは%sにつつまれた！",
+/*JP			cansee(i+x-1, j+y-1) ? Monnam(mtmp) : "It", str);*/
+			cansee(i+x-1, j+y-1) ? Monnam(mtmp) : "何者か", str);
 
 		idamres += destroy_mitem(mtmp, SCROLL_CLASS, (int) adtyp);
 		idamres += destroy_mitem(mtmp, SPBOOK_CLASS, (int) adtyp);
@@ -173,9 +186,11 @@ char olet;
 			int mdam = dam;
 
 			if (resist(mtmp, olet, 0, FALSE)) {
-				pline("%s resists the magical blast!",
+/*JP				pline("%s resists the magical blast!",*/
+				pline("%sは魔法の風をさえぎった！",
 					cansee(i+x-1,j+y-1) ? Monnam(mtmp)
-					: "It");
+/*JP					: "It");*/
+					: "何者か");
 				mdam = dam/2;
 			}
 			if (mtmp == u.ustuck)
@@ -196,15 +211,18 @@ char olet;
 	/* Do your injury last */
 	if (uhurt) {
 	        if (type >= 0 && flags.verbose && olet != SCROLL_CLASS)
-			You("are caught in the %s!", str);
+/*JP			You("are caught in the %s!", str);*/
+			You("%sにつつまれた！", str);
 		if (uhurt == 2) u.uhp -= dam;
 		if (u.uhp <= 0) {
 			char buf[BUFSZ];
 
 			if (type >= 0 && olet != SCROLL_CLASS) {
 			    killer_format = NO_KILLER_PREFIX;
-			    Sprintf(buf, "caught %sself in %s own %s.",
-				    him[flags.female], his[flags.female], str);
+/*JP			    Sprintf(buf, "caught %sself in %s own %s.",
+				    him[flags.female], his[flags.female], str);*/
+			    Sprintf(buf, "自分自身の%sにつつまれて",
+				    str);
 			} else {
 			    killer_format = KILLED_BY;
 			    Strcpy(buf, str);
@@ -226,7 +244,8 @@ char olet;
 */
 	}
 	if (shopdamage) {
-		pay_for_damage("burn away");
+/*JP		pay_for_damage("burn away");*/
+		pay_for_damage("焼く");
 /* (only if we ever add non-fire balls)
 		pay_for_damage(adtyp == AD_FIRE ? "burn away" :
 			       adtyp == AD_COLD ? "shatter" :

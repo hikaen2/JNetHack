@@ -7,25 +7,45 @@
 
 #include <stdio.h>
 
+/*
+**	Japanese version Copyright (c) Issei Numata 1994 
+**	changing point is marked `JP' (94/2/5)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
 
 /*#define BETA		/* if a beta-test copy  [MRS] */
-
 /*
  * Files expected to exist in the playground directory.
  */
 
 #define RECORD		"record"  /* a file containing list of topscorers */
+/*JP*/
+#if 0
 #define HELP		"help"	  /* a file containing command descriptions */
 #define SHELP		"hh"		/* abbreviated form of the same */
 #define DEBUGHELP	"wizhelp"	/* a file containing debug mode cmds */
 #define RUMORFILE	"rumors"	/* a file with fortune cookies */
 #define ORACLEFILE	"oracles"	/* a file with oracular information */
-#define DATAFILE	"data"	/* a file giving the meaning of symbols used */
 #define CMDHELPFILE	"cmdhelp"	/* file telling what commands do */
+#endif
+#define HELP		"jhelp"	  /* a file containing command descriptions */
+#define RUMORFILE	"jrumors"	/* Japanese version */
+#define ORACLEFILE	"joracles"	/* Japanese version */
+#define SHELP		"jhh"		/* Japanese version */
+#define DEBUGHELP	"jwizhelp"	/* Japanese version */
+#define CMDHELPFILE	"jcmdhelp"	/* file telling what commands do */
+#define DATAFILE	"data"	/* a file giving the meaning of symbols used */
+/*JP*/
+#if 0
 #define HISTORY		"history"	/* a file giving nethack's history */
-#define LICENSE		"license"	/* file with license information */
 #define OPTIONFILE	"opthelp"	/* a file explaining runtime options */
+#endif
+#define HISTORY		"jhistory"	/* a file giving nethack's history */
+#define OPTIONFILE	"jopthelp"	/* a file explaining runtime options */
+#define LICENSE		"license"	/* file with license information */
 #define OPTIONS_USED	"options"	/* compile-time options, for #version */
+/*JP*/
+#define JJJ		"jjj"		/* notice for jnethack */
 
 #define LEV_EXT	".lev"		/* extension for special level files */
 

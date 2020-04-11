@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #include <ctype.h>
@@ -762,6 +769,14 @@ const char *filename;
 	if ((fp = fopenp(tmp_config, "r")) != (FILE *)0)
 		return(fp);
 # else	/* should be only UNIX left */
+/*
+**  Kazuhiro Fujieda <fujieda@jaist.ac.jp> 94/6/22
+*/
+ 	Sprintf(tmp_config, "%s/%s", getenv("HOME"), ".jnethackrc");
+ 	if ((fp = fopenp(tmp_config, "r")) != (FILE *)0) {
+ 		configfile = ".jnethackrc";
+ 		return(fp);
+ 	}
 	Sprintf(tmp_config, "%s/%s", getenv("HOME"), ".nethackrc");
 	if ((fp = fopenp(tmp_config, "r")) != (FILE *)0)
 		return(fp);
@@ -845,7 +860,8 @@ char		*tmp_levels;
 
 	/* remove trailing whitespace */
 	bufp = eos(buf);
-	while (--bufp > buf && isspace(*bufp))
+/*JP	while (--bufp > buf && isspace(*bufp))*/
+	while (--bufp > buf && isspace_8(*bufp))
 		continue;
 
 	if (bufp <= buf)
@@ -860,7 +876,8 @@ char		*tmp_levels;
 	if (!bufp) return 0;
 
 	/* skip  whitespace between '=' and value */
-	do { ++bufp; } while (isspace(*bufp));
+/*JP	do { ++bufp; } while (isspace(*bufp));*/
+	do { ++bufp; } while (isspace_8(*bufp));
 
 	/* Go through possible variables */
 	if (!strncmpi(buf, "OPTIONS", 4)) {
@@ -993,6 +1010,8 @@ const char *filename;
 # endif
 #endif
 	char	buf[BUFSZ];
+/*JP*/
+	char	jbuf[BUFSZ];
 	FILE	*fp;
 
 #ifdef MAC
@@ -1029,8 +1048,13 @@ const char *filename;
 #endif
 
 	while (fgets(buf, BUFSZ, fp)) {
+		Strcpy(jbuf, str2ic(buf));
+		if (!parse_config_line(fp, jbuf, tmp_ramdisk, tmp_levels)) {
+			raw_printf("Bad option line:  \"%s\"", jbuf);
+/*JP
 		if (!parse_config_line(fp, buf, tmp_ramdisk, tmp_levels)) {
 			raw_printf("Bad option line:  \"%s\"", buf);
+*/
 			wait_synch();
 		}
 	}

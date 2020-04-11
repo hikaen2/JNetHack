@@ -7,6 +7,14 @@
  *	bonuses for any given weapon used, as well as weapons selection
  *	code for monsters.
  */
+
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifdef OVLB
@@ -348,7 +356,8 @@ register struct monst *mon;
 		MON_NOWEP(mon);
 		mon->weapon_check = NO_WEAPON_WANTED;
 		if (cansee(mon->mx, mon->my)) {
-			pline("%s drops %s.", Monnam(mon),
+/*JP			pline("%s drops %s.", Monnam(mon),*/
+			pline("%sは%sを置いた．", Monnam(mon),
 				distant_name(obj, doname));
 		}
 		backobj = 0;
@@ -427,22 +436,30 @@ register struct monst *mon;
 		    if (canseemon(mon)) {
 			char welded_buf[BUFSZ];
 
-			Sprintf(welded_buf, "%s welded to %s hand%s",
+/*JP			Sprintf(welded_buf, "%s welded to %s hand%s",
 				(mw_tmp->quan == 1L) ? "is" : "are",
 				his[pronoun_gender(mon)],
-				objects[mw_tmp->otyp].oc_bimanual ? "s" : "");
+				objects[mw_tmp->otyp].oc_bimanual ? "s" : "");*/
+			Sprintf(welded_buf, "手に");
 
 			if (obj->otyp == PICK_AXE) {
-			    pline("Since %s weapon%s %s,",
+/*JP			    pline("Since %s weapon%s %s,",
 				  s_suffix(mon_nam(mon)),
-				  plur(mw_tmp->quan), welded_buf);
-			    pline("%s cannot wield that %s.",
+				  plur(mw_tmp->quan), welded_buf);*/
+			    pline("%sは武器を%sしようとしたが，",
+				  mon_nam(mon), welded_buf);
+/*JP			    pline("%s cannot wield that %s.",*/
+			    pline("%sは%sを装備できなかった．",
 				mon_nam(mon), xname(obj));
 			} else {
-			    pline("%s tries to wield %s.", Monnam(mon),
+/*JP			    pline("%s tries to wield %s.", Monnam(mon),*/
+			    pline("%sは%sを装備しようとした．", Monnam(mon),
 				doname(obj));
-			    pline("%s %s %s!",
+/*JP			    pline("%s %s %s!",
 				  s_suffix(Monnam(mon)),
+				  xname(mw_tmp), welded_buf);*/
+			    pline("%sは%sを%sした！",
+				  Monnam(mon),
 				  xname(mw_tmp), welded_buf);
 			}
 			mw_tmp->bknown = 1;
@@ -454,13 +471,17 @@ register struct monst *mon;
 		if (mw_tmp) mw_tmp->owornmask &= ~W_WEP;
 		mon->weapon_check = NEED_WEAPON;
 		if (canseemon(mon)) {
-			pline("%s wields %s!", Monnam(mon), doname(obj));
+/*JP			pline("%s wields %s!", Monnam(mon), doname(obj));*/
+			pline("%sは%sを装備した！", Monnam(mon), doname(obj));
 			if (obj->cursed && obj->otyp != CORPSE) {
-				pline("%s %s to %s hand!",
+/*JP				pline("%s %s to %s hand!",
 					The(xname(obj)),
 					(obj->quan == 1L) ? "welds itself"
 					    : "weld themselves",
-					s_suffix(mon_nam(mon)));
+					s_suffix(mon_nam(mon)));*/
+				pline("%sは勝手に%sの手に装備された！",
+					The(xname(obj)),
+					mon_nam(mon));
 				obj->bknown = 1;
 			}
 		}

@@ -26,6 +26,18 @@
  * and placed there by 'makedefs'.
  */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
+#ifdef _MSC_VER
+#include "../japanese/emalloc.h"
+#define alloc(s) emalloc(s)
+#endif
+
 #ifndef SEEK_SET
 # define SEEK_SET 0
 #endif
@@ -133,12 +145,14 @@ int truth; /* 1=true, -1=false, 0=either */
 boolean cookie;
 {
 	static const char fortune_msg[] =
-		"This cookie has a scrap of paper inside.";
+/*JP		"This cookie has a scrap of paper inside.";*/
+		"このクッキーには紙切が入っている．";
 	const char *line;
 
 	if (cookie && Blind) {
 		pline(fortune_msg);
-		pline("What a pity that you cannot read it!");
+/*JP		pline("What a pity that you cannot read it!");*/
+		pline("それを読めないなんて気の毒なことだ！");
 		return;
 	}
 	line = getrumor(truth);
@@ -146,12 +160,16 @@ boolean cookie;
 		line = "NetHack rumors file closed for renovation.";
 	if (cookie) {
 		pline(fortune_msg);
-		pline("It reads:");
-		pline("%s", line);
+/*JP		pline("It reads:");*/
+		pline("それを読んだ:");
+		pline("『%s』", line);
 	} else {	/* if the Oracle is the only alternative */
-		pline("True to her word, the Oracle %ssays: ",
+/*JP		pline("True to her word, the Oracle %ssays: ",
 		(!rn2(4) ? "offhandedly " : (!rn2(3) ? "casually " :
-		(rn2(2) ? "nonchalantly " : ""))));
+		(rn2(2) ? "nonchalantly " : ""))));*/
+		pline("真実は言葉にあり，賢者は%s述べた:",
+		(!rn2(4) ? "無造作に" : (!rn2(3) ? "何気なく" :
+		(rn2(2) ? "無頓着に" : ""))));
 		verbalize("%s", line);
 		exercise(A_WIS, TRUE);
 	}
@@ -228,8 +246,10 @@ boolean special;
 
 		tmpwin = create_nhwindow(NHW_TEXT);
 		putstr(tmpwin, 0, special ?
-		      "The Oracle scornfully takes all your money and says:" :
-		      "The Oracle meditates for a moment and then intones:");
+/*JP		      "The Oracle scornfully takes all your money and says:" :
+		      "The Oracle meditates for a moment and then intones:");*/
+		      "賢者は軽蔑したようにあなたの全てのお金を受けとり，述べた:" :
+		      "賢者は一瞬冥想し，詠唱した:");
 		putstr(tmpwin, 0, "");
 
 		while (fgets(line, COLNO, oracles) && strcmp(line,"---\n")) {
@@ -256,18 +276,22 @@ register struct monst *oracl;
 	multi = 0;
 
 	if (!oracl) {
-		pline("There is no one here to consult.");
+/*JP		pline("There is no one here to consult.");*/
+		pline("ここには信託を乞う人はいない．");
 		return 0;
 	} else if (!oracl->mpeaceful) {
-		pline("The Oracle is in no mood for consultations.");
+/*JP		pline("The Oracle is in no mood for consultations.");*/
+		pline("賢者は信託を告げてくれる雰囲気ではない．");
 		return 0;
 	} else if (!u.ugold) {
-		You("have no money.");
+/*JP		You("have no money.");*/
+		You("お金がない．");
 		return 0;
 	}
 
 	Sprintf(qbuf,
-		"\"Wilt thou settle for a minor consultation?\" (%d zorkmids)",
+/*JP		"\"Wilt thou settle for a minor consultation?\" (%d zorkmids)",*/
+		"「汝，低位の信託を受けるか？」(%dゴールド)",
 		minor_cost);
 	switch (ynq(qbuf)) {
 	    default:
@@ -275,7 +299,8 @@ register struct monst *oracl;
 		return 0;
 	    case 'y':
 		if (u.ugold < (long)minor_cost) {
-		    You("don't even have enough money for that!");
+/*JP		    You("don't even have enough money for that!");*/
+		    You("十分なお金を持っていない！");
 		    return 0;
 		}
 		u_pay = minor_cost;
@@ -284,7 +309,8 @@ register struct monst *oracl;
 		if (u.ugold <= (long)minor_cost ||	/* don't even ask */
 		    (oracle_cnt == 1 || oracle_flg < 0)) return 0;
 		Sprintf(qbuf,
-			"\"Then dost thou desire a major one?\" (%d zorkmids)",
+/*JP			"\"Then dost thou desire a major one?\" (%d zorkmids)",*/
+			"「汝，高位の信託を受けるか？」(%dゴールド)",
 			major_cost);
 		if (yn(qbuf) != 'y') return 0;
 		u_pay = (u.ugold < (long)major_cost ? (int)u.ugold

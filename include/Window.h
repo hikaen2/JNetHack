@@ -48,6 +48,11 @@
  white		     Color		Pixel		"white"
 
  font		     Font		XFontStruct*	XtDefaultFont
+**
+** by issei 1996/1/8
+**
+ fontSet             FontSet            XFontSet        XtDefaultFontSet
+
  exposeCallback	     Callback		Callback	NULL
  callback	     Callback		Callback	NULL
  resizeCallback	     Callback		Callback	NULL

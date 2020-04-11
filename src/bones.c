@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985,1993. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "lev.h"
 
@@ -257,8 +264,10 @@ savebones()
 		if (!mtmp) return;
 		mtmp = christen_monst(mtmp, plname);
 		newsym(u.ux, u.uy);
-		Your("body rises from the dead as %s...",
-			an(mons[u.ugrave_arise].mname));
+/*JP		Your("body rises from the dead as %s...",
+			an(mons[u.ugrave_arise].mname));*/
+		Your("体は%sとして死体から蘇った．．．",
+			jtrns_mon(mons[u.ugrave_arise].mname));
 		display_nhwindow(WIN_MESSAGE, FALSE);
 		drop_upon_death(mtmp, (struct obj *)0);
 #ifdef MUSE

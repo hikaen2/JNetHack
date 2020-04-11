@@ -672,12 +672,14 @@ boolean is_rlevel;
  * all of this info and to simply initialize it via a for() loop like r_oc_syms.
  */
 
-# ifdef ASCIIGRAPH
+/* # ifdef ASCIIGRAPH */
+# if 0
 	if (!flags.IBMgraphics) {
 # endif
 	    showsyms[S_vodoor]  = showsyms[S_hodoor]  = showsyms[S_ndoor] = '+';
 	    showsyms[S_upstair] = showsyms[S_dnstair] = '%';
-# ifdef ASCIIGRAPH
+/* # ifdef ASCIIGRAPH */
+# if 0
 	} else {
 	    /* a la EPYX Rogue */
 	    showsyms[S_vwall]   = 0xba; /* all walls now use	*/
@@ -703,7 +705,8 @@ boolean is_rlevel;
 #endif /* ASCIIGRAPH */
 
 	for (i = 0; i < MAXOCLASSES; i++) {
-#ifdef ASCIIGRAPH
+/* #ifdef ASCIIGRAPH */
+# if 0
 	    if (flags.IBMgraphics)
 		oc_syms[i] = IBM_r_oc_syms[i];
 	    else

@@ -62,12 +62,22 @@
 #endif
 
 #include "config.h"	/* #define for const for non __STDC__ compilers */
+/*JP*/
+/* for Japanese by issei (1994/1/10)
+*/
+#ifdef XAW_I18N
+#include <X11/Xaw/Xawi18n.h>
+#endif
 
 /* ":" added to both translations below to allow limited redefining of
  * keysyms before testing for keysym values -- dlc */
+/* 
+** added Ctl-m translation by nao (1994/6/26)
+*/ 
 static const char okay_accelerators[] =
     "#override\n\
-     :<Key>Return: set() notify() unset()\n";
+     :<Key>Return: set() notify() unset()\n\
+     :<Ctrl>m: set() notify() unset()\n";
 
 static const char cancel_accelerators[] =
     "#override\n\
@@ -113,6 +123,10 @@ CreateDialog(parent, name, okay_callback, cancel_callback)
     XtSetArg(args[num_args], XtNright, XtChainLeft);	num_args++;
     XtSetArg(args[num_args], XtNresizable, True);	num_args++;
     XtSetArg(args[num_args], XtNborderWidth, 0);	num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     prompt = XtCreateManagedWidget("prompt", labelWidgetClass,
 				   form, args, num_args);
 
@@ -132,6 +146,10 @@ CreateDialog(parent, name, okay_callback, cancel_callback)
     XtSetArg(args[num_args], XtNeditType, XawtextEdit);	num_args++;
     XtSetArg(args[num_args], XtNresize, XawtextResizeWidth);	num_args++;
     XtSetArg(args[num_args], XtNstring, "");		num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     response = XtCreateManagedWidget("response", asciiTextWidgetClass,
 				     form, args, num_args);
 
@@ -150,6 +168,10 @@ CreateDialog(parent, name, okay_callback, cancel_callback)
     XtSetArg(args[num_args], XtNresizable, True);	num_args++;
     XtSetArg(args[num_args], XtNaccelerators,
 	     XtParseAcceleratorTable(okay_accelerators));	num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     okay = XtCreateManagedWidget("okay", commandWidgetClass,
 				 form, args, num_args);
     XtAddCallback(okay, XtNcallback, okay_callback, form);
@@ -172,12 +194,15 @@ CreateDialog(parent, name, okay_callback, cancel_callback)
 	XtSetArg(args[num_args], XtNresizable, True);		num_args++;
 	XtSetArg(args[num_args], XtNaccelerators,
 	     XtParseAcceleratorTable(cancel_accelerators));	num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 	cancel = XtCreateManagedWidget("cancel", commandWidgetClass,
 				       form, args, num_args);
 	XtAddCallback(cancel, XtNcallback, cancel_callback, form);
 	XtInstallAccelerators(response, cancel);
     }
-
     XtInstallAccelerators(response, okay);
     XtSetKeyboardFocus(form, response);
 
@@ -238,19 +263,35 @@ SetDialogResponse(w, s)
     Widget w;
     String s;
 {
+/*JP
+    by issei 1994/1/10
     Arg args[4];
+*/
+    Arg args[5];
     Widget response;
     XFontStruct *font;
     Dimension width, nwidth, leftMargin, rightMargin;
+#ifdef XI18N
+    XFontSet fontset;
+    XFontSetExtents *extent;
+#endif
 
     response = XtNameToWidget(w, "response");
     XtSetArg(args[0], XtNfont, &font);
     XtSetArg(args[1], XtNleftMargin, &leftMargin);
     XtSetArg(args[2], XtNrightMargin, &rightMargin);
     XtSetArg(args[3], XtNwidth, &width);
+#ifndef XI18N
     XtGetValues(response, args, FOUR);
     nwidth = max(((font->max_bounds.width * strlen(s))+leftMargin+rightMargin),
 		 (width-(leftMargin+rightMargin)));
+#else
+    XtSetArg(args[4], XtNfontSet, &fontset);
+    XtGetValues(response, args, FIVE);
+    extent = XExtentsOfFontSet(fontset);
+    nwidth = max(((extent->max_logical_extent.width * strlen(s))+leftMargin+rightMargin),
+		 (width-(leftMargin+rightMargin)));
+#endif
 
     XtSetArg(args[0], XtNstring, s);
     XtSetArg(args[1], XtNwidth, nwidth);

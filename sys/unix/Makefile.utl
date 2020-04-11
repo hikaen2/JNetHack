@@ -66,9 +66,13 @@ LFLAGS =
 # yacc/lex programs to use to generate *_comp.h, *_lex.c, and *_yacc.c.
 # if, instead of yacc/lex you have bison/flex, comment/uncomment the following.
 YACC     = yacc
-LEX      = lex
+# LEX      = lex
 # YACC     = bison -y
 # LEX      = flex
+#
+# by issei 1994/1/10
+# lex is required 8bit through for japanese. 
+LEX	= flex -8
  
 # these are the names of the output files from YACC/LEX. Under MS-DOS
 # and similar systems, they may differ
@@ -133,6 +137,9 @@ makedefs.o:  ../include/config.h ../include/permonst.h ../include/objclass.h \
 	./makedefs -z
 ../src/vis_tab.c: makedefs
 	./makedefs -z
+#JP by issei(94/07/13)
+../include/jdata.h: makedefs
+	./makedefs -j
 
 lintdefs:
 	@lint -axbh -I../include -DLINT $(MAKESRC) ../src/monst.c ../src/objects.c | sed '/_flsbuf/d'

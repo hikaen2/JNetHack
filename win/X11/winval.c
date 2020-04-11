@@ -26,6 +26,12 @@
 #endif
 
 #include "config.h"	/* #define for const for non __STDC__ compilers */
+/*JP*/
+/* for Japanese by issei (1994/1/10)
+*/
+#ifdef XAW_I18N
+#include <X11/Xaw/Xawi18n.h>
+#endif
 
 #define NAME "name"
 #define VALUE "value"
@@ -52,6 +58,10 @@ create_value(parent, name_value)
     XtSetArg(args[num_args], XtNborderWidth, 0);		num_args++;
     XtSetArg(args[num_args], XtNlabel, name_value);		num_args++;
     XtSetArg(args[num_args], XtNinternalHeight, 0);		num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     name = XtCreateManagedWidget(NAME,
 				labelWidgetClass,
 				form, args, num_args);
@@ -61,6 +71,10 @@ create_value(parent, name_value)
     XtSetArg(args[num_args], XtNborderWidth, 0);		num_args++;
     XtSetArg(args[num_args], XtNfromHoriz, name);		num_args++;
     XtSetArg(args[num_args], XtNinternalHeight, 0);		num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     (void) XtCreateManagedWidget(VALUE,
 				labelWidgetClass,
 				form, args, num_args);

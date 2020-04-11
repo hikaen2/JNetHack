@@ -5,6 +5,11 @@
 #include "hack.h"
 #include "dgn_file.h"
 
+#ifdef _MSC_VER
+#include "../japanese/emalloc.h"
+#define alloc(s) emalloc(s)
+#endif
+
 #ifdef OVL1
 
 #define	DUNGEON_FILE	"dungeon"

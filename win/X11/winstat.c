@@ -10,6 +10,12 @@
  * Currently, only one status window (of any type) is _ever_ made.
  */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #ifndef SYSV
 #define PRESERVE_NO_SYSV	/* X11 include files may define SYSV */
 #endif
@@ -49,6 +55,10 @@ create_status_window(wp, create_popup, parent)
     Arg args[8];
     Cardinal num_args;
     Position top_margin, bottom_margin, left_margin, right_margin;
+#ifdef XI18N
+    XFontSet fontset;
+    XFontSetExtents *extent;
+#endif
 
     wp->type = NHW_STATUS;
 
@@ -88,6 +98,10 @@ create_status_window(wp, create_popup, parent)
     XtSetArg(args[num_args], XtNscrollVertical,
 				    XawtextScrollWhenNeeded);	num_args++;
 
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
     wp->w = XtCreateManagedWidget(
 		"status",		/* name */
 		asciiTextWidgetClass,
@@ -102,7 +116,11 @@ create_status_window(wp, create_popup, parent)
 
     /* Get the font and margin information. */
     num_args = 0;
+#ifndef XI18N
     XtSetArg(args[num_args], XtNfont,	      &fs);	       num_args++;
+#else
+    XtSetArg(args[num_args], XtNfontSet,      &fontset);       num_args++;
+#endif
     XtSetArg(args[num_args], XtNtopMargin,    &top_margin);    num_args++;
     XtSetArg(args[num_args], XtNbottomMargin, &bottom_margin); num_args++;
     XtSetArg(args[num_args], XtNleftMargin,   &left_margin);   num_args++;
@@ -110,10 +128,18 @@ create_status_window(wp, create_popup, parent)
     XtGetValues(wp->w, args, num_args);
 
     /* font height is ascent + descent */
+#ifndef XI18N
     wp->pixel_height = 2 * (fs->ascent + fs->descent) +
 						top_margin + bottom_margin;
     wp->pixel_width  = COLNO * fs->max_bounds.width +
 						left_margin + right_margin;
+#else
+    extent = XExtentsOfFontSet(fontset);
+    wp->pixel_height = 2 * extent->max_logical_extent.height +
+						top_margin + bottom_margin;
+    wp->pixel_width  = COLNO/2 * extent->max_logical_extent.width +
+						left_margin + right_margin;
+#endif
 
     /* Set the new width and height. */
     num_args = 0;
@@ -238,6 +264,8 @@ struct X_status_value {
  * + Blank value is 0 and should never change.
  */
 static struct X_status_value shown_stats[NUM_STATS] = {
+/*JP*/
+#if 0
     { "Strength",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },	/* 0*/
     { "Dexterity",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
     { "Constitution",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
@@ -265,6 +293,35 @@ static struct X_status_value shown_stats[NUM_STATS] = {
     { "Blind",		SV_NAME,  (Widget) 0,  0, 0, FALSE, TRUE },
     { "Stunned",	SV_NAME,  (Widget) 0,  0, 0, FALSE, TRUE },
     { "Hallucinating",	SV_NAME,  (Widget) 0,  0, 0, FALSE, TRUE },
+    { "",		SV_NAME,  (Widget) 0,  0, 0, FALSE, TRUE }, /*encumbr*/
+#endif
+    { "強さ",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },	/* 0*/
+    { "素早さ",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+    { "耐久力",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+    { "知力",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+    { "賢さ",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+    { "魅力",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },	/* 5*/
+
+    { "",		SV_LABEL, (Widget) 0, -1, 0, FALSE, FALSE }, /* name */
+    { "",		SV_LABEL, (Widget) 0, -1, 0, FALSE, FALSE }, /* dlvl */
+    { "金",		SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+    { "体力",		SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+    { "最大体力",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },	/*10*/
+    { "魔力",		SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+    { "最大魔力",	SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+    { "鎧",		SV_VALUE, (Widget) 0,256, 0, FALSE, FALSE },
+    { "レベル",		SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+    { "経験",		SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },	/*15*/
+    { "属性",		SV_VALUE, (Widget) 0, -2, 0, FALSE, FALSE },
+    { "時間",		SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+    { "スコア",		SV_VALUE, (Widget) 0, -1, 0, FALSE, FALSE },
+
+    { "",		SV_NAME,  (Widget) 0, -1, 0, FALSE, TRUE }, /* hunger*/
+    { "　混乱　",	SV_NAME,  (Widget) 0,  0, 0, FALSE, TRUE },	/*20*/
+    { "　病気　",	SV_NAME,  (Widget) 0,  0, 0, FALSE, TRUE },
+    { "　盲目　",	SV_NAME,  (Widget) 0,  0, 0, FALSE, TRUE },
+    { "  眩暈  ",	SV_NAME,  (Widget) 0,  0, 0, FALSE, TRUE },
+    { "　幻覚　",	SV_NAME,  (Widget) 0,  0, 0, FALSE, TRUE },
     { "",		SV_NAME,  (Widget) 0,  0, 0, FALSE, TRUE }, /*encumbr*/
 };
 
@@ -332,30 +389,36 @@ update_val(attr_rec, new_value)
 
 	    Strcpy(buf, plname);
 	    if ('a' <= buf[0] && buf[0] <= 'z') buf[0] += 'A'-'a';
-	    Strcat(buf, " the ");
+/*JP	    Strcat(buf, " the ");*/
+	    Strcat(buf, " ");
 #ifdef POLYSELF
 	    if (u.mtimedone) {
 		char mname[BUFSZ];
 		int k = 0;
 
 		Strcpy(mname, mons[u.umonnum].mname);
+/*JP
 		while(mname[k] != 0) {
 		    if ((k == 0 || (k > 0 && mname[k-1] == ' ')) &&
 					'a' <= mname[k] && mname[k] <= 'z')
 			    mname[k] += 'A' - 'a';
 		    k++;
-		}
-		Strcat(buf, mname);
+		}*/
+/*JP		Strcat(buf, mname);*/
+		Strcat(buf, jtrns_mon(mname));
 	    } else
 #endif
 		Strcat(buf, rank_of(u.ulevel, pl_character[0], flags.female));
 
 	} else if (attr_rec == &shown_stats[F_DLEVEL]) {
 	    if (In_endgame(&u.uz)) {
-		Strcpy(buf, (Is_astralevel(&u.uz) ? "Astral Plane":"End Game"));
+/*JP		Strcpy(buf, (Is_astralevel(&u.uz) ? "Astral Plane":"End Game"));*/
+		Strcpy(buf, (Is_astralevel(&u.uz) ? "精霊界":"最終試練"));
 	    } else {
-		Strcpy(buf, dungeons[u.uz.dnum].dname);
-		Sprintf(eos(buf), ", level %d", depth(&u.uz));
+/*JP		Strcpy(buf, dungeons[u.uz.dnum].dname);*/
+		Strcpy(buf, jtrns_obj('d',dungeons[u.uz.dnum].dname));
+/*JP		Sprintf(eos(buf), ", level %d", depth(&u.uz));*/
+		Sprintf(eos(buf), " 地下%d階", depth(&u.uz));
 	    }
 	} else {
 	    impossible("update_val: unknown label type \"%s\"",
@@ -507,9 +570,12 @@ update_val(attr_rec, new_value)
 	    }
 	} else if (attr_rec == &shown_stats[F_ALIGN]) {
 
-	    Strcpy(buf, (new_value == A_CHAOTIC) ? "Chaotic" :
+/*JP	    Strcpy(buf, (new_value == A_CHAOTIC) ? "Chaotic" :
 			(new_value == A_NEUTRAL) ? "Neutral" :
-						   "Lawful"  );
+						   "Lawful"  );*/
+	    Strcpy(buf, (new_value == A_CHAOTIC) ? "混沌" :
+			(new_value == A_NEUTRAL) ? "中立" :
+						   "秩序"  );
 	} else {
 	    Sprintf(buf, "%d", new_value);
 	}
@@ -730,6 +796,10 @@ create_widget(parent, sv, sv_index)
 	    num_args = 0;
 	    XtSetArg(args[num_args], XtNborderWidth, 0);	num_args++;
 	    XtSetArg(args[num_args], XtNinternalHeight, 0);	num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 	    sv->w = XtCreateManagedWidget(
 				sv_index == F_NAME ? "name" : "dlevel",
 				labelWidgetClass,
@@ -740,6 +810,10 @@ create_widget(parent, sv, sv_index)
 	    num_args = 0;
 	    XtSetArg(args[num_args], XtNborderWidth, 0);	num_args++;
 	    XtSetArg(args[num_args], XtNinternalHeight, 0);	num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 	    sv->w = XtCreateManagedWidget(sv->name,
 					labelWidgetClass,
 					parent,

@@ -114,3 +114,9 @@ NetHack*extended_commands*dismiss.accelerators: #override\n\
 !NetHack*map*bright_magenta:	violet
 !NetHack*map*bright_cyan:	cyan
 !NetHack*map*white:		white
+!
+! X11R6 resource by Issei , Mon May 23 14:10:19 JST 1994
+!
+NetHack*Label.international:	True
+NetHack*Command.international:	True
+NetHack*fontSet:		-*-fixed-medium-r-normal--16-*

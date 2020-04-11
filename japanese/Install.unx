@@ -1,0 +1,106 @@
+
+                               JNetHack
+                                   
+         Copyright 1993,1994  I.Numata, S.Miyashita, N.Hamada
+
+
+			INSTALL GUIDE FOR UNIX
+0)
+
+日本語 NetHackをインストールするには，8ビットスルーな lexが必要です．
+lexに -8 オプション(あるいはそれと同等のもの)があるかどうかをインストー
+ルの前に確認します．なければ，8ビットスルーな lexをインストールしなけ
+ればなりません．幸い GNUの flexが8ビットスルーですので，これをインストー
+ルするのがよいでしょう．また，gzipや patchも GNUの最新バージョンインス
+トールしておくことをおすすめします．
+
+1)
+
+最初にやることは，NetHack3.1.3を展開し，その後
+
+        % cd nethack-3.1.3
+        % gzip -dc  jnethack-?.?.?.gz | patch -p
+                             ~~~~~この部分はバージョンに依存
+
+を実行することです．また前のバージョンがあるならば．．
+
+        % gzip -dc  patch-jnh-?.?.?-jnh-?.?.?.gz | patch -p
+                              ~~~~~     ~~~~~この部分はバージョンに依存
+
+とします．ソースコードやドキュメントの漢字コードは全てEUCで既述されて
+います．よって SJISにしたいのであれば．．．
+
+        % gzip -dc  jnethack-?.?.?.gz | nkf -s |patch -p
+
+等とすればよいでしょう．
+
+2)
+
+次のコマンドを実行し Makefileを作ります．
+
+        % cd sys/unix
+        % sh setup.sh
+
+以前にインストールしたものをバージョンアップする際も必ず行なってくださ
+い．(何故ならMakefileが変更されている可能性があります)
+
+src/Makefile のコメントを参考にして CFLAGS等をマシンの設定に合せて自分
+で編集します．
+
+次に include/config.hや include/unixconf.h を編集します．
+
+オジナル版Nethackがインストールされている場合を考慮し，HACKDIRは別のディ
+レクトリになっています． X-Windowで動かすには，X11R5のXsiで動くXawをイ
+ンストールしているか， X11R6をインストールしている必要があります．前者
+は X11R5の contrib/lib/Xaw として手に入れることができます．推奨はX11R6
+です．いずれの場合もconfig.hの対応する部分を書き換え，src/Makefile を
+変更する必要があります．また，必要なら include/hack.hも編集します．
+
+HACKDIRを変更した場合はトップ階層にあるMakefileも変更します．さもない
+と make installが正しく動作しません．
+
+最後に，lexを使うか，flexを使うかによって，util/Makefileの対応する部分を
+書き替えます．
+
+3)
+
+        % make
+
+エラーなくコンパイルできたならば，次のコマンドを実行します．(多くの場
+合rootになる必要があるはずです)
+
+        % make install
+
+前のバージョンを上げたり，インストールしなおすときは
+
+	% make update
+
+とします．これを行わないとセーブファイル等が全て破壊されてしまいます．
+
+これで日本語版 NetHackの完成です．Xの環境で動作させたければ， 
+NetHack.ad を NetHackと言う名前にして適当なディレクトリィにコピーしま
+す．(例えば /usr/local/X11R6/lib/X11/app-defaultsとか，ホームディレク
+トリとか)
+
+
+				 注意
+
+.nethackrc等，設定ファイルは全て EUCコードにする必要があります．
+もちろん playername,fruit,dogname,catname等にも日本語
+を設定できます．新しく追加されたオプションとして，kcodeがあります．
+
+OPTIONS=kcode:jis
+
+のように設定してください．このオプションは ttyにのみ影響を与えます．
+XはXの国際化部分に依存します．また，.nethackrcより先に .jnethackrc
+を読みに行くので，英語版との共存が可能です．
+
+kterm-5.2.0(以上)がインストールされているならば，X11版をインストールし
+なくても -decオプションをつけることにより，そこそこのグラフィックを堪
+能できます．この場合 kcode:jisとする必要があります．
+
+
+
+
+
+

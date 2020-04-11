@@ -11,8 +11,9 @@ UTL	= ..\util
 
 default: all
 
-all:	$(DAT)\data	    $(DAT)\rumors	$(DAT)\dungeon \
-	$(DAT)\oracles	    $(DAT)\quest.dat	$(DAT)\sp_lev.tag
+all:	$(DAT)\data	    $(DAT)\jrumors	$(DAT)\dungeon \
+	$(DAT)\joracles	    $(DAT)\quest.dat	$(DAT)\sp_lev.tag \
+	..\include\jdata.h
 
 $(UTL)\utility.tag: $(UTL)\*.c $(UTL)\*.l $(UTL)\*.y $(INCL)\*.h
 	@echo You must "make all" in $(UTL) first.
@@ -21,14 +22,17 @@ $(UTL)\utility.tag: $(UTL)\*.c $(UTL)\*.l $(UTL)\*.y $(INCL)\*.h
 $(DAT)\data: 	$(UTL)\utility.tag    $(DAT)\data.base
 	$(UTL)\makedefs -d
 
-$(DAT)\rumors:	$(UTL)\utility.tag    $(DAT)\rumors.tru   $(DAT)\rumors.fal
+$(DAT)\jrumors:	$(UTL)\utility.tag    $(DAT)\jrumors.tru   $(DAT)\jrumors.fal
 	$(UTL)\makedefs -r
 
 $(DAT)\quest.dat: $(UTL)\utility.tag  $(DAT)\quest.txt
 	$(UTL)\makedefs -q
 
-$(DAT)\oracles:	$(UTL)\utility.tag    $(DAT)\oracles.txt
+$(DAT)\joracles: $(UTL)\utility.tag    $(DAT)\joracles.txt
 	$(UTL)\makedefs -h
+
+..\include\jdata.h: $(UTL)\utility.tag $(DAT)\jtrns_mo.dat $(DAT)\jtrns_ob.dat
+	$(UTL)\makedefs -j
 
 #
 # Note: `options` should be created via date.h target in ..\src\makefile
@@ -77,7 +81,7 @@ clean: spotless
 spotless:
 	if exist $(DAT)\?-fill?.lev	del $(DAT)\?-fill?.lev
 	if exist $(DAT)\?-goal.lev	del $(DAT)\?-goal.lev
-	if exist $(DAT)\?-locate.lev	del $(DAT)\?-locate
+	if exist $(DAT)\?-locate.lev	del $(DAT)\?-locate.lev
 	if exist $(DAT)\?-start.lev	del $(DAT)\?-start.lev
 	if exist $(DAT)\air.lev		del $(DAT)\air.lev
 	if exist $(DAT)\asmodeus.lev	del $(DAT)\asmodeus.lev
@@ -91,14 +95,15 @@ spotless:
 	if exist $(DAT)\earth.lev	del $(DAT)\earth.lev
 	if exist $(DAT)\fakewiz?.lev	del $(DAT)\fakewiz?.lev
 	if exist $(DAT)\fire.lev	del $(DAT)\fire.lev
+	if exist $(DAT)\knox.lev	del $(DAT)\knox.lev
 	if exist $(DAT)\juiblex.lev	del $(DAT)\juiblex.lev
 	if exist $(DAT)\medusa-?.lev	del $(DAT)\medusa-?.lev
 	if exist $(DAT)\mine*.lev	del $(DAT)\mine*.lev
 	if exist $(DAT)\options		del $(DAT)\options
 	if exist $(DAT)\oracle.lev	del $(DAT)\oracle.lev
-	if exist $(DAT)\oracles		del $(DAT)\oracles
+	if exist $(DAT)\joracles	del $(DAT)\joracles
 	if exist $(DAT)\orcus.lev	del $(DAT)\orcus.lev
-	if exist $(DAT)\rumors		del $(DAT)\rumors
+	if exist $(DAT)\jrumors		del $(DAT)\jrumors
 	if exist $(DAT)\quest.dat	del $(DAT)\quest.dat
 	if exist $(DAT)\sanctum.lev	del $(DAT)\sanctum.lev
 	if exist $(DAT)\tower?.lev	del $(DAT)\tower?.lev

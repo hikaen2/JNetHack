@@ -132,6 +132,75 @@ AX|ANSI X3.64|full ANSI X3.64 (1977) standard:\
 	:kn#4:k1=\EOP:k2=\EOQ:k3=\EOR:k4=\EOS:\
 	:im=\E[4h:ei=\E[4l:al=\E[L:dl=\E[M:ic=\E[@:dc=\E[P:sf=\ED:sr=\EM:
 #
+# For NEC PC-9801 normal-resolution
+#
+pc9801|pc9800|pc-9801|pc-9800|NEC PC-9801:\
+	:co#80:li#24:\
+	:cm=\E[%i%d;%dH:ho=\E[1;1H:ll=\E[24;1H:cr=^M:le=^H:nd=^L:\
+	:cv=\E[%dH:\
+	:up=\EM:do=\ED:bw:nw=\EE:sc=\E[s:rc=\E[u:ta=^I:bc=^H:bs:nl=\ED:\
+	:am:xn:\
+	:sf=\ED:sr=\EM:\
+	:cl=\E[1;1H\E[2J:cd=\E[J:ce=\E[K:\
+	:al=\E[L:dl=\E[M:AL=\E[%dL:DL=\E[%dM:\
+	:so=\E[7;32m:se=\E[m:\
+	:mb=\E[5;7m:md=\E[7;36m:mh=\E[34m:mk=\E[8m:me=\E[m:mr=\E[7;32m:\
+	:as=\E)3:ae=\E)0:\
+	:us=\E[4;33m:ue=\E[m:\
+	:vi=\E[>5h:ve=\E[>5l:\
+	:bl=^G:\
+	:kl=\E[D:kr=\E[C:ku=\E[A:kd=\E[B:\
+	:k0=\EZ:k1=\ES:k2=\ET:k3=\EU:k4=\EV:\
+	:k5=\EW:k6=\EE:k7=\EJ:k8=\EP:k9=\EQ:\
+	:kb=^H:\
+	:ti=\E[>1l\E[>5l:te=\E[>1l\E[>5l\E[m\E[2J:
+#
+# For NEC PC-9801 high-resolution
+#
+pc9801h|pc9800h|pc-9801h|pc-9800h|NEC PC-9801 hireso:\
+	:co#80:li#30:\
+	:cm=\E[%i%d;%dH:ho=\E[1;1H:ll=\E[30;1H:cr=^M:le=^H:nd=^L:\
+	:cv=\E[%dH:\
+	:up=\EM:do=\ED:bw:nw=\EE:sc=\E[s:rc=\E[u:ta=^I:bc=^H:bs:nl=\ED:\
+	:am:xn:\
+	:sf=\ED:sr=\EM:\
+	:cl=\E[1;1H\E[2J:cd=\E[J:ce=\E[K:\
+	:al=\E[L:dl=\E[M:AL=\E[%dL:DL=\E[%dM:\
+	:so=\E[7;32m:se=\E[m:\
+	:mb=\E[5;7m:md=\E[7;36m:mh=\E[34m:mk=\E[8m:me=\E[m:mr=\E[7;32m:\
+	:as=\E)3:ae=\E)0:\
+	:us=\E[4;33m:ue=\E[m:\
+	:vi=\E[>5h:ve=\E[>5l:\
+	:bl=^G:\
+	:kl=\E[D:kr=\E[C:ku=\E[A:kd=\E[B:\
+	:k0=\EZ:k1=\ES:k2=\ET:k3=\EU:k4=\EV:\
+	:k5=\EW:k6=\EE:k7=\EJ:k8=\EP:k9=\EQ:\
+	:kb=^H:\
+	:ti=\E[>1l\E[>5l:te=\E[>1l\E[>5l\E[m\E[2J:
+#
+# For NEC PC-9801 30 lines
+#
+pc9801x|pc9800x|pc-9801x|pc-9800x|NEC PC-9801 30 lines:\
+	:co#80:li#29:\
+	:cm=\E[%i%d;%dH:ho=\E[1;1H:ll=\E[29;1H:cr=^M:le=^H:nd=^L:\
+	:cv=\E[%dH:\
+	:up=\EM:do=\ED:bw:nw=\EE:sc=\E[s:rc=\E[u:ta=^I:bc=^H:bs:nl=\ED:\
+	:am:xn:\
+	:sf=\ED:sr=\EM:\
+	:cl=\E[1;1H\E[2J:cd=\E[J:ce=\E[K:\
+	:al=\E[L:dl=\E[M:AL=\E[%dL:DL=\E[%dM:\
+	:so=\E[7;32m:se=\E[m:\
+	:mb=\E[5;7m:md=\E[7;36m:mh=\E[34m:mk=\E[8m:me=\E[m:mr=\E[7;32m:\
+	:as=\E)3:ae=\E)0:\
+	:us=\E[4;33m:ue=\E[m:\
+	:vi=\E[>5h:ve=\E[>5l:\
+	:bl=^G:\
+	:kl=\E[D:kr=\E[C:ku=\E[A:kd=\E[B:\
+	:k0=\EZ:k1=\ES:k2=\ET:k3=\EU:k4=\EV:\
+	:k5=\EW:k6=\EE:k7=\EJ:k8=\EP:k9=\EQ:\
+	:kb=^H:\
+	:ti=\E[>1l\E[>5l:te=\E[>1l\E[>5l\E[m\E[2J:
+#
 # Display hacker's tool
 #
 debug|debugging entry:\

@@ -7,6 +7,7 @@
 #include "hack.h"
 
 #include	<sys/stat.h>
+#include	<jctype.h>
 
 #ifdef OVLB
 
@@ -100,9 +101,10 @@ regularize(s)
  */
 register char *s;
 {
-	register char *lp;
+	register unsigned char *lp;
 
 	for (lp = s; *lp; lp++)
+		if (iskanji((int)*lp) && iskanji2((int)*(lp + 1))) lp++; else
 		if (*lp <= ' ' || *lp == '"' || (*lp >= '*' && *lp <= ',') ||
 		    *lp == '.' || *lp == '/' || (*lp >= ':' && *lp <= '?') ||
 # ifdef OS2

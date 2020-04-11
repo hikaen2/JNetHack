@@ -8,6 +8,12 @@
  * 	+ No global functions.
  */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #ifndef SYSV
 #define PRESERVE_NO_SYSV	/* X11 include files may define SYSV */
 #endif
@@ -116,7 +122,14 @@ add_to_text_window(wp, attr, str)
     append_text_buffer(&text_info->text, str, FALSE);
 
     /* Calculate text width and save longest line */
+/*JP
+**	for i18n by issei 1994/1/8
+*/
+#ifndef XI18N
     width = XTextWidth(text_info->fs, str, (int) strlen(str));
+#else
+    width = XmbTextEscapement(text_info->fontset, str, (int) strlen(str));
+#endif
     if (width > text_info->max_width)
 	text_info->max_width = width;
 }
@@ -131,11 +144,20 @@ display_text_window(wp, blocking)
     Cardinal num_args;
     Dimension width, height;
     int nlines;
+/*JP*/
+#ifdef XI18N
+    XFontSetExtents *extent;
+#endif
 
     text_info = wp->text_information;
     width  = text_info->max_width + text_info->extra_width;
     text_info->blocked = blocking;
     text_info->destroy_on_ack = FALSE;
+
+/*JP*/
+#ifdef XI18N
+    extent = XExtentsOfFontSet(text_info->fontset);
+#endif
 
     /*
      * Calculate the number of lines to use.  First, find the number of
@@ -145,8 +167,14 @@ display_text_window(wp, blocking)
      * _some_ lines.  Finally, use the number of lines in the text if
      * there are fewer than the max.
      */
+/*JP*/
+#ifndef XI18N
     nlines = (XtScreen(wp->w)->height - text_info->extra_height) /
 			(text_info->fs->ascent + text_info->fs->descent);
+#else
+    nlines = (XtScreen(wp->w)->height - text_info->extra_height) /
+			extent->max_logical_extent.height;
+#endif
     nlines -= 4;
     if (nlines <= 0) nlines = 1;
 
@@ -154,8 +182,14 @@ display_text_window(wp, blocking)
 	nlines = text_info->text.num_lines;
 
     /* Font height is ascent + descent. */
+/*JP*/
+#ifndef XI18N
     height = (nlines * (text_info->fs->ascent + text_info->fs->descent))
 						    + text_info->extra_height;
+#else
+    height = (nlines * extent->max_logical_extent.height)
+						    + text_info->extra_height;
+#endif
 
     num_args = 0;
 
@@ -245,6 +279,10 @@ create_text_window(wp)
     XtSetArg(args[num_args], XtNresize, XawtextResizeBoth);	num_args++;
     XtSetArg(args[num_args], XtNtranslations,
 		XtParseTranslationTable(text_translations));	num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 
     wp->w = XtCreateManagedWidget(
 		killer && WIN_MAP == WIN_ERR ?
@@ -256,7 +294,11 @@ create_text_window(wp)
 
     /* Get the font and margin information. */
     num_args = 0;
+#ifndef XI18N
     XtSetArg(args[num_args], XtNfont,	      &text_info->fs); num_args++;
+#else
+    XtSetArg(args[num_args], XtNfontSet,	      &text_info->fontset); num_args++;
+#endif
     XtSetArg(args[num_args], XtNtopMargin,    &top_margin);    num_args++;
     XtSetArg(args[num_args], XtNbottomMargin, &bottom_margin); num_args++;
     XtSetArg(args[num_args], XtNleftMargin,   &left_margin);   num_args++;

@@ -3,6 +3,13 @@
 /* NetHack may be freely redistributed.  See license for details. */
 
 /*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
+/*
  *	Contains code for picking objects up, and container use.
  */
 
@@ -28,8 +35,10 @@ STATIC_PTR int FDECL(out_container,(struct obj *));
     ((cont)->cursed ? (obj)->owt * 2 :	\
 		      1 + ((obj)->owt / ((cont)->blessed ? 4 : 2)))
 
-static const char moderateloadmsg[] = "You have a little trouble lifting";
-static const char nearloadmsg[] = "You have much trouble lifting";
+/*JP static const char moderateloadmsg[] = "You have a little trouble lifting";
+static const char nearloadmsg[] = "You have much trouble lifting";*/
+static const char moderateloadmsg[] = "を持ったら少しふらついた．";
+static const char nearloadmsg[] = "はずっしりと肩にのしかかった．";
 
 static void
 unsplitobj(obj_block, obj_chip, resplit)
@@ -136,8 +145,10 @@ boolean here, incl_gold;
 ask_again:
 		oclasses[oclassct = 0] = '\0';
 		*one_at_a_time = *everything = FALSE;
-		Sprintf(qbuf,"What kinds of thing do you want to %s? [%s]",
-			action, ilets);
+/*JP		Sprintf(qbuf,"What kinds of thing do you want to %s? [%s]",
+			action, ilets);*/
+		Sprintf(qbuf,"どの種類のものを%sか？[%s]",
+			jconj(action,"ます"), ilets);
 		getlin(qbuf,inbuf);
 		if (*inbuf == '\033') return FALSE;
 
@@ -159,13 +170,18 @@ ask_again:
 			    oclasses[oclassct] = '\0';
 			} else {
 			    if (!where)
-				where = !strcmp(action,"pick up")  ? "here" :
+/*JP				where = !strcmp(action,"pick up")  ? "here" :
 					!strcmp(action,"take out") ?
-							    "inside" : "";
+							    "inside" : "";*/
+				where = (!strcmp(action,"pick up")||!strcmp(action,"拾う")) ? "ここ" :
+					(!strcmp(action,"take out")||!strcmp(action,"取り出す")) ?
+							    "の中" : "";
 			    if (*where)
-				pline("There are no %c's %s.", sym, where);
+/*JP				pline("There are no %c's %s.", sym, where);*/
+				pline("%cは%sにない．", sym, where);
 			    else
-				You("have no %c's.", sym);
+/*JP				You("have no %c's．", sym);*/
+				You("%cは持っていない．", sym);
 			}
 		    }
 		}
@@ -196,8 +212,10 @@ boolean picked_some;
 		(void) dolook();
 	    } else {
 		read_engr_at(u.ux,u.uy);
-		pline("There are several %sobjects here.",
-		      picked_some ? "more " : "");
+/*JP		pline("There are several %sobjects here.",
+		      picked_some ? "more " : "");*/
+		pline("ここには%sいくつかものがある．",
+		      picked_some ? "さらに" : "");
 	    }
 	} else {
 	    read_engr_at(u.ux,u.uy);
@@ -253,12 +271,14 @@ int all;	/* all >= 0 => yes/no; < 0 => -count */
 		    ct++;
 
 		if (ct >= 2) {
-		    pline("There are several objects here.");
+/*JP		    pline("There are several objects here.");*/
+		    pline("ここにはいくつかものがある．");
 		    count = 0;
 
 		    /* added by GAN 10/24/86 to allow selective picking up */
 		    if (!query_classes(oclasses, &selective, &all_of_a_type,
-			  "pick up", level.objects[u.ux][u.uy], TRUE, FALSE))
+/*JP			  "pick up", level.objects[u.ux][u.uy], TRUE, FALSE))*/
+			  "拾う", level.objects[u.ux][u.uy], TRUE, FALSE))
 			return;
 		}
 	}
@@ -273,7 +293,8 @@ int all;	/* all >= 0 => yes/no; < 0 => -count */
 
 		if (!all_of_a_type) {
 		    char qbuf[QBUFSZ];
-		    Sprintf(qbuf, "Pick up %s?", doname(obj));
+/*JP		    Sprintf(qbuf, "Pick up %s?", doname(obj));*/
+		    Sprintf(qbuf, "%sを拾いますか？", doname(obj));
 		    switch ((obj->quan < 2L) ? ynaq(qbuf) : ynNaq(qbuf)) {
 		    case 'q': return;
 		    case 'n': continue;
@@ -350,26 +371,34 @@ struct obj *obj, *objx;
 
 	    if (gold_capacity <= 0L) {
 		if (objx) unsplitobj(obj, objx, 0L);
-       pline("There %s %ld gold piece%s here, but you cannot carry any more.",
+/*JP       pline("There %s %ld gold piece%s here, but you cannot carry any more.",
 			(obj->quan == 1L) ? "is" : "are",
-			obj->quan, plur(obj->quan));
+			obj->quan, plur(obj->quan)); */
+       pline("ここには%ld個の金塊がある, しかしこれ以上持てない．",
+			obj->quan);
 		return 0;
 	    } else if (gold_capacity < obj->quan) {
 		if (objx) unsplitobj(obj, objx, 0L);
-		You("can only carry %s of the %ld gold pieces lying here.",
-		    gold_capacity == 1L ? "one" : "some", obj->quan);
-		pline("%s %ld gold piece%s.",
-		    nearloadmsg, gold_capacity, plur(gold_capacity));
+/*JP		You("can only carry %s of the %ld gold pieces lying here．",
+		    gold_capacity == 1L ? "one" : "some", obj->quan); */
+		You("%ld個の金塊の%sしか運べない．",
+		    obj->quan, gold_capacity == 1L ? "ひとつ" : "一部");
+/*JP		pline("%s %ld gold piece%s.",
+		    nearloadmsg, gold_capacity, plur(gold_capacity)); */
+		pline("%ld個の金塊%s",
+		      gold_capacity, nearloadmsg);
 		u.ugold += gold_capacity;
 		obj->quan -= gold_capacity;
 		costly_gold(obj->ox, obj->oy, gold_capacity);
 	    } else {
 		u.ugold += obj->quan;
 		if ((nearload = near_capacity()) != 0)
-		    pline("%s %ld gold piece%s.",
-			  nearload < MOD_ENCUMBER ?
+/*JP		    pline("%s %ld gold piece%s.",
 			  moderateloadmsg : nearloadmsg,
-			  obj->quan, plur(obj->quan));
+			  obj->quan, plur(obj->quan)); */
+		    pline("%ld個の金塊%s", obj->quan,
+			  nearload < MOD_ENCUMBER ?
+			  moderateloadmsg : nearloadmsg);
 		else
 		    prinv(NULL, obj, 0L);
 		costly_gold(obj->ox, obj->oy, obj->quan);
@@ -391,16 +420,21 @@ struct obj *obj, *objx;
 		else
 #endif
 		{
-		  pline("Touching the cockatrice corpse is a fatal mistake.");
+/*JP		  pline("Touching the cockatrice corpse is a fatal mistake.");
 		    You("turn to stone.");
-		    You("die...");
+		    You("die..."); */
+		  pline("コカトリスの死体に触れるのは致命的な間違いだ．");
+		    You("石になった．");
+		    pline("あなたは死にました．．．");
 		    killer_format = KILLED_BY_AN;
-		    killer = "cockatrice corpse";
+/*JP		    killer = "cockatrice corpse";*/
+		    killer = "コカトリスの死体に触れて";
 		    done(STONING);
 		    return -1;
 		}
 	    } else if (is_rider(&mons[obj->corpsenm])) {
-		pline("At your touch, the corpse suddenly moves...");
+/*JP		pline("At your touch, the corpse suddenly moves..."); */
+		pline("あなたが触ると突然死体が動き出した．．．");
 		revive_corpse(obj, 1, FALSE);
 		exercise(A_WIS, FALSE);
 		return -1;
@@ -409,9 +443,11 @@ struct obj *obj, *objx;
 	    if (obj->blessed) obj->blessed = 0;
 	    else if (!obj->spe && !obj->cursed) obj->spe = 1;
 	    else {
-		pline("The scroll%s turn%s to dust as you pick %s up.",
+/*JP		pline("The scroll%s turn%s to dust as you pick %s up.",
 			plur(obj->quan), (obj->quan == 1L) ? "s" : "",
-			(obj->quan == 1L) ? "it" : "them");
+			(obj->quan == 1L) ? "it" : "them"); */
+		pline("%s巻物はあなたが拾い上げると塵となってしまった．",
+			(obj->quan == 1L) ? "その" : "それらの");
 		if (!(objects[SCR_SCARE_MONSTER].oc_name_known) &&
 				    !(objects[SCR_SCARE_MONSTER].oc_uname))
 		    docall(obj);
@@ -449,8 +485,10 @@ struct obj *obj, *objx;
 			savequan = obj->quan;
 			obj->quan += objx->quan;
 		    }
-		    You("can only carry %s of the %s lying here.",
-			(qq == 1L) ? "one" : "some", doname(obj));
+/*JP		    You("can only carry %s of the %s lying here.",
+			(qq == 1L) ? "one" : "some", doname(obj)); */
+		    You("ここにある%sのうちの%sしか運べない．",
+			doname(obj), (qq == 1L) ? "１つ" : "いくつか");
 		    if (objx) {		/* re-do the prior split */
 			obj->quan = savequan;
 			unsplitobj(obj, objx, qq);
@@ -462,12 +500,19 @@ struct obj *obj, *objx;
 		}
 	    }
 	    if (objx) unsplitobj(obj, objx, 0L);
-	    pline("There %s %s here, but %s.",
+/*JP	    pline("There %s %s here, but %s.",
 		    (obj->quan == 1L) ? "is" : "are", doname(obj),
 		    !invent ? (obj->quan == 1L ?
 				"it is too heavy for you to lift" :
 				"they are too heavy for you to lift") :
-			"you cannot carry any more");
+			"you cannot carry any more"); */
+	    pline("ここには%s%sがある, しかし%s．",
+		  (obj->quan == 1L) ? "" : "いくつかの",
+		  doname(obj),
+		  !invent ? (obj->quan == 1L ?
+			     "それは持つには重過ぎる" :
+			     "それらは持つには重過ぎる") :
+		  "これ以上は運べない");
 	    if (obj->otyp == SCR_SCARE_MONSTER) obj->spe = 0;
 	    return -1;
 	}
@@ -476,7 +521,8 @@ lift_some:
 	if (inv_cnt() >= 52) {
 	    if (objx) unsplitobj(obj, objx, 0L);
 	    if (obj->otyp == SCR_SCARE_MONSTER) obj->spe = 0;
-	    Your("knapsack cannot accommodate any more items.");
+/*JP	    Your("knapsack cannot accommodate any more items."); */
+	    Your("ナップザックはこれ以上アイテムを詰め込めない．");
 	    return -1;
 	}
 
@@ -486,7 +532,8 @@ lift_some:
 		char qbuf[QBUFSZ];
 		char ch;
 
-		Sprintf(qbuf, "%s %s.  Continue?", nearloadmsg, doname(obj));
+/*JP		Sprintf(qbuf, "%s %s.  Continue?", nearloadmsg, doname(obj)); */
+		Sprintf(qbuf, "%s%s．続けますか？", doname(obj), nearloadmsg);
 		switch (ch = ynq(qbuf)) {
 			case 'n':
 			case 'q':
@@ -504,7 +551,7 @@ lift_some:
 	if (uwep && uwep == obj) mrg_to_wielded = TRUE;
 	nearload = near_capacity();
 	prinv(nearload == SLT_ENCUMBER ? moderateloadmsg : NULL,
-		obj, pickquan);
+		obj, pickquan); 
 	mrg_to_wielded = FALSE;
 	return 1;
 }
@@ -535,25 +582,41 @@ encumber_msg()
 
     if(oldcap < newcap) {
 	switch(newcap) {
-	case 1: Your("movements are slowed slightly because of your load.");
+/*JP	case 1: Your("movements are slowed slightly because of your load.");
 		break;
 	case 2: You("rebalance your load.  Movement is difficult.");
 		break;
 	case 3: You("stagger under your heavy load.  Movement is very hard.");
 		break;
 	default: You("can barely move a handspan with this load!");
+		break; */
+	case 1: Your("動きは荷物のために少し遅くなった．");
+		break;
+	case 2: You("荷物の釣合をとり直したが，動きにくい．");
+		break;
+	case 3: You("荷物の重みでのたうちまわった．動くのが非常にきつい．");
+		break;
+	default: You("この重さでは少しも動けない！");
 		break;
 	}
 	flags.botl = 1;
     } else if(oldcap > newcap) {
 	switch(newcap) {
-	case 0: Your("movements are now unencumbered.");
+/*JP	case 0: Your("movements are now unencumbered.");
 		break;
 	case 1: Your("movements are only slowed slightly by your load.");
 		break;
 	case 2: You("rebalance your load.  Movement is still difficult.");
 		break;
 	case 3: You("stagger under your load.  Movement is still very hard.");
+		break; */
+	case 0: Your("動きは楽になった．");
+		break;
+	case 1: You("ちょっと動きやすくなった．");
+		break;
+	case 2: You("荷物の釣合をとり直した．だがまだ動くのはきつい．");
+		break;
+	case 3: You("荷物の重みがずっしりと肩にくる．まだ動くのが非常にきつい．");
 		break;
 	}
 	flags.botl = 1;
@@ -571,17 +634,20 @@ doloot()	/* loot a container on the floor. */
 	int timepassed = 0;
 
 	if (Levitation && !Is_airlevel(&u.uz) && !Is_waterlevel(&u.uz)) {
-		You("cannot reach the floor.");
+/*JP		You("cannot reach the floor."); */
+		You("床に届かない．");
 		return(0);
 	}
 	if(is_pool(u.ux, u.uy)) {
-		You("cannot loot things that are deep in the water.");
+/*JP		You("cannot loot things that are deep in the water."); */
+		You("水深くに沈んだものを開けれない．");
 		return(0);
 	}
 
 #ifdef POLYSELF
 	if(nolimbs(uasmon)) {
-		You("cannot loot things without limbs.");
+/*JP		You("cannot loot things without limbs."); */
+		You("手足がないと開けれない．");
 		return(0);
 	}
 #endif
@@ -592,27 +658,35 @@ doloot()	/* loot a container on the floor. */
 		if(Is_container(cobj)) {
 		    char qbuf[QBUFSZ];
 
-		    Sprintf(qbuf, "There is %s here, loot it?", doname(cobj));
+/*JP		    Sprintf(qbuf, "There is %s here, loot it?", doname(cobj));
+		    c = ynq(qbuf); */
+		    Sprintf(qbuf, "ここには%sがある．開けますか？",
+			    doname(cobj));
 		    c = ynq(qbuf);
 		    if(c == 'q') return (timepassed);
 		    if(c == 'n') continue;
 
 		    if(cobj->olocked) {
-			pline("Hmmm, it seems to be locked.");
+/*JP			pline("Hmmm, it seems to be locked."); */
+			pline("むーん，鍵がかかっているようだ．");
 			continue;
 		    }
 		    if(cobj->otyp == BAG_OF_TRICKS) {
-			You("carefully open the bag...");
-			pline("It develops a huge set of teeth and bites you!");
+/*JP			You("carefully open the bag..."); */
+			You("慎重に鞄を開けた．．．");
+/*JP			pline("It develops a huge set of teeth and bites you!"); */
+			pline("鞄から大きな歯が生えてきて，あなたを噛んだ！");
 			c = rnd(10);
 			if(Half_physical_damage) c = (c+1) / 2;
-			losehp(c, "carnivorous bag", KILLED_BY_AN);
+/*JP			losehp(c, "carnivorous bag", KILLED_BY_AN);*/
+			losehp(c, "食肉鞄によって", KILLED_BY_AN);
 			makeknown(BAG_OF_TRICKS);
 			timepassed = 1;
 			continue;
 		    }
 
-		    You("carefully open %s...", the(xname(cobj)));
+/*JP		    You("carefully open %s...", the(xname(cobj))); */
+		    You("慎重に%sを開けた．．．", the(xname(cobj)));
 		    if (cobj->otrapped && chest_trap(cobj, FINGER, FALSE)) {
 			timepassed = 1;
 			continue;	/* explosion destroyed cobj */
@@ -665,18 +739,23 @@ register struct obj *obj;
 		impossible("<in> no current_container?");
 		return 0;
 	} else if (obj == uball || obj == uchain) {
-		You("must be kidding.");
+/*JP		You("must be kidding."); */
+		You("ふざけてるんでしょ．");
 		return 0;
 	} else if (obj == current_container) {
-		pline("That would be an interesting topological exercise.");
+/*JP		pline("That would be an interesting topological exercise."); */
+		pline("それは興味をそそられるトポロジーの問題だ．");
 		return 0;
 	} else if (obj->owornmask & (W_ARMOR | W_RING | W_AMUL | W_TOOL)) {
-		Norep("You cannot %s something you are wearing.",
-			Icebox ? "refrigerate" : "stash");
+/*JP		Norep("You cannot %s something you are wearing.",
+			Icebox ? "refrigerate" : "stash"); */
+		Norep("身につけているものを%sことはできない．", 
+			Icebox ? "冷凍する" : "しまう");
 		return 0;
 	} else if ((obj->otyp == LOADSTONE) && obj->cursed) {
 		obj->bknown = 1;
-	      pline("The stone%s won't leave your person.", plur(obj->quan));
+/*JP	      pline("The stone%s won't leave your person.", plur(obj->quan)); */
+	      pline("どういうわけかその石をしまうことはできない．");
 		return 0;
 	} else if (obj->otyp == AMULET_OF_YENDOR ||
 		   obj->otyp == CANDELABRUM_OF_INVOCATION ||
@@ -686,12 +765,14 @@ register struct obj *obj;
 	 * steal them.  It also becomes a pain to check to see if someone
 	 * has the Amulet.  Ditto for the Candelabrum, the Bell and the Book.
 	 */
-	    pline("%s cannot be confined in such trappings.", The(xname(obj)));
+/*JP	    pline("%s cannot be confined in such trappings.", The(xname(obj))); */
+	    pline("%sは詰めることはできない．", The(xname(obj)));
 	    return 0;
 	}
 #ifdef WALKIES
 	else if (obj->otyp == LEASH && obj->leashmon != 0) {
-		pline("%s is attached to your pet.", The(xname(obj)));
+/*JP		pline("%s is attached to your pet.", The(xname(obj))); */
+		pline("%sがペットに付けられた．", The(xname(obj)));
 		return 0;
 	}
 #endif
@@ -713,7 +794,9 @@ register struct obj *obj;
 		 *  of evaluation of the parameters is undefined.
 		 */
 		Strcpy(buf, the(xname(obj)));
-		You("cannot fit %s into %s.", buf,
+/*JP		You("cannot fit %s into %s.", buf,
+		    the(xname(current_container))); */
+		You("%sを%sに詰め込むことはできない．", buf,
 		    the(xname(current_container)));
 		return 0;
 	}
@@ -736,7 +819,8 @@ register struct obj *obj;
 	current_container->owt = weight(current_container);
 
 	Strcpy(buf, the(xname(current_container)));
-	You("put %s into %s.", doname(obj), buf);
+/*JP	You("put %s into %s.", doname(obj), buf); */
+	You("%sを%sの中にしまった．", doname(obj), buf);
 
 	if (floor_container && costly_spot(u.ux, u.uy)) {
 		sellobj_state(TRUE);
@@ -749,7 +833,8 @@ register struct obj *obj;
 		obj->age = monstermoves - obj->age; /* actual age */
 
 	else if (Is_mbag(current_container) && mbag_explodes(obj, 0)) {
-		You("are blasted by a magical explosion!");
+/*JP		You("are blasted by a magical explosion!"); */
+		You("魔法の爆発を浴びた！");
 
 		/* the !floor_container case is taken care of */
 		if(*u.ushops && costly_spot(u.ux, u.uy) && floor_container) {
@@ -767,7 +852,8 @@ register struct obj *obj;
 		else
 			panic("in_container:  bag not found.");
 
-		losehp(d(6,6),"magical explosion", KILLED_BY_AN);
+/*JP		losehp(d(6,6),"magical explosion", KILLED_BY_AN);*/
+		losehp(d(6,6),"魔法の爆発で", KILLED_BY_AN);
 		current_container = 0;	/* baggone = TRUE; */
 	}
 
@@ -801,7 +887,8 @@ register struct obj *obj;
 	} else if (is_gold) {
 		obj->owt = weight(obj);
 	} else if (inv_cnt() >= 52) {
-		You("have no room to hold anything else.");
+/*JP		You("have no room to hold anything else."); */
+		pline("あなたにはこれ以上ものを持つ余裕はない．");
 		return -1;	/* skips gold too; oh well */
 	}
 
@@ -814,11 +901,17 @@ register struct obj *obj;
 		char buf[BUFSZ];
 
 		Strcpy(buf, doname(obj));
-		pline("There %s %s in %s, but %s.",
+/*JP		pline("There %s %s in %s, but %s.",
 			obj->quan==1 ? "is" : "are",
 			buf, the(xname(current_container)),
 			invent ? "you cannot carry any more"
-			: "it is too heavy for you to carry");
+			: "it is too heavy for you to carry");*/
+		pline("この%sには%s%sがある, しかし%s．",
+		        the(xname(current_container)),
+			obj->quan==1 ? "" : "いくつかの",
+			buf,
+			invent ? "これ以上は運べない"
+			: "それは持つには重過ぎる");
 		/* "too heavy for you to lift" is not right if you're carrying
 		   the container... */
 		return(0);
@@ -853,8 +946,10 @@ register struct obj *obj;
 	loadlev = near_capacity();
 	prinv(loadlev ?
 	      (loadlev < MOD_ENCUMBER ?
-	       "You have a little trouble removing" :
-	       "You have much trouble removing") : NULL,
+/*JP	       "You have a little trouble removing" :
+	       "You have much trouble removing") : NULL, */
+	       "運ぶのは少々困難だ．" :
+	       "運ぶのはかなり困難だ．") : NULL,
 	      ootmp, quan);
 
 	if (is_gold) {
@@ -884,8 +979,12 @@ register int held;
 
 	current_container = obj;	/* for use by in/out_container */
 	if (current_container->olocked) {
-		pline("%s seems to be locked.", The(xname(current_container)));
-		if (held) You("must put it down to unlock.");
+/*JP		pline("%s seems to be locked.", The(xname(current_container)));
+		if (held) You("must put it down to unlock."); */
+		pline("%sは鍵がかかっているようだ．",
+		      The(xname(current_container)));
+		if (held)
+		    pline("下に置かないことには鍵をはずせない．");
 		return 0;
 	}
 	/* Count the number of contained objects. Sometimes toss objects if */
@@ -895,10 +994,14 @@ register int held;
 	    otmp = curr->nobj;
 	    if (Is_mbag(obj) && obj->cursed && !rn2(13)) {
 		if (curr->known)
-		    pline("%s to have vanished!", The(aobjnam(curr,"seem")));
+/*JP		    pline("%s to have vanished!", The(aobjnam(curr,"seem"))); */
+		    pline("%sは消え去った！", The(xname(curr)));
 		else
-		    You("%s %s disappear.", Blind ? "notice" : "see",
-							doname(curr));
+/*JP		    You("%s %s disappear.", Blind ? "notice" : "see",
+							doname(curr)); */
+		    You("%sが見えなくなるの%s．",
+			doname(curr),
+			Blind ? "に気づいた" : "を見た");
 		if (prev)
 		    prev->nobj = otmp;
 		else
@@ -925,23 +1028,28 @@ register int held;
 	}
 
 	if (cnt && loss)
-	    You("owe %ld zorkmids for lost item%s.",
-		loss, lcnt > 1 ? "s" : "");
+/*JP	    You("owe %ld zorkmids for lost item%s.",
+		loss, lcnt > 1 ? "s" : ""); */
+	    You("なくなったアイテムのために%ldゴールドの借りをつくった．",
+		loss);
 
 	current_container->owt = weight(current_container);
 
 	if(!cnt)
-	    pline("%s %s is empty.", (held) ? "Your" : "The", xname(obj));
+/*JP	    pline("%s %s is empty．", (held) ? "Your" : "The", xname(obj)); */
+	    pline("%sは空っぽだ．", xname(obj));
 	else {
-	    Sprintf(qbuf, "Do you want to take something out of %s?",
-			the(xname(obj)));
+/*JP	    Sprintf(qbuf, "Do you want to take something out of %s?",
+			the(xname(obj))); */
+	    Sprintf(qbuf, "%sから何か取り出しますか？", the(xname(obj)));
 ask_again:
 	    switch (yn_function(qbuf, ":ynq", 'n')) {
 	    case ':':
 		container_contents(current_container, FALSE, FALSE);
 		goto ask_again;
 	    case 'y':
-		if (query_classes(select, &one_by_one, &allflag, "take out",
+/*JP		if (query_classes(select, &one_by_one, &allflag, "take out",*/
+		if (query_classes(select, &one_by_one, &allflag, "取り出す",
 				   current_container->cobj, FALSE, FALSE)) {
 		    if (askchain((struct obj **)&current_container->cobj,
 				 (one_by_one ? (char *)0 : select), allflag,
@@ -958,14 +1066,18 @@ ask_again:
 	}
 
 	if (!invent && (u.ugold == 0 || Icebox)) return used;
-	if (yn_function("Do you wish to put something in?", ynqchars, 'n')
+/*JP	if (yn_function("Do you wish to put something in?", ynqchars, 'n')
+	    != 'y') return used; */
+	if (yn_function("中に何か入れますか？", ynqchars, 'n')
 	    != 'y') return used;
 	if (Icebox && current_container->dknown) {
-		otmp = getobj(frozen_food, "put in");
+/*JP		otmp = getobj(frozen_food, "put in");*/
+		otmp = getobj(frozen_food, "入れる");
 		if(!otmp || !in_container(otmp))
 			flags.move = multi = 0;
 	} else {
-		if (query_classes(select, &one_by_one, &allflag, "put in",
+/*JP		if (query_classes(select, &one_by_one, &allflag, "put in",*/
+		if (query_classes(select, &one_by_one, &allflag, "入れる",
 					   invent, FALSE, (u.ugold != 0L))) {
 		    struct obj *u_gold = (struct obj *)0;
 		    if (u.ugold && (one_by_one || (allflag && !*select)

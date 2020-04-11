@@ -53,12 +53,21 @@
 #define BURNING		 5
 #define CRUSHING	 6
 #define STONING		 7
+/*JP
 #define GENOCIDED	 8
 #define PANICKED	 9
 #define TRICKED		10
 #define QUIT		11
 #define ESCAPED		12
 #define ASCENDED	13
+*/
+#define DIED2		 8
+#define GENOCIDED	 9
+#define PANICKED	10
+#define TRICKED		11
+#define QUIT		12
+#define ESCAPED		13
+#define ASCENDED	14
 
 #ifndef DUNGEON_H	/* includes align.h */
 #include "dungeon.h"

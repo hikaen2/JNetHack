@@ -8,6 +8,11 @@
  * h+ 930227
  */
 
+/*
+**	Japanese version (by Issei Numata)
+**	changing point is marked `JP' (93/11/24)
+*/
+
 #include "hack.h"
 
 #ifdef TTY_GRAPHICS
@@ -227,7 +232,10 @@ tty_init_nhwindows()
 	 "         By Stichting Mathematisch Centrum and M. Stephenson.");
     tty_putstr(BASE_WINDOW, 0, "         See license for details.");
     tty_putstr(BASE_WINDOW, 0, "");
-    tty_display_nhwindow(BASE_WINDOW, FALSE);
+    tty_putstr(BASE_WINDOW, 0, "NetHack[日本語版], Copyright 1993, 1994");
+    tty_putstr(BASE_WINDOW, 0, "         By I. Numata , S. Miyashita and N. Hamada.");
+    tty_putstr(BASE_WINDOW, 0, "");
+   tty_display_nhwindow(BASE_WINDOW, FALSE);
 }
 
 void
@@ -248,7 +256,8 @@ tty_player_selection()
 	pl_character[0] = pc = 0;
     }
 
-#define PICK_PROMPT "Shall I pick a character for you? [Y, N, or Q(quit)] "
+/*JP#define PICK_PROMPT "Shall I pick a character for you? [Y, N, or Q(quit)] "*/
+#define PICK_PROMPT "キャラクターを選んであげましょうか？[Y, N, or Q(quit)] "
     tty_putstr(BASE_WINDOW, 0, "");
     tty_putstr(BASE_WINDOW, 0, PICK_PROMPT);
 
@@ -271,7 +280,8 @@ tty_player_selection()
     }
 
     tty_curs(BASE_WINDOW, 1, linecount+2);
-    tty_putstr(BASE_WINDOW, 0, "What kind of character are you:");
+/*JP    tty_putstr(BASE_WINDOW, 0, "What kind of character are you:");*/
+    tty_putstr(BASE_WINDOW, 0, "どのキャラクターにしますか：");
     tty_putstr(BASE_WINDOW, 0, "");
     Sprintf(pbuf, " 	 %s,", An(roles[0]));
     for(i = 1; roles[i]; i++) {
@@ -318,7 +328,8 @@ beginner:
 	i = rn2((int)strlen(pl_classes));
 	pc = pl_classes[i];
 	tty_putstr(BASE_WINDOW, 0, "");
-	Sprintf(pbuf, "This game you will be %s.", an(roles[i]));
+/*JP	Sprintf(pbuf, "This game you will be %s.", an(roles[i]));*/
+	Sprintf(pbuf, "このゲームではあなたは%sです．", jtrns_mon(roles[i]));
 	tty_putstr(BASE_WINDOW, 0, pbuf);
 	tty_putstr(BASE_WINDOW, 0, "");
 	tty_display_nhwindow(BASE_WINDOW, TRUE);
@@ -343,8 +354,10 @@ tty_askname()
 	register int c, ct;
 
 	tty_putstr(BASE_WINDOW, 0, "");
-	tty_putstr(BASE_WINDOW, 0, "Who are you? ");
-	tty_curs(BASE_WINDOW, 14, wins[BASE_WINDOW]->cury-1);
+/*JP	tty_putstr(BASE_WINDOW, 0, "Who are you? ");
+	tty_curs(BASE_WINDOW, 14, wins[BASE_WINDOW]->cury-1);*/
+	tty_putstr(BASE_WINDOW, 0, "あなたの名前は？");
+	tty_curs(BASE_WINDOW, 17, wins[BASE_WINDOW]->cury-1);
 	ct = 0;
 	while((c = tty_nhgetch()) != '\n') {
 		if(c == EOF) error("End of input\n");
@@ -356,12 +369,15 @@ tty_askname()
 # if defined(WIN32CON)
 				backsp();       /* \b is visible on NT */
 # else
-				msmsg("\b \b");
+/*JP				msmsg("\b \b");*/
+				(void) cputchar('\b');
+				(void) cputchar(' ');
+				(void) cputchar('\b');
 # endif
 #else
-				(void) putchar('\b');
-				(void) putchar(' ');
-				(void) putchar('\b');
+				(void) cputchar('\b');
+				(void) cputchar(' ');
+				(void) cputchar('\b');
 #endif
 			}
 			continue;
@@ -380,6 +396,13 @@ tty_askname()
 		}
 	}
 	plname[ct] = 0;
+/*JP*/
+	{
+		const char *jp;
+		jp = str2ic(plname);
+		Strcpy(plname,jp);
+	}
+
 	tty_curs(BASE_WINDOW, 1, wins[BASE_WINDOW]->cury+1);
 	if(ct == 0) tty_askname();
 }
@@ -400,6 +423,8 @@ tty_get_nh_event()
 static void
 getret()
 {
+/*JP*/
+	jputchar('\0');
 	xputs("\n");
 	if(flags.standout)
 		standoutbeg();
@@ -617,6 +642,8 @@ dmore(cw)
 	tty_curs(BASE_WINDOW, (int)ttyDisplay->curx+2, (int)ttyDisplay->cury);
     if(flags.standout)
 	standoutbeg();
+/*JP    xputs(prompt);*/
+    jputchar('\0'); /* reset */
     xputs(prompt);
     ttyDisplay->curx += strlen(prompt);
     if(flags.standout)
@@ -712,7 +739,7 @@ tty_display_nhwindow(window, blocking)
 	    if(cw->data[i]) {
 		attr = cw->data[i][0]-1;
 		if(cw->type == NHW_MENU) {
-		    (void) putchar(' '); ++ttyDisplay->curx;
+		    (void) cputchar(' '); ++ttyDisplay->curx;
 		}
 		term_start_attr(attr);
 		for(cp = &cw->data[i][1];
@@ -720,7 +747,8 @@ tty_display_nhwindow(window, blocking)
 #ifdef __SASC
 			(void) fputchar(*cp++);
 #else
-			(void) putchar(*cp++);
+/*JP			(void) putchar(*cp++);*/
+			(void) jputchar(*cp++);
 #endif
 		term_end_attr(attr);
 	    }
@@ -877,7 +905,7 @@ register int x, y;	/* not xchar: perhaps xchar is unsigned and
 	nocmov(x, y);
 #ifndef NO_TERMS
     } else if ((x <= 3 && cy <= 3) || (!CM && x < cx)) {
-	(void) putchar('\r');
+	(void) cputchar('\r');
 	ttyDisplay->curx = 0;
 	nocmov(x, y);
     } else if (!CM) {
@@ -897,6 +925,8 @@ tty_putsym(window, x, y, ch)
     char ch;
 {
     register struct WinDesc *cw = 0;
+/*JP*/
+    static int prev_win;
 
     if(window == WIN_ERR || (cw = wins[window]) == (struct WinDesc *) 0)
 	panic(winpanicstr,  window);
@@ -906,7 +936,12 @@ tty_putsym(window, x, y, ch)
     case NHW_MAP:
     case NHW_BASE:
 	tty_curs(window, x, y);
-	(void) putchar(ch);
+/*JP*/
+	if(cw->type!=NHW_MAP)
+	  (void) jputchar(ch);
+	else{
+	  (void) cputchar(ch);
+	}
 	ttyDisplay->curx++;
 	cw->curx++;
 	break;
@@ -916,6 +951,8 @@ tty_putsym(window, x, y, ch)
 	impossible("Can't putsym to window type %d", cw->type);
 	break;
     }
+/*JP*/
+    prev_win = cw->type;
 }
 
 
@@ -952,10 +989,16 @@ tty_putstr(window, attr, str)
     register char *ob;
     register const char *nb;
     register int i, j, n0;
+/*JP*/
+    int kflg;
+    unsigned char uc;
 
     /* Assume there's a real problem if the window is missing --
      * probably a panic message
      */
+/*JP*/
+    jputchar('\0');	/* RESET */
+
     if(window == WIN_ERR || (cw = wins[window]) == (struct WinDesc *) 0) {
 	tty_raw_print(str);
 	return;
@@ -993,8 +1036,19 @@ tty_putstr(window, attr, str)
 		}
 		break;
 	    }
-	    if(*ob != *nb)
+/*JP	    if(*ob != *nb)		*/
+/* check 2-bytes character for Japanese	*/
+/* by issei 93/12/2 			*/
+	    uc = *((unsigned char *)nb);
+	    if((!(uc & 0x80) && *ob != *nb) || kflg){
+	      tty_putsym(WIN_STATUS, i, cw->cury, *nb);
+	    }
+	    else{
+	      if(*ob != *nb || *(ob+1)!= *(nb+1)){
 		tty_putsym(WIN_STATUS, i, cw->cury, *nb);
+		kflg = 1;
+	      }
+	    }
 	    if(*ob) ob++;
 	}
 
@@ -1007,11 +1061,15 @@ tty_putstr(window, attr, str)
     case NHW_BASE:
 	tty_curs(window, cw->curx+1, cw->cury);
 	term_start_attr(attr);
+/*JP*/
 	while(*str && (int) ttyDisplay->curx < (int) ttyDisplay->cols-1) {
 #ifdef __SASC
 	    (void) fputchar(*str++);
 #else
-	    (void) putchar(*str++);
+	    if(cw->type==NHW_MAP)
+	      (void) cputchar(*str++);
+	    else
+	      (void) jputchar(*str++);
 #endif
 	    ttyDisplay->curx++;
 	}
@@ -1065,6 +1123,8 @@ tty_putstr(window, attr, str)
 	}
 	break;
     }
+/*JP*/
+    jputchar('\0');	/* RESET */
 }
 
 void
@@ -1342,24 +1402,40 @@ int in_ch;
 
 # if defined(ASCIIGRAPH) && !defined(NO_TERMS)
     if (flags.IBMgraphics)
+#  ifdef PC9801
+    {
+	if (!GFlag) {
+	    graph_on();
+	    GFlag = TRUE;
+	}
+/*JP	(void) putchar(ch);*/
+	(void) cputchar(ch);
+    }
+#  else
 	/* IBM-compatible displays don't need other stuff */
-	(void) putchar(ch);
+
+/*JP	(void) putchar(ch);*/
+	(void) cputchar(ch);
+#  endif
     else if (ch & 0x80) {
 	if (!GFlag) {
 	    graph_on();
 	    GFlag = TRUE;
 	}
-	(void) putchar((ch ^ 0x80)); /* Strip 8th bit */
+/*JP	(void) putchar((ch ^ 0x80)); /* Strip 8th bit */
+	(void) cputchar((ch & 0x7f)); /* Strip 8th bit */
     } else {
 	if (GFlag) {
 	    graph_off();
 	    GFlag = FALSE;
 	}
-	(void) putchar(ch);
+/*JP	(void) putchar(ch);*/
+	(void) cputchar(ch);
     }
 
 #else
-    (void) putchar(ch);
+/*JP    (void) putchar(ch);*/
+    (void) jputchar(ch);
 
 #endif	/* ASCIIGRAPH && !NO_TERMS */
 
@@ -1494,7 +1570,7 @@ tty_print_glyph(window, x, y, glyph)
 
 #ifndef NO_TERMS
     if (ul_hack && ch == '_') {		/* non-destructive underscore */
-	(void) putchar((char) ' ');
+	(void) cputchar((char) ' ');
 	backsp();
     }
 #endif
@@ -1527,9 +1603,11 @@ tty_raw_print(str)
 {
     if(ttyDisplay) ttyDisplay->rawprint++;
 #ifdef MICRO
-    msmsg("%s\n", str);
+/*JP    msmsg("%s\n", str);*/
+    jputs(str); (void) fflush(stdout);
 #else
-    puts(str); (void) fflush(stdout);
+/*JP    puts(str); (void) fflush(stdout);*/
+    jputs(str); (void) fflush(stdout);
 #endif
 }
 
@@ -1540,13 +1618,17 @@ tty_raw_print_bold(str)
     if(ttyDisplay) ttyDisplay->rawprint++;
     term_start_raw_bold();
 #ifdef MICRO
-    msmsg("%s", str);
+/*JP    msmsg("%s", str);*/
+    (void) jfputs(str,stdout);
 #else
-    (void) fputs(str, stdout);
+/*JP    (void) fputs(str, stdout);*/
+    (void) jfputs(str,stdout);
 #endif
     term_end_raw_bold();
 #ifdef MICRO
-    msmsg("\n");
+/*JP    msmsg("\n");*/
+    puts("\n");
+    (void) fflush(stdout);
 #else
     puts("");
     (void) fflush(stdout);

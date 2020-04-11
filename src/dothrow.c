@@ -4,6 +4,13 @@
 
 /* Contains code for 't' (throw) */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 static int FDECL(gem_accept, (struct monst *, struct obj *));
@@ -20,7 +27,8 @@ dothrow()
 	register struct obj *obj;
 
 	if(check_capacity(NULL)) return(0);
-	obj = getobj(toss_objs, "throw");
+/*JP	obj = getobj(toss_objs, "throw");*/
+	obj = getobj(toss_objs, "投げる");
 	/* it is also possible to throw food */
 	/* (or jewels, or iron balls... ) */
 
@@ -35,10 +43,12 @@ dothrow()
 
 	if(obj->oclass == GOLD_CLASS) return(throw_gold(obj));
 
-	if(!canletgo(obj,"throw"))
+/*JP	if(!canletgo(obj,"throw"))*/
+	if(!canletgo(obj,"投げる"))
 		return(0);
 	if (obj->oartifact == ART_MJOLLNIR && obj != uwep) {
-		You("must be wielding %s in order to throw it.", xname(obj));
+/*JP		You("must be wielding %s in order to throw it.", xname(obj));*/
+		pline("それを投げるには%sを装備しなければならない．", xname(obj));
 		return(0);
 	}
 	if ((obj->oartifact == ART_MJOLLNIR && ACURR(A_STR) != 125)
@@ -47,11 +57,13 @@ dothrow()
 					&& !throws_rocks(uasmon)
 #endif
 								)) {
-		pline("It's too heavy.");
+/*JP		pline("It's too heavy.");*/
+		pline("重すぎて投げられない．");
 		return(1);
 	}
 	if(!u.dx && !u.dy && !u.dz) {
-		You("cannot throw an object at yourself.");
+/*JP		You("cannot throw an object at yourself.");*/
+		pline("自分に向かっては投げられない．");
 		return(0);
 	}
 	u_wipe_engr(2);
@@ -84,12 +96,15 @@ register struct obj *obj;
 	}
 	if (IS_ALTAR(levl[u.ux][u.uy].typ)) doaltarobj(obj);
 	else
-		pline("%s hit%s the %s.", Doname2(obj), 
-		      (obj->quan == 1L) ? "s" : "", surface(u.ux,u.uy));
+/*JP		pline("%s hit%s the %s.", Doname2(obj), 
+		      (obj->quan == 1L) ? "s" : "", surface(u.ux,u.uy));*/
+		pline("%sは%sに命中した．", Doname2(obj), 
+		      surface(u.ux,u.uy));
 	if (breaks(obj, TRUE)) return;
 	else if(obj->oclass == POTION_CLASS) {
-		pline("The flask%s break%s, and you smell a peculiar odor...",
-		      plur(obj->quan), (obj->quan == 1L) ? "s" : "");
+/*JP		pline("The flask%s break%s, and you smell a peculiar odor...",
+		      plur(obj->quan), (obj->quan == 1L) ? "s" : "");*/
+		pline("薬瓶は割れ，独特のにおいがただよった．．．");
 		potionbreathe(obj);
 		if(*u.ushops)
 		    check_shop_obj(obj, u.ux, u.uy, TRUE);
@@ -121,7 +136,8 @@ hurtle(dx, dy, range)
     if(!range || (!dx && !dy) || u.ustuck) return; /* paranoia */
 
     nomul(-range);
-    You("%s in the opposite direction.", range > 1 ? "hurtle" : "float");
+/*JP    You("%s in the opposite direction.", range > 1 ? "hurtle" : "float");*/
+    You("反動で反対の方向に%s．", range > 1 ? "転がった" : "飛んだ");
     while(range--) {
 	nx = u.ux + dx;
 	ny = u.uy + dy;
@@ -129,15 +145,19 @@ hurtle(dx, dy, range)
 	if(!isok(nx,ny)) break;
 	if(IS_ROCK(levl[nx][ny].typ) || closed_door(nx,ny) ||
 	   (IS_DOOR(levl[nx][ny].typ) && (levl[nx][ny].doormask & D_ISOPEN))) {
-	    pline("Ouch!");
+/*JP	    pline("Ouch!");*/
+	    pline("いてっ！");
 	    losehp(rnd(2+range), IS_ROCK(levl[nx][ny].typ) ?
-		   "bumping into a wall" : "bumping into a door", KILLED_BY);
+/*JP		   "bumping into a wall" : "bumping into a door", KILLED_BY);*/
+		   "壁にぶちあたって" : "扉にぶちあったって", KILLED_BY);
 	    break;
 	}
 
 	if ((obj = sobj_at(BOULDER,nx,ny)) != 0) {
-	    You("bump into a %s.  Ouch!", xname(obj));
-	    losehp(rnd(2+range), "bumping into a boulder", KILLED_BY);
+/*JP	    You("bump into a %s.  Ouch!", xname(obj));*/
+	    You("%sにぶちあたった．いてっ！", xname(obj));
+/*JP	    losehp(rnd(2+range), "bumping into a boulder", KILLED_BY);*/
+	    losehp(rnd(2+range), "岩にぶちあたって", KILLED_BY);
 	    break;
 	}
 
@@ -145,7 +165,8 @@ hurtle(dx, dy, range)
 	u.uy = ny;
 	newsym(u.ux - dx, u.uy - dy);
 	if ((mon = m_at(u.ux, u.uy)) != 0) {
-	    You("bump into %s.", a_monnam(mon));
+/*JP	    You("bump into %s.", a_monnam(mon));*/
+	    You("%sにぶちあたった．", a_monnam(mon));
 	    wakeup(mon);
 	    if(Is_airlevel(&u.uz))
 		mnexto(mon);
@@ -219,14 +240,15 @@ register struct obj *obj;
 		&& uwep && (objects[obj->otyp].w_propellor > 0) &&
 		(objects[obj->otyp].w_propellor ==
                                              -objects[uwep->otyp].w_propellor))
-		pline("%s misfires!", The(xname(obj)));
+		pline("%sははずれた！", The(xname(obj)));
 	    else {
 		/* only slip if it's greased or meant to be thrown */
 		if(obj->greased ||
 		   (obj->otyp >= DART && obj->otyp <= JAVELIN) ||
 		   (obj->otyp >= DAGGER && obj->otyp <= CRYSKNIFE &&
 		    obj->otyp != ATHAME) || obj->otyp == WAR_HAMMER)
-		    pline("%s slips as you throw it!", The(xname(obj)));
+/*JP		    pline("%s slips as you throw it!", The(xname(obj)));*/
+		    pline("%sを投げようとしたが，ずり落ちてしまった！", The(xname(obj)));
 		else slipok = FALSE;
 	    }
 	    if (slipok) {
@@ -244,7 +266,8 @@ register struct obj *obj;
 	} else if(u.dz) {
 	  if (u.dz < 0 && pl_character[0] == 'V' &&
 	      obj->oartifact == ART_MJOLLNIR && !impaired) {
-	      pline("%s hits the ceiling and returns to your hand!",
+/*JP	      pline("%s hits the ceiling and returns to your hand!",*/
+	      pline("%sは天井に命中し，手に戻ってきた！",
 		    The(xname(obj)));
 	      obj = addinv(obj);
 	      (void) encumber_msg();
@@ -252,7 +275,8 @@ register struct obj *obj;
 	      return(1);
 	  }
 	  if (u.dz < 0 && !Is_airlevel(&u.uz) && !Underwater && !Is_waterlevel(&u.uz)) {
-	    pline("%s hits the ceiling, then falls back on top of your %s.",
+/*JP	    pline("%s hits the ceiling, then falls back on top of your %s.",*/
+	    pline("%sは天井に命中し，あなたの%sの真上に落ちてきた．",
 		Doname2(obj),		/* note: obj->quan == 1 */
 		body_part(HEAD));
 	    if(obj->oclass == POTION_CLASS)
@@ -262,10 +286,12 @@ register struct obj *obj;
 	      
 		if (uarmh) {
 		    if(is_metallic(uarmh)) {
-		        pline("Fortunately, you are wearing a hard helmet.");
+/*JP		        pline("Fortunately, you are wearing a hard helmet.");*/
+		        pline("幸運にも，あなたは固い兜を身につけていた．");
 			dmg = 1;
 		    } else if (flags.verbose)
-		        Your("%s does not protect you.", xname(uarmh));
+/*JP		        Your("%s does not protect you.", xname(uarmh));*/
+		        Your("%sでは防ぎきれなかった．", xname(uarmh));
 		} else if (obj->otyp == CORPSE &&
 				obj->corpsenm == PM_COCKATRICE) {
 #ifdef POLYSELF
@@ -273,8 +299,10 @@ register struct obj *obj;
 			if(!(poly_when_stoned(uasmon) &&
 					polymon(PM_STONE_GOLEM))) {
 #endif
-			killer = doname(obj);
-			You("turn to stone.");
+/*KP			killer = doname(obj);*/
+/*JP			You("turn to stone.");*/
+			killer = "落下してきたコカトリスの死体で";
+			You("石化した．");
 			do_death = STONING;
 #ifdef POLYSELF
 		    }
@@ -289,7 +317,8 @@ register struct obj *obj;
 		if (do_death == STONING)
 		    done(STONING);
 		else
-		    losehp(dmg, "falling object", KILLED_BY_AN);
+/*JP		    losehp(dmg, "falling object", KILLED_BY_AN);*/
+		    losehp(dmg, "落下物で", KILLED_BY_AN);
 	    }
 	  } else hitfloor(obj);
 	  return(1);
@@ -387,7 +416,8 @@ register struct obj *obj;
 		    }
 
 		    if (!impaired && rn2(100)) {
-			pline("%s returns to your hand!", The(xname(obj)));
+/*JP			pline("%s returns to your hand!", The(xname(obj)));*/
+			pline("%sはあなたの手に戻ってきた！", The(xname(obj)));
 			obj = addinv(obj);
 			(void) encumber_msg();
 			setuwep(obj);
@@ -396,10 +426,12 @@ register struct obj *obj;
 		    } else {
 			int dmg = rnd(4);
 			if (Blind)
-			    pline("%s hits your %s!",
+/*JP			    pline("%s hits your %s!",*/
+			    pline("%sはあなたの%sに命中した！",
 				  The(xname(obj)), body_part(ARM));
 			else
-			    pline("%s flies back toward you, hitting your %s!",
+/*JP			    pline("%s flies back toward you, hitting your %s!",*/
+			    pline("%sは戻ってきて，あなたの%sに命中した！",
 				  The(xname(obj)), body_part(ARM));
 			(void) artifact_hit((struct monst *) 0, &youmonst,
 					    obj, &dmg, 0);
@@ -413,11 +445,14 @@ register struct obj *obj;
 		if (!IS_SOFT(levl[bhitpos.x][bhitpos.y].typ) && !u.uinwater &&
 		    obj->oclass == POTION_CLASS && rn2(2)) {
 		    if(distu(bhitpos.x, bhitpos.y) < 3 && rn2(5)) {
-			pline("The flask breaks, and you smell a peculiar odor...");
+/*JP			pline("The flask breaks, and you smell a peculiar odor...");*/
+			pline("薬瓶は割れ，独特のにおいがただよった．．．");
 			potionbreathe(obj);
 		    } else if(!Blind)
-			pline("The flask breaks.");
-		    else pline("Crash!");
+/*JP			pline("The flask breaks.");*/
+			pline("薬瓶は割れた．");
+/*JP		    else pline("Crash!");*/
+		    else pline("ガチャン！");
 		    if(*u.ushops)
 		        check_shop_obj(obj, bhitpos.x, bhitpos.y, TRUE);
 		    obfree(obj, (struct obj *)0);
@@ -431,7 +466,8 @@ register struct obj *obj;
 		    tmp_at(DISP_END, 0);
 		    return(1);
 		}
-		if(flooreffects(obj,bhitpos.x,bhitpos.y,"fall")) return(1);
+/*JP		if(flooreffects(obj,bhitpos.x,bhitpos.y,"fall")) return(1);*/
+		if(flooreffects(obj,bhitpos.x,bhitpos.y,"落ちる")) return(1);
 		if(obj->otyp == CRYSKNIFE)
 			obj->otyp = WORM_TOOTH;
 	        if(mon && mon->isshk && obj->otyp == PICK_AXE) {
@@ -531,11 +567,13 @@ register struct obj   *obj;
 
 	if(obj->oclass == GEM_CLASS && mon->data->mlet == S_UNICORN) {
 		if (mon->mtame) {
-			pline("%s catches and drops %s.",
+/*JP			pline("%s catches and drops %s.",*/
+			pline("%sが%sをくわえてきて置いた．",
 				Monnam(mon), the(xname(obj)));
 			return(0);
 		} else {
-			pline("%s catches %s.", Monnam(mon), the(xname(obj)));
+/*JP			pline("%s catches %s.", Monnam(mon), the(xname(obj)));*/
+			pline("%sは%sをくわえた．", Monnam(mon), the(xname(obj)));
 			return(gem_accept(mon, obj));
 		}
 	}
@@ -544,7 +582,8 @@ register struct obj   *obj;
 	   at leader.... */
 	if (mon->data->msound == MS_LEADER && is_quest_artifact(obj)) {
 		if (mon->mcanmove)
-			pline("%s ignores %s.", Monnam(mon), the(xname(obj)));
+/*JP			pline("%s ignores %s.", Monnam(mon), the(xname(obj)));*/
+			pline("%sは%sを無視した．", Monnam(mon), the(xname(obj)));
 		return(0);
 	}
 #endif
@@ -618,7 +657,8 @@ register struct obj   *obj;
 		potionhit(mon, obj);
 		return(1);
 	} else {
-		pline("%s misses %s.", The(xname(obj)), mon_nam(mon));
+/*JP		pline("%s misses %s.", The(xname(obj)), mon_nam(mon));*/
+		pline("%sははずれた．", The(xname(obj)));
 		if(obj->oclass == FOOD_CLASS && is_domestic(mon->data))
 			if(tamedog(mon,obj)) return(1);
 	}
@@ -634,14 +674,20 @@ register struct obj *obj;
 	boolean is_buddy = sgn(mon->data->maligntyp) == sgn(u.ualign.type);
 	boolean is_gem = objects[obj->otyp].oc_material == GEMSTONE;
 	int ret = 0;
-	static NEARDATA const char nogood[] = " is not interested in your junk.";
+/*JP	static NEARDATA const char nogood[] = " is not interested in your junk.";
 	static NEARDATA const char acceptgift[] = " accepts your gift.";
 	static NEARDATA const char maybeluck[] = " hesitatingly";
 	static NEARDATA const char noluck[] = " graciously";
-	static NEARDATA const char addluck[] = " gratefully";
+	static NEARDATA const char addluck[] = " gratefully";*/
+	static NEARDATA const char nogood[] = "あなたのガラクタに興味を示さない．";
+	static NEARDATA const char acceptgift[] = "あなたの贈り物を受けとった．";
+	static NEARDATA const char maybeluck[] = "ためらいながら";
+	static NEARDATA const char noluck[] = "丁重に";
+	static NEARDATA const char addluck[] = "喜んで";
 
 	Strcpy(buf,Monnam(mon));
-
+/*JP*/
+	Strcat(buf,"は");
 	mon->mpeaceful = 1;
 
 	/* object properly identified */
@@ -714,19 +760,24 @@ register boolean loose;		/* if not loose, obj is in fobj chain */
 		case EXPENSIVE_CAMERA:
 #endif
 			if(!Blind)
-			    pline("%s shatters into a thousand pieces!",
+/*JP			    pline("%s shatters into a thousand pieces!",*/
+			    pline("%sはこなごなになった！",
 				Doname2(obj));
-			else You("hear something shatter!");
+/*JP			else You("hear something shatter!");*/
+			else You("何かがこなごなになる音を聞いた！");
 			break;
 		case EGG:
-			pline("Splat!");
+/*JP			pline("Splat!");*/
+			pline("グシャ！");
 			break;
 		case CREAM_PIE:
-			pline("What a mess!");
+/*JP			pline("What a mess!");*/
+			pline("めちゃくちゃだ！");
 			break;
 		case ACID_VENOM:
 		case BLINDING_VENOM:
-			pline("Splash!");
+/*JP			pline("Splash!");*/
+			pline("ピシャ！");
 			break;
 		default:
 			return 0;
@@ -778,8 +829,10 @@ struct obj *obj;
 
 	if(u.uswallow) {
 		pline(is_animal(u.ustuck->data) ?
-			"%s in the %s's entrails." : "%s into %s.",
-			"The gold disappears", mon_nam(u.ustuck));
+/*JP			"%s in the %s's entrails." : "%s into %s.",
+			"The gold disappears", mon_nam(u.ustuck));*/
+			"%sの腹の中に%s．" : "%sの中に%s．", mon_nam(u.ustuck),
+			"ゴールドは消えていった");
 		u.ustuck->mgold += zorks;
 		dealloc_obj(obj);
 		return(1);
@@ -787,13 +840,17 @@ struct obj *obj;
 
 	if(u.dz) {
 	  	if(u.dz < 0 && !Is_airlevel(&u.uz) && !Underwater && !Is_waterlevel(&u.uz)) {
-	pline("The gold hits the ceiling, then falls back on top of your %s.",
+/*JP	pline("The gold hits the ceiling, then falls back on top of your %s.",*/
+	pline("ゴールドは天井に命中し，あなたの%sの真上に落ちてきた．",
 		    body_part(HEAD));
 		    /* some self damage? */
-		    if(uarmh) pline("Fortunately, you are wearing a helmet!");
+/*JP		    if(uarmh) pline("Fortunately, you are wearing a helmet!");*/
+		    if(uarmh) pline("幸運なことに，あなたは兜を身につけている！");
 		}
-		if(flooreffects(obj,u.ux,u.uy,"fall")) return(1);
-		if(u.dz > 0) pline("The gold hits the %s.", surface(u.ux,u.uy));
+/*JP		if(flooreffects(obj,u.ux,u.uy,"fall")) return(1);*/
+		if(flooreffects(obj,u.ux,u.uy,"落ちる")) return(1);
+/*JP		if(u.dz > 0) pline("The gold hits the %s.", surface(u.ux,u.uy));*/
+		if(u.dz > 0) pline("ゴールドは%sに命中した．", surface(u.ux,u.uy));
 		obj->nobj = fobj;	/* add the gold to the object list */
 		fobj = obj;
 		place_object(obj,u.ux,u.uy);
@@ -824,7 +881,8 @@ struct obj *obj;
 		}
 	}
 
-	if(flooreffects(obj,bhitpos.x,bhitpos.y,"fall")) return(1);
+/*JP	if(flooreffects(obj,bhitpos.x,bhitpos.y,"fall")) return(1);*/
+	if(flooreffects(obj,bhitpos.x,bhitpos.y,"落ちる")) return(1);
 	obj->nobj = fobj;	/* add the gold to the object list */
 	fobj = obj;
 	place_object(obj,bhitpos.x,bhitpos.y);

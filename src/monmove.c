@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "mfndpos.h"
 #include "artifact.h"
@@ -22,9 +29,11 @@ register struct monst *mtmp;
 {
 	if (flags.verbose) {
 	    if (cansee(mtmp->mx, mtmp->my))
-	       pline("KABOOM!!  You see a door explode.");
+/*JP	       pline("KABOOM!!  You see a door explode.");*/
+	       pline("バーン！ドアが爆発するのを見た．");
 	    else if (flags.soundok)
-               You("hear a distant explosion.");
+/*JP           You("hear a distant explosion.");*/
+               pline("遠方で爆発する音を聞いた．");
 	}
 	mtmp->mstun = 1;
 	mtmp->mhp -= rnd(15);
@@ -58,12 +67,15 @@ register struct monst *mtmp;
 
 		if(couldsee(mtmp->mx, mtmp->my)) {
 
-		  pline("%s yells:", Amonnam(mtmp));
+/*JP		  pline("%s yells:", Amonnam(mtmp));*/
+		  pline("%sは叫んだ：", Amonnam(mtmp));
 		  if(levl[x][y].looted & D_WARNED) {
-			verbalize("Halt, thief!  You're under arrest!");
+/*JP			verbalize("Halt, thief!  You're under arrest!");*/
+			verbalize("待て！ぬすっと！おまえを逮捕する！");
 			(void) angry_guards(!(flags.soundok));
 		  } else {
-			verbalize("Hey, stop picking that lock!");
+/*JP			verbalize("Hey, stop picking that lock!");*/
+			verbalize("おい，岩を掘るのはやめな！");
 			levl[x][y].looted |=  D_WARNED;
 		  }
 		  stop_occupation();
@@ -96,7 +108,8 @@ register struct monst *mtmp;
 		}
 	    } else {
 		if(!rn2(3) && flags.verbose)	/* not too often.. */
-		    You("feel an unexpected draft.");
+/*JP		    You("feel an unexpected draft.");*/
+		    You("思いもよらず，すきま風を感じた．");
 		here->doormask = D_BROKEN;
 	    }
 	    newsym(mtmp->mx,mtmp->my);
@@ -115,7 +128,8 @@ register struct monst *mtmp;
 
 	if(IS_WALL(here->typ)) {
 	    if(flags.soundok && flags.verbose && !rn2(5))
-		You("hear crashing rock.");
+/*JP		You("hear crashing rock.");*/
+		You("岩のくだける音を聞いた．");
 	    if (*in_rooms(mtmp->mx, mtmp->my, SHOPBASE))
 	    	add_damage(mtmp->mx, mtmp->my, 0L);
 	    if (level.flags.is_maze_lev) {
@@ -383,8 +397,10 @@ register struct monst *mtmp;
 	if(nearby && mdat->msound == MS_BRIBE &&
 	   mtmp->mpeaceful && !mtmp->mtame) {
 		if (mtmp->mux != u.ux || mtmp->muy != u.uy) {
-			pline("%s whispers at thin air.",
-			    cansee(mtmp->mux, mtmp->muy) ? Monnam(mtmp) : "It");
+/*JP			pline("%s whispers at thin air.",
+			    cansee(mtmp->mux, mtmp->muy) ? Monnam(mtmp) : "It");*/
+			pline("%sがささやいた．",
+			    cansee(mtmp->mux, mtmp->muy) ? Monnam(mtmp) : "何者か");
 #ifdef POLYSELF
 			if (is_demon(uasmon)) rloc(mtmp);
 			  /* "Good hunting, brother" */
@@ -392,7 +408,8 @@ register struct monst *mtmp;
 #endif
 			    mtmp->minvis = 0;
 			    /* Why?  For the same reason in real demon talk */
-			    pline("%s gets angry!", Amonnam(mtmp));
+/*JP			    pline("%s gets angry!", Amonnam(mtmp));*/
+			    pline("%sは怒った！", Amonnam(mtmp));
 			    mtmp->mpeaceful = 0;
 			    /* since no way is an image going to pay it off */
 #ifdef POLYSELF
@@ -409,26 +426,34 @@ register struct monst *mtmp;
 		struct monst *m2, *nmon = (struct monst *)0;
 
 		if (canseemon(mtmp))
-			pline("%s concentrates.", Monnam(mtmp));
+/*JP			pline("%s concentrates.", Monnam(mtmp));*/
+			pline("%sは精神を集中している．", Monnam(mtmp));
 		if (distu(mtmp->mx, mtmp->my) > BOLT_LIM * BOLT_LIM) {
-			You("sense a faint wave of psychic energy.");
+/*JP			You("sense a faint wave of psychic energy.");*/
+			You("サイコエネルギーの波動を感じた．");
 			goto toofar;
 		}
-		pline("A wave of psychic energy pours over you!");
+/*JP		pline("A wave of psychic energy pours over you!");*/
+		pline("サイコエネルギーの波動があなたにそそがれた！");
 		if (mtmp->mpeaceful &&
 		    (!Conflict || resist(mtmp, RING_CLASS, 0, 0)))
-			pline("It feels quite soothing.");
+/*JP			pline("It feels quite soothing.");*/
+			pline("心がなごんだ．");
 		else {
 			register boolean m_sen = sensemon(mtmp);
 
 			if (m_sen || (Telepat && rn2(2)) || !rn2(10)) {
 				int dmg;
-				pline("It locks on to your %s!",
+/*JP				pline("It locks on to your %s!",
 					m_sen ? "telepathy" :
-					Telepat ? "latent telepathy" : "mind");
+					Telepat ? "latent telepathy" : "mind");*/
+				Your("%sは封じられてしまった！",
+					m_sen ? "テレパシー" :
+					Telepat ? "潜在能力" : "心");
 				dmg = rnd(15);
 				if (Half_spell_damage) dmg = (dmg+1) / 2;
-				losehp(dmg, "psychic blast", KILLED_BY_AN);
+/*JP				losehp(dmg, "psychic blast", KILLED_BY_AN);*/
+				losehp(dmg, "サイコ攻撃で", KILLED_BY_AN);
 			}
 		}
 		for(m2=fmon; m2; m2 = nmon) {
@@ -439,7 +464,8 @@ register struct monst *mtmp;
 			if ((telepathic(m2->data) &&
 			    (rn2(2) || m2->mblinded)) || !rn2(10)) {
 				if (cansee(m2->mx, m2->my))
-				    pline("It locks on to %s.", mon_nam(m2));
+/*JP				    pline("It locks on to %s.", mon_nam(m2));*/
+				    pline("%sは封じられた．", mon_nam(m2));
 				m2->mhp -= rnd(15);
 				if (m2->mhp <= 0)
 				    monkilled(m2, "", AD_DRIN);
@@ -536,7 +562,8 @@ itsstuck(mtmp)
 register struct monst *mtmp;
 {
 	if (sticks(uasmon) && mtmp==u.ustuck && !u.uswallow) {
-		pline("%s cannot escape from you!", Monnam(mtmp));
+/*JP		pline("%s cannot escape from you!", Monnam(mtmp));*/
+		pline("%sはあなたから逃げられない！", Monnam(mtmp));
 		return(TRUE);
 	}
 	return(FALSE);
@@ -651,7 +678,8 @@ register int after;
 #ifdef MAIL
 	if(ptr == &mons[PM_MAIL_DAEMON]) {
 	    if(flags.soundok && canseemon(mtmp))
-		verbalize("I'm late!");
+/*JP		verbalize("I'm late!");*/
+		verbalize("遅くなってすまない！");
 	    mongone(mtmp);
 	    return(2);	    
 	}
@@ -951,10 +979,12 @@ postmov:
 
 		if(here->doormask & (D_LOCKED|D_CLOSED) && amorphous(ptr)) {
 		    if (flags.verbose && canseeit)
-			pline("%s %ss under the door.", Monnam(mtmp),
+/*JP			pline("%s %ss under the door.", Monnam(mtmp),*/
+			pline("%sは扉の下から%s．", Monnam(mtmp),
 			      (ptr == &mons[PM_FOG_CLOUD] ||
 			       ptr == &mons[PM_YELLOW_LIGHT])
-			      ? "flow" : "ooze");
+/*JP			      ? "flow" : "ooze");*/
+			      ? "流れでた" : "にじみでた");
 		} else if(here->doormask & D_LOCKED && can_unlock) {
 		    if(btrapped) {
 			here->doormask = D_NODOOR;
@@ -964,9 +994,11 @@ postmov:
 		    } else {
 			if (flags.verbose) {
 			    if (canseeit)
-			       You("see a door unlock and open.");
+/*JP			       You("see a door unlock and open.");*/
+			       You("扉の鍵がはずれ，開くのを見た．");
 			    else if (flags.soundok)
-			       You("hear a door unlock and open.");
+/*JP			       You("hear a door unlock and open.");*/
+			       You("扉の鍵がはずれ，開く音を聞いた．");
 		        }
 		        here->doormask = D_ISOPEN;
 			/* newsym(mtmp->mx, mtmp->my); */
@@ -981,9 +1013,11 @@ postmov:
 		    } else {
 		        if (flags.verbose) {
 			    if (canseeit)
-			         You("see a door open.");
+/*JP			         You("see a door open.");*/
+			         You("扉が開くのを見た．");
 			    else if (flags.soundok)
-			         You("hear a door open.");
+/*JP			         You("hear a door open.");*/
+			         You("扉が開く音を聞いた．");
 		        }
 		        here->doormask = D_ISOPEN;
 			/* newsym(mtmp->mx, mtmp->my); */  /* done below */
@@ -999,9 +1033,11 @@ postmov:
 		    } else {
 		        if (flags.verbose) {
 			    if (canseeit)
-			        You("see a door crash open.");
+/*JP			        You("see a door crash open.");*/
+			        You("扉が破壊されるのを見た．");
 			    else if (flags.soundok)
-			        You("hear a door crash open.");
+/*JP			        You("hear a door crash open.");*/
+			        You("扉が破壊される音を聞いた．");
 		        }
 		        if (here->doormask & D_LOCKED && !rn2(2))
 			        here->doormask = D_NODOOR;

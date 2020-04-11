@@ -4,6 +4,12 @@
 /* NetHack may be freely redistributed.  See license for details. */
 /* makedefs.c - NetHack version 3.1 */
 
+/*
+**	Japanese version Copyright (c) Issei Numata 1994 
+**	changing point is marked `JP' (94/1/6)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #define	MAKEDEFS_C	/* use to conditionally include file sections */
 /* #define DEBUG /* uncomment for debugging info */
 
@@ -16,8 +22,15 @@
 /* version information */
 #ifdef SHORT_FILENAMES
 #include "patchlev.h"
+#include "../japanese/jpatchle.h"
 #else
 #include "patchlevel.h"
+/*JP*/
+#include "../japanese/jpatchlevel.h"
+#endif
+
+#ifdef NEWSOS4
+#include <ctype.h>
 #endif
 
 #ifdef MAC
@@ -77,9 +90,13 @@ extern void FDECL(exit, (int));
 #define MONST_FILE	"pm.h"
 #define ONAME_FILE	"onames.h"
 #define OPTIONS_FILE	"options"
-#define ORACLE_FILE	"oracles"
+/*JP
+#define ORACLE_FILE	"oracles"*/
+#define ORACLE_FILE	"joracles"
 #define DATA_FILE	"data"
-#define RUMOR_FILE	"rumors"
+/*JP
+#define RUMOR_FILE	"rumors"*/
+#define RUMOR_FILE	"jrumors"
 #define DGN_I_FILE	"dungeon.def"
 #define DGN_O_FILE	"dungeon.pdf"
 #define MON_STR_C	"monstr.c"
@@ -87,6 +104,13 @@ extern void FDECL(exit, (int));
 #define QTXT_O_FILE	"quest.dat"
 #define VIS_TAB_H	"vis_tab.h"
 #define VIS_TAB_C	"vis_tab.c"
+/*
+** JP
+*/
+#define JOBJ_FILE	"jtrns_obj.dat"
+#define JMON_FILE	"jtrns_mon.dat"
+#define JDATA		"jdata.h"
+
 	/* locations for those files */
 #ifdef AMIGA
 # define INCLUDE_TEMPLATE	"Incl:t.%s"
@@ -113,7 +137,8 @@ static const char
 static struct {
 	long	incarnation;
 	long	features;
-} version;
+/*JP} version;*/
+} version,jversion;
 
 /* definitions used for vision tables */
 #define TEST_WIDTH  COLNO
@@ -152,6 +177,8 @@ void NDECL(do_questtxt);
 void NDECL(do_rumors);
 void NDECL(do_oracles);
 void NDECL(do_vision);
+/*JP*/
+void NDECL(do_japanese);
 
 extern void NDECL(monst_init);		/* monst.c */
 extern void NDECL(objects_init);	/* objects.c */
@@ -308,6 +335,10 @@ char	*arrgv[];
 		case 'z':
 		case 'Z':	do_vision();
 				break;
+/*JP*/
+		case 'j':
+		case 'J':	do_japanese();
+				break;
 
 		default:
 				Fprintf(stderr,	"Unknown option '%c'.\n",
@@ -368,7 +399,6 @@ do_rumors()
 		Unlink(filename);	/* kill empty output file */
 		exit(1);
 	}
-
 	/* get size of true rumors file */
 #ifndef VMS
 	(void) fseek(ifp, 0L, SEEK_END);
@@ -387,6 +417,7 @@ do_rumors()
 	/* copy true rumors */
 	while(fgets(in_line,sizeof(in_line),ifp) != NULL)
 		(void) fputs(xcrypt(in_line), ofp);
+
 
 	Fclose(ifp);
 	Strcat(strcpy(infile, filename), ".fal");
@@ -409,6 +440,7 @@ do_rumors()
 static void
 make_version()
 {
+/*JP*/
 	/*
 	 * integer version number
 	 */
@@ -416,6 +448,11 @@ make_version()
 				((long)VERSION_MINOR << 16) |
 				((long)PATCHLEVEL << 8) |
 				((long)EDITLEVEL);
+	jversion.incarnation = ((long)JVERSION_MAJOR << 24) |
+				((long)JVERSION_MINOR << 16) |
+				((long)JPATCHLEVEL << 8) |
+				((long)JEDITLEVEL);
+
 	/*
 	 * encoded feature list
 	 * Note:  if any of these magic numbers are changed or reassigned,
@@ -514,6 +551,8 @@ do_date()
 	Fprintf(ofp,"\n");
 	Fprintf(ofp,"#define VERSION_NUMBER 0x%08lxL\n", version.incarnation);
 	Fprintf(ofp,"#define VERSION_FEATURES 0x%08lxL\n", version.features);
+/*JP*/
+	Fprintf(ofp,"#define JVERSION_NUMBER 0x%08lxL\n", jversion.incarnation);
 	Fprintf(ofp,"\n");
 #ifdef AMIGA
 	{
@@ -894,6 +933,7 @@ h_filter(line)
 }
 
 static const char *special_oracle[] = {
+/*JP
 	"\"...it is rather disconcerting to be confronted with the",
 	"following theorem from [Baker, Gill, and Solovay, 1975].",
 	"",
@@ -904,6 +944,17 @@ static const char *special_oracle[] = {
 	"This provides impressive evidence that the techniques that are",
 	"currently available will not suffice for proving that P != NP or          ",
 	"that P == NP.\"  [Garey and Johnson, p. 185.]"
+*/
+	"「次の定理[Baker, Gill, and Solovay, 1975]に直面することは",
+	"むしろ困惑することである．",
+	"",
+	"定理 7.18 次のような再帰的言語 A，Bが存在する",
+	"  (1)  P(A) == NP(A)，かつ",
+	"  (2)  P(B) != NP(B)",
+	"",
+	"これは現在 P != NPであるかまたは P == NPであるかを証明する",
+        "有効な手法がないことを強く示している．」",
+        "[Garey and Johnson, p. 185.]"
 };
 
 /*
@@ -2042,4 +2093,121 @@ clear_path(you_row,you_col,y2,x2)
 }
 #endif /* VISION_TABLES */
 
+/* JP
+** 
+*/
+void
+do_japanese()
+{
+  FILE *fpr,*fpw;
+  char fnamer[BUFSZ],fnamew[BUFSZ];
+  unsigned char buf[BUFSZ],*p,*key,*val;
+
+  sprintf(fnamew,INCLUDE_TEMPLATE,JDATA);
+  if((fpw = fopen(fnamew,WRMODE))==(void *)NULL){
+    fprintf(stderr,"Error: Can't create %s\n",fnamew);
+    return;
+  }
+
+  fprintf(fpw,Dont_Edit_Code);
+
+  sprintf(fnamer,DATA_TEMPLATE,JMON_FILE);
+  if((fpr = fopen(fnamer,RDMODE))==(void *)NULL)
+    fprintf(stderr,"Warning: Can't open %s\n",fnamer);
+  else{
+    fprintf(fpw,"struct _jtrns_tab {\n");
+    fprintf(fpw,"  const int type;\n");
+    fprintf(fpw,"  const char *key;\n");
+    fprintf(fpw,"  const char *val;\n");
+    fprintf(fpw,"} jtrns_tab[] = {\n");
+    while(fgets((char *)buf,BUFSIZ,fpr)!=NULL){
+      if(buf[0]=='#')
+        goto Next1;
+      buf[strlen((char *)buf)-1]='\0';
+      p = buf;
+      while(isspace(*p))
+        if(!*p)
+          goto Next1;
+        else
+          ++p;
+      key = p;
+      while(*p!=':')
+        if(!*p)
+          goto Next1;
+        else if(*p<128)
+          ++p;
+        else
+          p+=2;
+      *p='\0';
+      ++p;
+      while(isspace(*p))
+        if(!*p)
+          goto Next1;
+        else
+          ++p;
+      val = p;
+      while(*p!=':')
+        if(!*p)
+          goto Next1;
+        else if(*p<128)
+          ++p;
+        else
+          p+=2;
+      *p='\0';
+      fprintf(fpw,"  {'@', \"%s\", \"%s\"},\n",key,val);
+    Next1:
+      ;
+    }
+    fclose(fpr);
+    
+    sprintf(fnamer,DATA_TEMPLATE,JOBJ_FILE);
+    if((fpr = fopen(fnamer,RDMODE))==(void *)NULL)
+      fprintf(stderr,"Warning: Can't open %s\n",fnamer);
+    else{
+      while(fgets((char *)buf,BUFSIZ,fpr)!=NULL){
+	if(buf[0]=='#')
+	  goto Next2;
+	buf[strlen((char *)buf)-1]='\0';
+	p = buf;
+	while(isspace(*p))
+	  if(!*p)
+	    goto Next2;
+	  else
+	    ++p;
+	key = p;
+	while(*p!=':')
+	  if(!*p)
+	    goto Next2;
+	  else
+	    ++p;
+	*p='\0';
+	++p;
+	while(isspace(*p))
+	  if(!*p)
+	    goto Next2;
+	  else
+	    ++p;
+	val = p;
+	while(*p!=':')
+	  if(!*p)
+	    goto Next2;
+	  else
+	    ++p;
+	*p='\0';
+	if(*key=='\'')
+	  fprintf(fpw,"  {'\\%c', \"%s\", \"%s\"},\n",*key,key+1,val);
+	else
+	  fprintf(fpw,"  {'%c', \"%s\", \"%s\"},\n",*key,key+1,val);
+      Next2:
+	;
+      }
+      fclose(fpr);
+      fprintf(fpw,"  {'\\0', NULL, NULL},\n");
+      fprintf(fpw,"};\n");
+    }
+    fclose(fpw);
+  }
+}
+  
+  
 /*makedefs.c*/

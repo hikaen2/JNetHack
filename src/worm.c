@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "lev.h"
 
@@ -368,7 +375,8 @@ cutworm(worm, x, y, weap)
 
     /* Sometimes the tail end dies. */
     if (rn2(3) || !(new_wnum = get_wormno())) {
-	You("cut part of the tail off of %s.", mon_nam(worm));
+/*JP	You("cut part of the tail off of %s.", mon_nam(worm));*/
+	You("%sの尻尾の一部分を切った．", mon_nam(worm));
 	toss_wsegs(new_tail, TRUE);
 	if (worm->mhp > 1) worm->mhp /= 2;
 	return;
@@ -418,7 +426,8 @@ cutworm(worm, x, y, weap)
     /* Place the new monster at all the segment locations. */
     place_wsegs(new_worm);
 
-    You("cut %s in half.", mon_nam(worm));
+/*JP    You("cut %s in half.", mon_nam(worm));*/
+    You("%sを真っぷたつにした．", mon_nam(worm));
 }
 
 

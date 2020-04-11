@@ -14,7 +14,7 @@
 # MAKE = make
 
 # make NetHack
-GAME     = nethack
+GAME     = jnethack
 GAMEUID  = games
 GAMEGRP  = bin
 
@@ -35,8 +35,11 @@ DIRPERM  = 0755
 GAMEDIR  = /usr/games/lib/$(GAME)dir
 SHELLDIR = /usr/games
 
-DATHELP = help hh cmdhelp history opthelp wizhelp
-VARDAT = data oracles options quest.dat rumors
+# by issei 1994/2/5, 1994/6/25
+#DATHELP = help hh cmdhelp history opthelp wizhelp
+#VARDAT = data oracles options quest.dat rumors
+DATHELP = jhelp jhh jcmdhelp jhistory jopthelp jwizhelp jjj
+VARDAT = data joracles options quest.dat jrumors
 
 SPEC_LEVS = asmodeus.lev baalz.lev bigroom.lev castle.lev fakewiz?.lev \
 	juiblex.lev knox.lev medusa-?.lev mine_end.lev minefill.lev \
@@ -45,7 +48,12 @@ SPEC_LEVS = asmodeus.lev baalz.lev bigroom.lev castle.lev fakewiz?.lev \
 QUEST_LEVS = ?-goal.lev ?-fill?.lev ?-locate.lev ?-start.lev
 
 SCRIPT = dungeon
-DAT = $(DATHELP) $(VARDAT) $(SPEC_LEVS) $(QUEST_LEVS) $(SCRIPT) license
+#JP by issei(93/11/26)
+#JAPANESEDAT = jtrns_mon.dat jtrns_obj.dat
+JAPANESEDAT =
+#DAT = $(DATHELP) $(VARDAT) $(SPEC_LEVS) $(QUEST_LEVS) $(SCRIPT) license
+
+DAT = $(DATHELP) $(VARDAT) $(SPEC_LEVS) $(QUEST_LEVS) $(SCRIPT) license $(JAPANESEDAT)
 
 $(GAME):
 	( cd src ; $(MAKE) )
@@ -62,11 +70,17 @@ manpages:
 data:
 	( cd dat ; $(MAKE) data )
 
-rumors:
-	( cd dat ; $(MAKE) rumors )
+# by issei 1994/2/5
+#rumors:
+#	( cd dat ; $(MAKE) rumors )
+jrumors:
+	( cd dat ; $(MAKE) jrumors )
 
-oracles:
-	( cd dat ; $(MAKE) oracles )
+# by issei 1994/2/5
+#oracles:
+#	( cd dat ; $(MAKE) oracles )
+joracles:
+	( cd dat ; $(MAKE) joracles )
 
 #	Note: options should have already been made with make, but...
 options:

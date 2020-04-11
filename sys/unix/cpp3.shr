@@ -1,3 +1,4 @@
+#!/bin/sh
 # This is a shell archive.  Save it in a file, remove anything before
 # this line, and then unpack it by entering "sh file".  Note, it may
 # create directories; files and directories will be owned by you and
@@ -1899,3 +1900,4 @@ X
 X
 END-of-cpp6.c
 exit
+

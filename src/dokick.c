@@ -2,6 +2,13 @@
 /* Copyright (c) Izchak Miller, Mike Stephenson, Steve Linhart, 1989. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "eshk.h"
 
@@ -77,7 +84,8 @@ register boolean clumsy;
 		mdx = mon->mx + u.dx;
 		mdy = mon->my + u.dy;
 		if(goodpos(mdx, mdy, mon, mon->data)) {
-			pline("%s reels from the blow.", Monnam(mon));
+/*JP			pline("%s reels from the blow.", Monnam(mon));*/
+			pline("%sは強打されよろめいた．", Monnam(mon));
 			remove_monster(mon->mx, mon->my);
 			newsym(mon->mx, mon->my);
 			place_monster(mon, mdx, mdy);
@@ -114,7 +122,8 @@ register xchar x, y;
 		    if (tmp > rnd(20)) {
 			int sum;
 
-			You("kick %s.", mon_nam(mon));
+/*JP			You("kick %s.", mon_nam(mon));*/
+			You("%sを蹴った．", mon_nam(mon));
 			sum = damageum(mon, &(uasmon->mattk[i]));
 			if (sum == 2)
 				(void)passive(mon, 1, 0, TRUE);
@@ -132,13 +141,15 @@ register xchar x, y;
 	/* no need to check POLYSELF since only ghosts, which you can't turn */
 	/* into, are noncorporeal */
 	if(noncorporeal(mon->data)) {
-		Your("kick passes through!");
+/*JP		Your("kick passes through!");*/
+		Your("蹴りは空をきった！");
 		return;
 	}
 
 	if(Levitation && !rn2(3) && verysmall(mon->data) &&
 	   !is_flyer(mon->data)) {
-		pline("Floating in the air, you miss wildly!");
+/*JP		pline("Floating in the air, you miss wildly!");*/
+		pline("空中に浮いているので，大きく外した！");
 		exercise(A_DEX, FALSE);
 		(void) passive(mon, FALSE, 1, TRUE);
 		return;
@@ -150,7 +161,8 @@ register xchar x, y;
 	if(i < (j*3)/10) {
 		if(!rn2((i < j/10) ? 2 : (i < j/5) ? 3 : 4)) {
 			if(martial() && !rn2(2)) goto doit;
-			Your("clumsy kick does no damage.");
+/*JP			Your("clumsy kick does no damage.");*/
+			Your("不器用な蹴りはダメージを与えない．");
 			(void) passive(mon, FALSE, 1, TRUE);
 			return;
 		}
@@ -163,28 +175,39 @@ register xchar x, y;
 	else if(uarm && objects[uarm->otyp].oc_bulky && ACURR(A_DEX) < rnd(25))
 		clumsy = TRUE;
 doit:
-	You("kick %s.", mon_nam(mon));
+/*JP	You("kick %s.", mon_nam(mon));*/
+	You("%sを蹴った．", mon_nam(mon));
 	if(!rn2(clumsy ? 3 : 4) && (clumsy || !bigmonst(mon->data)) &&
 	   mon->mcansee && !mon->mtrapped && !thick_skinned(mon->data) &&
 	   mon->data->mlet != S_EEL && haseyes(mon->data) && mon->mcanmove &&
 	   !mon->mstun && !mon->mconf && !mon->msleep &&
 	   mon->data->mmove >= 12) {
 		if(!nohands(mon->data) && !rn2(martial() ? 5 : 3)) {
-		    pline("%s blocks your %skick.", Monnam(mon),
-				clumsy ? "clumsy " : "");
+/*JP		    pline("%s blocks your %skick.", Monnam(mon),
+				clumsy ? "clumsy " : "");*/
+		    pline("%sはあなたの%s蹴りを防いだ．", Monnam(mon),
+				clumsy ? "不器用な" : "");
 		    (void) passive(mon, FALSE, 1, TRUE);
 		    return;
 		} else {
 		    mnexto(mon);
 		    if(mon->mx != x || mon->my != y) {
-			pline("%s %s, %s evading your %skick.", Monnam(mon),
+/*JP			pline("%s %s, %s evading your %skick.", Monnam(mon),
 				(can_teleport(mon->data) ? "teleports" :
 				 is_floater(mon->data) ? "floats" :
 				 is_flyer(mon->data) ? "flutters" :
 				 nolimbs(mon->data) ? "slides" :
 				 "jumps"),
 				clumsy ? "easily" : "nimbly",
-				clumsy ? "clumsy " : "");
+				clumsy ? "clumsy " : "");*/
+			pline("%sは%s，%sあなたの%s蹴りをたくみに避けた．", Monnam(mon),
+				(can_teleport(mon->data) ? "瞬間移動し" :
+				 is_floater(mon->data) ? "浮き" :
+				 is_flyer(mon->data) ? "はばたき" :
+				 nolimbs(mon->data) ? "横に滑り" :
+				 "跳ね"),
+				clumsy ? "楽々と" : "素早く",
+				clumsy ? "不器用な" : "");
 			(void) passive(mon, FALSE, 1, TRUE);
 			return;
 		    }
@@ -211,7 +234,8 @@ register struct obj *gold;
 	} else if (!mtmp->mcanmove) {
 		/* too light to do real damage */
 		if (canseemon(mtmp))
-		    pline("The gold hits %s.", mon_nam(mtmp));
+/*JP		    pline("The gold hits %s.", mon_nam(mtmp));*/
+		    pline("ゴールドは%sに命中した．", mon_nam(mtmp));
 	} else {
 		mtmp->msleep = 0;
 		mtmp->meating = 0;
@@ -219,7 +243,8 @@ register struct obj *gold;
 
 		/* greedy monsters catch gold */
 		if (cansee(mtmp->mx, mtmp->my))
-		    pline("%s catches the gold.", Monnam(mtmp));
+/*JP		    pline("%s catches the gold.", Monnam(mtmp));*/
+		    pline("%sはゴールドを受けとった．", Monnam(mtmp));
 		mtmp->mgold += gold->quan;
 		if (mtmp->isshk) {
 			long robbed = ESHK(mtmp)->robbed;
@@ -227,8 +252,10 @@ register struct obj *gold;
 			if (robbed) {
 				robbed -= gold->quan;
 				if (robbed < 0) robbed = 0;
-				pline("The amount %scovers %s recent losses.",
-				      !robbed ? "" : "partially ",
+/*JP				pline("The amount %scovers %s recent losses.",
+				      !robbed ? "" : "partially ",*/
+				pline("%s%sの損失を補填するのに使われた．",
+				      !robbed ? "" : "金の一部は",
 				      his[mtmp->female]);
 				ESHK(mtmp)->robbed = robbed;
 				if(!robbed)
@@ -236,16 +263,18 @@ register struct obj *gold;
 			} else {
 				if(mtmp->mpeaceful) {
 				    ESHK(mtmp)->credit += gold->quan;
-				    You("have %ld zorkmid%s in credit.",
-					ESHK(mtmp)->credit,
-					plur(ESHK(mtmp)->credit));
-				} else verbalize("Thanks, scum!");
+/*JP				    You("have %ld zorkmid%s in credit.",*/
+				    You("%ldゴールドをクレジットにした．",
+					ESHK(mtmp)->credit);
+/*JP				} else verbalize("Thanks, scum!");*/
+				} else verbalize("ありがとよ！くそったれ！");
 			}
 		}
 		else if(mtmp->ispriest) {
 			if(mtmp->mpeaceful)
-			    verbalize("Thank you for your contribution.");
-			else verbalize("Thanks, scum!");
+/*JP			    verbalize("Thank you for your contribution.");*/
+			    verbalize("寄付をどうもありがとう．");
+			else verbalize("ありがとよ！くそったれ！");
 		}
 #ifdef ARMY
 		else if (is_mercenary(mtmp->data)) {
@@ -268,8 +297,10 @@ register struct obj *gold;
 			}
 		     }
 		     if (mtmp->mpeaceful)
-			    verbalize("That should do.  Now beat it!");
-		     else verbalize("That's not enough, coward!");
+/*JP			    verbalize("That should do.  Now beat it!");*/
+			    verbalize("なんだい？これは？");
+/*JP		     else verbalize("That's not enough, coward!");*/
+		     else verbalize("そんなもので済むか，卑怯者！");
 		 }
 #endif
 
@@ -304,14 +335,17 @@ xchar x, y;
 			&& !passes_walls(uasmon)
 #endif
 			) || trap->ttyp == WEB) {
-			You("can't kick something that's in a %s!",
-				trap->ttyp == WEB ? "web" : "pit");
+/*JP			You("can't kick something that's in a %s!",
+				trap->ttyp == WEB ? "web" : "pit");*/
+			You("%sの中では蹴ることができない",
+				trap->ttyp == WEB ? "くもの巣" : "落し穴");
 			return(1);
 		}
 	}
 
 	if(Fumbling && !rn2(3)) {
-		Your("clumsy kick missed.");
+/*JP		Your("clumsy kick missed.");*/
+		Your("不器用な蹴りは外れた．");
 		return(1);
 	}
 
@@ -339,13 +373,15 @@ xchar x, y;
 		struct obj *otmp2, *probj = (struct obj *) 0, *temp;
 		long loss = 0L;
 
-		if(range < 2) pline("THUD!");
+/*JP		if(range < 2) pline("THUD!");*/
+		if(range < 2) pline("ガン！");
 
 		for(otmp = kickobj->cobj; otmp; otmp = otmp2) {
 			otmp2 = otmp->nobj;
 			if (objects[otmp->otyp].oc_material == GLASS
 			    && !obj_resists(otmp, 33, 100)) {
-				You("hear a muffled shatter.");
+/*JP				You("hear a muffled shatter.");*/
+				You("ガチャンと言う音を聞いた．");
 				if(costly) loss += stolen_value(otmp, x, y, 
 					    (boolean)shkp->mpeaceful, TRUE);
 				if (otmp->quan > 1L)
@@ -366,16 +402,19 @@ xchar x, y;
 		}
 		if(costly && loss) {
 		    if(!insider) {
-  		        You("caused %ld zorkmids worth of damage!", loss);
+/*JP  		        You("caused %ld zorkmids worth of damage!", loss);*/
+  		        You("%ldゴールド分のダメージをくらった！", loss);
 			make_angry_shk(shkp, x, y);
 		    } else
-		        You("owe %s %ld zorkmids for objects destroyed.",
+/*JP		        You("owe %s %ld zorkmids for objects destroyed.",*/
+		        You("器物破損で%sに%ldゴールドの借りをつくった．",
 			         mon_nam(shkp), loss);
 		}
 
 		if (kickobj->olocked) {
 		    if (!rn2(5) || (martial() && !rn2(2))) {
-			You("break open the lock!");
+/*JP			You("break open the lock!");*/
+			You("鍵を壊し開けた！");
 			kickobj->olocked = 0;
 			kickobj->obroken = 1;
 			if (otrp) (void) chest_trap(kickobj, LEG, FALSE);
@@ -383,7 +422,8 @@ xchar x, y;
 		    }
 		} else {
 		    if (!rn2(3) || (martial() && !rn2(2))) {
-			pline("The lid slams open, then falls shut.");
+/*JP			pline("The lid slams open, then falls shut.");*/
+			pline("蓋がばたんと開き，閉じた．");
 			if (otrp) (void) chest_trap(kickobj, LEG, FALSE);
 			return(1);
 		    }
@@ -398,18 +438,21 @@ xchar x, y;
 	/* potions get a chance of breaking here */
 	if(kickobj->oclass == POTION_CLASS) {
 		if(rn2(2)) {
-		    You("smash %s %s!",
-			  kickobj->quan == 1L ? "the" : "a", xname(kickobj));
+/*JP		    You("smash %s %s!",
+			  kickobj->quan == 1L ? "the" : "a", xname(kickobj));*/
+		    You("%sを打ち割った！",xname(kickobj));
 		    potionbreathe(kickobj);
 		    if(costly) {
 		        long loss = stolen_value(kickobj, kickobj->ox,
 				   kickobj->oy, (boolean)shkp->mpeaceful, TRUE);
 			if(loss) {
 			    if(insider)
-			      You("owe %ld zorkmids for objects destroyed.",
+/*JP			      You("owe %ld zorkmids for objects destroyed.",*/
+			      You("器物破損のため%ldゴールドの借りをつくった．",
 				                              loss);
 			    else {
-  		           You("caused %ld zorkmids worth of damage!", loss);
+/*JP  		           You("caused %ld zorkmids worth of damage!", loss);*/
+  		           You("%ldゴールド分のダメージをくらった！", loss);
 			          make_angry_shk(shkp, kickobj->ox, 
 						                kickobj->oy);
 			    }
@@ -426,22 +469,29 @@ xchar x, y;
 				|| IS_ROCK(levl[u.ux][u.uy].typ)
 #endif
 								) {
-			if (Blind) pline("It doesn't come loose.");
-			else pline("%s do%sn't come loose.",
+/*JP			if (Blind) pline("It doesn't come loose.");*/
+			if (Blind) pline("びくともしない．");
+/*JP			else pline("%s do%sn't come loose.",
 				The(distant_name(kickobj, xname)),
-				(kickobj->quan == 1L) ? "es" : "");
+				(kickobj->quan == 1L) ? "es" : "");*/
+			else pline("%sはびくともしない．",
+				The(distant_name(kickobj, xname)));
 			return(!rn2(3) || martial());
 		}
-		if (Blind) pline("It comes loose.");
-		else pline("%s come%s loose.",
+/*JP		if (Blind) pline("It comes loose.");*/
+		if (Blind) pline("ヒビが入ってきた．");
+/*JP		else pline("%s come%s loose.",
 			   The(distant_name(kickobj, xname)),
-			   (kickobj->quan == 1L) ? "s" : "");
+			   (kickobj->quan == 1L) ? "s" : "");*/
+		else pline("%sにヒビが入ってきた．",
+			   The(distant_name(kickobj, xname)));
 		freeobj(kickobj);
 		newsym(x, y);
 		if (costly && (!costly_spot(u.ux, u.uy)
 			       || !index(u.urooms, *in_rooms(x, y, SHOPBASE))))
 			addtobill(kickobj, FALSE, FALSE, FALSE);
-		if(!flooreffects(kickobj,u.ux,u.uy,"fall")) {
+/*JP		if(!flooreffects(kickobj,u.ux,u.uy,"fall")) {*/
+		if(!flooreffects(kickobj,u.ux,u.uy,"落ちる")) {
 		    kickobj->nobj = fobj;
 		    fobj = kickobj;
 		    place_object(kickobj, u.ux, u.uy);
@@ -458,7 +508,8 @@ xchar x, y;
 	 * from its current position
 	 */
 	if(range < 2 || (isgold && kickobj->quan > 300L)) {
-	    if(!Is_box(kickobj)) pline("Thump!");
+/*JP	    if(!Is_box(kickobj)) pline("Thump!");*/
+	    if(!Is_box(kickobj)) pline("ゴツン！");
 	    return(!rn2(3) || martial());
 	}
 
@@ -497,7 +548,8 @@ xchar x, y;
 
 	if(shipit && ship_object(kickobj, bhitpos.x, bhitpos.y, costly))
 		return(1);
-	if(flooreffects(kickobj,bhitpos.x,bhitpos.y,"fall")) return(1);
+/*JP	if(flooreffects(kickobj,bhitpos.x,bhitpos.y,"fall")) return(1);*/
+	if(flooreffects(kickobj,bhitpos.x,bhitpos.y,"落ちる")) return(1);
 	kickobj->nobj = fobj;
 	fobj = kickobj;
 	place_object(kickobj, bhitpos.x, bhitpos.y);
@@ -511,30 +563,42 @@ kickstr()
 {
 	static NEARDATA char buf[BUFSZ];
 
-	if (kickobj) Sprintf(buf, "kicking %s", doname(kickobj));
+/*JP	if (kickobj) Sprintf(buf, "kicking %s", doname(kickobj));*/
+	if (kickobj) Sprintf(buf, "%sを蹴って", doname(kickobj));
 	else {
-	  Strcpy(buf, "kicking ");
-	  if (IS_STWALL(maploc->typ)) Strcat(buf, "a wall");
-	  else if (IS_ROCK(maploc->typ)) Strcat(buf, "a rock");
-	  else if (IS_THRONE(maploc->typ)) Strcat(buf, "a throne");
+/*JP	  Strcpy(buf, "kicking ");*/
+	  Strcpy(buf, "");
+/*JP	  if (IS_STWALL(maploc->typ)) Strcat(buf, "a wall");*/
+	  if (IS_STWALL(maploc->typ)) Strcat(buf, "壁を");
+/*JP	  else if (IS_ROCK(maploc->typ)) Strcat(buf, "a rock");*/
+	  else if (IS_ROCK(maploc->typ)) Strcat(buf, "岩を");
+/*JP	  else if (IS_THRONE(maploc->typ)) Strcat(buf, "a throne");*/
+	  else if (IS_THRONE(maploc->typ)) Strcat(buf, "玉座を");
 #ifdef SINKS
-	  else if (IS_SINK(maploc->typ)) Strcat(buf, "a sink");
+/*JP	  else if (IS_SINK(maploc->typ)) Strcat(buf, "a sink");*/
+	  else if (IS_SINK(maploc->typ)) Strcat(buf, "流し台を");
 #endif
-	  else if (IS_ALTAR(maploc->typ)) Strcat(buf, "an altar");
-	  else if (IS_DRAWBRIDGE(maploc->typ)) Strcat(buf, "the drawbridge");
+/*JP	  else if (IS_ALTAR(maploc->typ)) Strcat(buf, "an altar");*/
+	  else if (IS_ALTAR(maploc->typ)) Strcat(buf, "祭壇を");
+/*JP	  else if (IS_DRAWBRIDGE(maploc->typ)) Strcat(buf, "the drawbridge");*/
+	  else if (IS_DRAWBRIDGE(maploc->typ)) Strcat(buf, "跳ね橋を");
 	  else {
 		switch (maploc->typ) {
 		case STAIRS:
-			Strcat(buf, "the stairs");
+/*JP			Strcat(buf, "the stairs");*/
+			Strcat(buf, "階段を");
 			break;
 		case LADDER:
-			Strcat(buf, "a ladder");
+/*JP			Strcat(buf, "a ladder");*/
+			Strcat(buf, "はしごを");
 			break;
 		default:
-			Strcat(buf, "something wierd");
+/*JP			Strcat(buf, "something wierd");*/
+			Strcat(buf, "何か妙なものを");
 			break;
 		}
 	  }
+	  Strcat(buf, "蹴って");
 	}
 	return buf;
 }
@@ -550,33 +614,40 @@ dokick()
 
 #ifdef POLYSELF
 	if (nolimbs(uasmon)) {
-		You("have no legs to kick with.");
+/*JP		You("have no legs to kick with.");*/
+		You("何かを蹴ろうにも足がない．");
 		no_kick = TRUE;
 	} else if (verysmall(uasmon)) {
-		You("are too small to do any kicking.");
+/*JP		You("are too small to do any kicking.");*/
+		You("何かを蹴るには小さすぎる．");
 		no_kick = TRUE;
 	} else
 #endif
 	if (Wounded_legs) {
-		Your("%s %s in no shape for kicking.",
+/*JP		Your("%s %s in no shape for kicking.",*/
+		Your("%sは怪我をしており蹴れない．",
 		      ((Wounded_legs & BOTH_SIDES)==BOTH_SIDES)
-			? (const char *)makeplural(body_part(LEG)) : body_part(LEG),
-		      ((Wounded_legs & BOTH_SIDES)==BOTH_SIDES) ? "are" : "is");
+			? (const char *)makeplural(body_part(LEG)) : body_part(LEG));
+/*JP		      ((Wounded_legs & BOTH_SIDES)==BOTH_SIDES) ? "are" : "is");*/
 		no_kick = TRUE;
 	} else if (near_capacity() > SLT_ENCUMBER) {
-		Your("load is too heavy to balance yourself for a kick.");
+/*JP		Your("load is too heavy to balance yourself for a kick.");*/
+		You("たくさんものを持ちすぎて蹴りのためのバランスがとれない．");
 		no_kick = TRUE;
 	} else if (u.uinwater && !rn2(2)) {
-		Your("slow motion kick doesn't hit anything.");
+/*JP		Your("slow motion kick doesn't hit anything.");*/
+		Your("遅い動きの蹴りでは命中しようがない．");
 		no_kick = TRUE;
 	} else if (u.utrap) {
 		switch (u.utraptype) {
 		    case TT_PIT:
-			pline("There's not enough room to kick down here.");
+/*JP			pline("There's not enough room to kick down here.");*/
+			pline("落し穴にはまっているので，蹴れない．");
 			break;
 		    case TT_WEB:
 		    case TT_BEARTRAP:
-			You("can't move your %s!", body_part(LEG));
+/*JP			You("can't move your %s!", body_part(LEG));*/
+			You("%sを動かすことができない！", body_part(LEG));
 			break;
 		    default:
 			break;
@@ -599,13 +670,16 @@ dokick()
 
 	if(u.uswallow) {
 		switch(rn2(3)) {
-		case 0:  You("can't move your %s!", body_part(LEG));
+/*JP		case 0:  You("can't move your %s!", body_part(LEG));*/
+		case 0:  You("%sを動かすことができない！", body_part(LEG));
 			 break;
 		case 1:  if (is_animal(u.ustuck->data)) {
-				pline("%s burps loudly.", Monnam(u.ustuck));
+/*JP				pline("%s burps loudly.", Monnam(u.ustuck));*/
+				pline("%sは大きなゲップをした．", Monnam(u.ustuck));
 				break;
 			 }
-		default: Your("feeble kick has no effect."); break;
+/*JP		default: Your("feeble kick has no effect."); break;*/
+		default: Your("弱々しい蹴りは効果がない"); break;
 		}
 		return(1);
 	}
@@ -650,12 +724,14 @@ dokick()
 	if(!IS_DOOR(maploc->typ)) {
 		if(maploc->typ == SDOOR) {
 		    if(!Levitation && rn2(30) < avrg_attrib) {
-			pline("Crash!  You kick open a secret door!");
+/*JP			pline("Crash!  You kick open a secret door!");*/
+			pline("ガシャン！あなたは秘密の扉を蹴りやぶった！");
 			exercise(A_DEX, TRUE);
 			maploc->typ = DOOR;
 			if(maploc->doormask & D_TRAPPED) {
 			    maploc->doormask = D_NODOOR;
-			    b_trapped("door", FOOT);
+/*JP			    b_trapped("door", FOOT);*/
+			    b_trapped("扉", FOOT);
 			} else
 			    maploc->doormask = D_ISOPEN;
 			if (Blind)
@@ -668,7 +744,8 @@ dokick()
 		}
 		if(maploc->typ == SCORR) {
 		    if(!Levitation && rn2(30) < avrg_attrib) {
-			pline("Crash!  You kick open a secret passage!");
+/*JP			pline("Crash!  You kick open a secret passage!");*/
+			pline("ガシャン！あなたは秘密の通路を蹴りやぶった！");
 			exercise(A_DEX, TRUE);
 			maploc->typ = CORR;
 			if (Blind)
@@ -687,9 +764,11 @@ dokick()
 			maploc->doormask = 0; /* don't leave loose ends.. */
 			mkgold((long)rnd(200), x, y);
 			if (Blind)
-			    pline("CRASH!  You destroy it.");
+/*JP			    pline("CRASH!  You destroy it.");*/
+			    pline("ガシャン！あなたは何かを破壊した．");
 			else {
-			    pline("CRASH!  You destroy the throne.");
+/*JP			    pline("CRASH!  You destroy the throne.");*/
+			    pline("ガシャン！あなたは玉座を破壊した．");
 			    newsym(x, y);
 			}
 			exercise(A_DEX, TRUE);
@@ -700,9 +779,11 @@ dokick()
 			if(i > 6) i = 6;
 			while(i--) (void) mkobj_at(GEM_CLASS, x, y, TRUE);
 			if (Blind)
-			    You("kick something loose!");
+/*JP			    You("kick something loose!");*/
+			    You("なにかを蹴り散らした！");
 			else {
-			    You("kick loose some ornamental coins and gems!");
+/*JP			    You("kick loose some ornamental coins and gems!");*/
+			    You("装飾用の金貨や宝石を蹴り散らした！");
 			    newsym(x, y);
 			}
 			/* prevent endless milking */
@@ -718,7 +799,8 @@ dokick()
 		}
 		if(IS_ALTAR(maploc->typ)) {
 		    if(Levitation) goto dumb;
-		    You("kick %s.",(Blind ? "something" : "the altar"));
+/*JP		    You("kick %s.",(Blind ? "something" : "the altar"));*/
+		    You("%sを蹴った．",(Blind ? "何かを" : "祭壇を"));
 		    if(!rn2(3)) goto ouch;
 		    altar_wrath(x, y);
 		    exercise(A_DEX, TRUE);
@@ -729,17 +811,21 @@ dokick()
 		    if(Levitation) goto dumb;
 		    if(rn2(5)) {
 			if(flags.soundok)
-			    pline("Klunk!  The pipes vibrate noisily.");
-			else pline("Klunk!");
+/*JP			    pline("Klunk!  The pipes vibrate noisily.");*/
+			    pline("ガラン！パイプはうるさく振動した．");
+/*JP			else pline("Klunk!");*/
+			else pline("ガラン！");
 			exercise(A_DEX, TRUE);
 			return(1);
 		    } else if(!(maploc->looted & S_LPUDDING) && !rn2(3) &&
 			  !(mons[PM_BLACK_PUDDING].geno &
 				(G_GENOD | G_EXTINCT))) {
 			if (Blind)
-			    You("hear a gushing sound.");
+/*JP			    You("hear a gushing sound.");*/
+			    You("なにかが噴出する音を聞いた．");
 			else
-			    pline("A %s ooze gushes up from the drain!",
+/*JP			    pline("A %s ooze gushes up from the drain!",*/
+			    pline("%s液体が排水口からにじみ出た！",
 					  Hallucination ? hcolor() : Black);
 			(void) makemon(&mons[PM_BLACK_PUDDING], x, y);
 			exercise(A_DEX, TRUE);
@@ -754,20 +840,26 @@ dokick()
 				      PM_INCUBUS : PM_SUCCUBUS].geno &
 				  (G_GENOD | G_EXTINCT))) {
 			/* can't resist... */
-			pline("%s returns!", (Blind ? "Something" :
-							"The dish washer"));
+/*JP			pline("%s returns!", (Blind ? "Something" :
+							"The dish washer"));*/
+			pline("%sは戻った！", (Blind ? "何か" :
+							"皿洗い"));
 			if (makemon(&mons[poly_gender() == 1 ?
 				PM_INCUBUS : PM_SUCCUBUS], x, y)) newsym(x,y);
 			maploc->looted |= S_LDWASHER;
 			exercise(A_DEX, TRUE);
 			return(1);
 		    } else if(!rn2(3)) {
-			pline("Flupp!  %s.", (Blind ?
+/*JP			pline("Flupp!  %s.", (Blind ?
 				      "You hear a sloshing sound" :
-				      "Muddy waste pops up from the drain"));
+				      "Muddy waste pops up from the drain"));*/
+			pline("うわ！%s．", (Blind ?
+				      "あなたは，バチャバチャする音を聞いた" :
+				      "排水口から泥々の廃棄物が登ってくる．"));
 			if(!(maploc->looted & S_LRING)) { /* once per sink */
 			    if (!Blind)
-				You("see a ring shining in its midst.");
+/*JP				You("see a ring shining in its midst.");*/
+				You("その中央に光る指輪を見つけた．");
 			    (void) mkobj_at(RING_CLASS, x, y, TRUE);
 			    newsym(x, y);
 			    exercise(A_DEX, TRUE);
@@ -784,7 +876,8 @@ dokick()
 		    if(!IS_STWALL(maploc->typ) && maploc->ladder == LA_DOWN)
 			goto dumb;
 ouch:
-		    pline("Ouch!  That hurts!");
+/*JP		    pline("Ouch!  That hurts!");*/
+		    pline("いてっ！怪我した！");
 		    exercise(A_DEX, FALSE);
 		    exercise(A_STR, FALSE);
 		    if (Blind) feel_location(x,y); /* we know we hit it */
@@ -796,7 +889,8 @@ ouch:
 		    return(1);
 		}
 		if (is_drawbridge_wall(x,y) >= 0) {
-		    pline("The drawbridge is unaffected.");
+/*JP		    pline("The drawbridge is unaffected.");*/
+		    pline("跳ね橋には影響がない．");
 		    if(Levitation)
 			hurtle(-u.dx, -u.dy, rn1(2,4)); /* it's heavy */
 		    return(1);
@@ -810,9 +904,11 @@ ouch:
 dumb:
 		exercise(A_DEX, FALSE);
 		if (martial() || ACURR(A_DEX) >= 16 || rn2(3)) {
-			You("kick at empty space.");
+/*JP			You("kick at empty space.");*/
+			You("何もない空間を蹴った．");
 		} else {
-			pline("Dumb move!  You strain a muscle.");
+/*JP			pline("Dumb move!  You strain a muscle.");*/
+			pline("ばかげた動きだ！筋肉を痛めた．");
 			exercise(A_STR, FALSE);
 			set_wounded_legs(RIGHT_SIDE, 5 + rnd(5));
 		}
@@ -831,21 +927,26 @@ dumb:
 	if(rnl(35) < avrg_attrib + (!martial() ? 0 : ACURR(A_DEX))) {
 		/* break the door */
 		if(maploc->doormask & D_TRAPPED) {
-		    if (flags.verbose) You("kick the door.");
+/*JP		    if (flags.verbose) You("kick the door.");*/
+		    if (flags.verbose) You("扉を蹴った．");
 		    exercise(A_STR, FALSE);
 		    maploc->doormask = D_NODOOR;
-		    b_trapped("door", FOOT);
+/*JP		    b_trapped("door", FOOT);*/
+		    b_trapped("扉", FOOT);
 		} else if(ACURR(A_STR) > 18 && !rn2(5) &&
 			  !*in_rooms(x, y, SHOPBASE)) {
-		    pline("As you kick the door, it shatters to pieces!");
+/*JP		    pline("As you kick the door, it shatters to pieces!");*/
+		    pline("扉を蹴ると，こなごなにくだけた！");
 		    exercise(A_STR, TRUE);
 		    maploc->doormask = D_NODOOR;
 		} else {
-		    pline("As you kick the door, it crashes open!");
+/*JP		    pline("As you kick the door, it crashes open!");*/
+		    pline("扉を蹴ると，壊れて開いた！");
 		    exercise(A_STR, TRUE);
 		    if(*in_rooms(x, y, SHOPBASE)) {
 			add_damage(x, y, 400L);
-			pay_for_damage("break");
+/*JP			pay_for_damage("break");*/
+			pay_for_damage("破壊する");
 		    }
 		    maploc->doormask = D_BROKEN;
 		}
@@ -860,8 +961,10 @@ dumb:
 			mtmp->data == &mons[PM_WATCH_CAPTAIN]) &&
 			couldsee(mtmp->mx, mtmp->my) &&
 			mtmp->mpeaceful) {
-			pline("%s yells:", Amonnam(mtmp));
-			verbalize("Halt, thief!  You're under arrest!");
+/*JP			pline("%s yells:", Amonnam(mtmp));*/
+			pline("%sは叫んだ：", Amonnam(mtmp));
+/*JP			verbalize("Halt, thief!  You're under arrest!");*/
+			verbalize("止まれ泥棒！おまえを逮捕する！");
 			(void) angry_guards(FALSE);
 			break;
 		    }
@@ -869,7 +972,8 @@ dumb:
 	} else {
 	    if (Blind) feel_location(x,y);	/* we know we hit it */
 	    exercise(A_STR, TRUE);
-	    pline("WHAMMM!!!");
+/*JP	    pline("WHAMMM!!!");*/
+	    pline("ぐぁぁぁん");
 	    if ((slev = Is_special(&u.uz)) && slev->flags.town)
 	      for(mtmp = fmon; mtmp; mtmp = mtmp->nmon) {
 	        if((mtmp->data == &mons[PM_WATCHMAN] ||
@@ -877,12 +981,15 @@ dumb:
 	          couldsee(mtmp->mx, mtmp->my) &&
 	          mtmp->mpeaceful) {
 		
-		  pline("%s yells:", Amonnam(mtmp));
+/*JP		  pline("%s yells:", Amonnam(mtmp));*/
+		  pline("%sは叫んだ：", Amonnam(mtmp));
 		  if(levl[x][y].looted & D_WARNED) {
-			verbalize("Halt, vandal!  You're under arrest!");
+/*JP			verbalize("Halt, vandal!  You're under arrest!");*/
+			verbalize("止まれ野蛮人！おまえを逮捕する！");
 			(void) angry_guards(FALSE);
 		  } else {
-			verbalize("Hey, stop damaging that door!");
+/*JP			verbalize("Hey, stop damaging that door!");*/
+			verbalize("おい，扉を破壊するのをやめろ！");
 			levl[x][y].looted |= D_WARNED;
 		  }
 		  break;
@@ -900,11 +1007,15 @@ register xchar gate;
 
 	switch(gate) {
 	    case 0:
-	    case 4:  optr = "through the trap door."; break;
+/*JP	    case 4:  optr = "through the trap door."; break;*/
+	    case 4:  optr = "罠の扉を通り"; break;
 	    case 1:
-	    case 3:  optr = "down the stairs."; break;
+/*JP	    case 3:  optr = "down the stairs."; break;
 	    case 2:  optr = "down the ladder."; break;
-	    default: optr = "down out of sight."; break;
+	    default: optr = "down out of sight."; break;*/
+	    case 3:  optr = "階段から"; break;
+	    case 2:  optr = "はしごから"; break;
+	    default: optr = "視界から"; break;
 	}
 	return(optr);
 }
@@ -1021,40 +1132,52 @@ register xchar x, y, dlev;
 	}
 
 	if (dct) {	/* at least one object fell */
-	    const char *what = (dct == 1L ? "object falls" : "objects fall");
+/*JP	    const char *what = (dct == 1L ? "object falls" : "objects fall");*/
+	    const char *what = "物";
 	    if (missile)
-		pline("From the impact, %sother %s.",
-			dct == oct ? "the " : dct == 1L ? "an" : "", what);
+/*JP		pline("From the impact, %sother %s.",
+			dct == oct ? "the " : dct == 1L ? "an" : "", what);*/
+		pline("衝撃で，他の%sが落ちた．",what);
 	    else
 		if (oct == dct) {
-		    pline("%s adjacent %s %s",
-			    dct == 1L ? "The" : "All the",
+/*JP		    pline("%s adjacent %s %s",*/
+/*JP			    dct == 1L ? "The" : "All the",*/
+		    pline("近くにあった%sが%s落ちた．",
 			    what, gate_str(toloc));
 		} else {
-		    pline("%s adjacent %s %s",
+/*JP		    pline("%s adjacent %s %s",
 			    dct == 1L ? "One of the" : "Some of the",
 			    dct == 1L ? "objects falls" : what,
+			    gate_str(toloc));*/
+		    pline("近くにあった%s%s%s落ちた．",
+			    what,
+			    dct == 1L ? "は" : "のいくつかは",
 			    gate_str(toloc));
 		}
 	}
 
 	if(costly && shkp && price) {
 		if(ESHK(shkp)->robbed > robbed) {
-		    You("removed %ld zorkmids worth of goods!", price);
+/*JP		    You("removed %ld zorkmids worth of goods!", price);*/
+		    You("%ldゴールド分の品物を取りさった！",price);
 		    if(cansee(shkp->mx, shkp->my)) {
 			if(ESHK(shkp)->customer[0] == 0)
 			    (void) strncpy(ESHK(shkp)->customer,
 					   plname, PL_NSIZ);
 			if(angry)
-			    pline("%s is infuriated!", Monnam(shkp));
-			else pline("\"%s, you are a thief!\"", plname);
-		    } else  You("hear a scream, \"Thief!\"");
+/*JP			    pline("%s is infuriated!", Monnam(shkp));*/
+			    pline("%sは激怒した！", Monnam(shkp));
+/*JP			else pline("\"%s, you are a thief!\"", plname);*/
+			else pline("「%s，おまえは盗賊だな！」", plname);
+/*JP		    } else  You("hear a scream, \"Thief!\"");*/
+		    } else  You("金切り声を聞いた「泥棒！」");
 		    hot_pursuit(shkp);
 		    (void) angry_guards(FALSE);
 		    return;
 		}
 		if(ESHK(shkp)->debit > debit)
-		    You("owe %s %ld zorkmids for goods lost.",
+/*JP		    You("owe %s %ld zorkmids for goods lost.",*/
+		    You("品物消失のため%sに%ldゴールドの借りをつくった．",
 			Monnam(shkp),
 			(ESHK(shkp)->debit - debit));
 	}
@@ -1230,26 +1353,32 @@ int num;
 {
 	char obuf[BUFSZ];
 
-	Sprintf(obuf, "%s%s",
+/*JP	Sprintf(obuf, "%s%s",
 		 (otmp->otyp == CORPSE &&
-			type_is_pname(&mons[otmp->corpsenm])) ? "" : "The ",
+			type_is_pname(&mons[otmp->corpsenm])) ? "" : "The ",*/
+	Sprintf(obuf, "%sは",
 		 xname(otmp));
 
 	if(num) { /* means: other objects are impacted */
-	    Sprintf(eos(obuf), " hit%s %s object%s",
+/*JP	    Sprintf(eos(obuf), " hit%s %s object%s",
 		      otmp->quan == 1L ? "s" : "",
 		      num == 1 ? "another" : "other",
-		      num > 1 ? "s" : "");
+		      num > 1 ? "s" : "");*/
+	    Sprintf(eos(obuf), "他の物体に命中して");
 	    if(nodrop)
-		Sprintf(eos(obuf), " and stop%s.",
-				 otmp->quan == 1L ? "s" : "");
+/*JP		Sprintf(eos(obuf), " and stop%s.",
+				 otmp->quan == 1L ? "s" : "");*/
+		Sprintf(eos(obuf), "止った．");
 	    else
-		Sprintf(eos(obuf), " and fall%s %s",
-				otmp->quan == 1L ? "s" : "", gate_str(loc));
+/*JP		Sprintf(eos(obuf), " and fall%s %s",
+				otmp->quan == 1L ? "s" : "", gate_str(loc));*/
+		Sprintf(eos(obuf), "%s落ちた．",
+				gate_str(loc));
 	    pline(obuf);
 	} else if(!nodrop)
-	    pline("%s fall%s %s", obuf,
-		  otmp->quan == 1L ? "s" : "",
+/*JP	    pline("%s fall%s %s", obuf,
+		  otmp->quan == 1L ? "s" : "",*/
+	    pline("%s%s落ちた．", obuf,
 		  gate_str(loc));
 }
 
