@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "lev.h"
 
@@ -53,19 +60,22 @@ int
 dosave()
 {
 	clear_nhwindow(WIN_MESSAGE);
-	if(yn("Really save?") == 'n') {
+/*JP	if(yn("Really save?") == 'n') {*/
+	if(yn("本当に保存する？") == 'n') {
 		clear_nhwindow(WIN_MESSAGE);
 		if(multi > 0) nomul(0);
 	} else {
 		clear_nhwindow(WIN_MESSAGE);
-		pline("Saving...");
+/*JP		pline("Saving...");*/
+		pline("保存中．．．");
 #if defined(UNIX) || defined(VMS)
 		program_state.done_hup = 0;
 #endif
 		if(dosave0()) {
 			/* make sure they see the Saving message */
 			display_nhwindow(WIN_MESSAGE, TRUE);
-			exit_nhwindows("Be seeing you...");
+/*JP			exit_nhwindows("Be seeing you...");*/
+			exit_nhwindows("また会いましょう．．．");
 			terminate(EXIT_SUCCESS);
 		} else (void)doredraw();
 	}
@@ -131,8 +141,9 @@ dosave0()
 	    if (fd > 0) {
 		(void) close(fd);
 		clear_nhwindow(WIN_MESSAGE);
-		pline("There seems to be an old save file.");
-		if (yn("Overwrite the old file?") == 'n') {
+/*JP		pline("There seems to be an old save file.");*/
+		pline("前にセーブしたファイルがあります．");
+		if (yn("古いファイルに上書きしますか？") == 'n') {
 		    compress(SAVEF);
 		    return 0;
 		}

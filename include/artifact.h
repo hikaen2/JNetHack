@@ -31,8 +31,9 @@
 #define SPFX_DFLAG1 0x0400000L	/* attack bonus on monsters w/ mflags1 flag */
 #define SPFX_DFLAG2 0x0800000L	/* attack bonus on monsters w/ mflags2 flag */
 #define SPFX_DALIGN 0x1000000L	/* attack bonus on non-aligned monsters  */
-
 #define SPFX_DBONUS 0x1F00000L	/* attack bonus mask */
+/*JP*/
+#define SPFX_PCTRL  0x2000000L  /* polymorph control */	
 
 struct artifact {
 	short	    otyp;

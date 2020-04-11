@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 int NDECL((*afternmv));
@@ -177,9 +184,14 @@ NEARDATA struct obj *billobjs = (struct obj *)0;
 NEARDATA struct obj zeroobj = DUMMY;
 
 /* monster pronouns, index is return value of gender(mtmp) */
+#if 0 /*JP*/
 const char *he[3]  = { "he",  "she", "it" };
 const char *him[3] = { "him", "her", "it" };
 const char *his[3] = { "his", "her", "its" };
+#endif
+const char *he[3]  = { "彼", "彼女", "それ" };
+const char *him[3] = { "彼", "彼女", "それ" };
+const char *his[3] = { "彼", "彼女", "それ" };
 
 /* originally from dog.c */
 NEARDATA char dogname[PL_PSIZ] = DUMMY;
@@ -193,16 +205,23 @@ NEARDATA struct monst *migrating_mons = (struct monst *)0;
 NEARDATA struct mvitals mvitals[NUMMONS];
 
 NEARDATA struct c_color_names c_color_names = {
-	"black", "amber", "golden",
+/*JP	"black", "amber", "golden",
 	"light blue", "red", "green",
 	"silver", "blue", "purple",
-	"white"
+	"white"*/
+	"黒い", "琥珀色の", "金色の",
+	"水色の", "赤い", "緑色の",
+	"銀色の", "青い", "紫色の",
+	"白い"
 };
 
 struct c_common_strings c_common_strings = {
-	"Nothing happens.",		"That's enough tries!",
+/*JP	"Nothing happens.",		"That's enough tries!",
 	"That is a silly thing to %s.",	"shudder for a moment.",
-	"something", "Something", "You can move again."
+	"something", "Something", "You can move again."*/
+	"何も起きなかった．",		"いい加減にしろ！",
+	"%s？そりゃばかげている．",	"一瞬震えた．",
+	"何か", "何か", "また動けるようになった．"
 };
 
 /* Vision */
@@ -217,7 +236,11 @@ char toplines[BUFSZ];
 struct tc_gbl_data tc_gbl_data = { 0,0, 0,0 };	/* AS,AE, LI,CO */
 
 #ifdef TOURIST
+#ifdef FIGHTER
+const char *pl_classes = "ABCEFHKPRSTVW";
+#else
 const char *pl_classes = "ABCEHKPRSTVW";
+#endif
 #else
 const char *pl_classes = "ABCEHKPRSVW";
 #endif

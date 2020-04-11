@@ -213,6 +213,18 @@
 /* #define X11_GRAPHICS	/* X11 interface */
 
 /*
+** added by issei, Tue May 24 11:55:10 JST 1994
+*/
+#ifdef X11_GRAPHICS
+#define XI18N		/* if you use X11 internationalization, define this */
+#endif
+
+#ifdef XI18N
+#undef  XAW_I18N	/* if you use X11R5 & Xawi18n, define this */
+#define X11R6		/* ,or if use X11R6, define this */
+#endif
+
+/*
  * Define the default window system.  This should be one that is compiled
  * into your system (see defines above).  Known window systems are:
  *
@@ -330,7 +342,7 @@
  * otherwise it will be the current directory.
  */
 # ifndef HACKDIR
-#  define HACKDIR "/usr/games/lib/nethackdir"	/* nethack directory */
+#  define HACKDIR "/usr/games/lib/jnethackdir"	/* nethack directory */
 # endif
 
 /*
@@ -451,6 +463,7 @@ typedef unsigned char	uchar;
 #define KOPS		/* Keystone Kops by Scott R. Turner */
 #define SEDUCE		/* Succubi/incubi seduction, by KAA, suggested by IM */
 #define TOURIST		/* Tourist players with cameras and Hawaiian shirts */
+#define FIGHTER		/* Sailor Fighter with sailor blouse */
 /* difficulty */
 #define ELBERETH	/* Engraving the E-word repels monsters */
 /* I/O */

@@ -1,0 +1,594 @@
+
+
+  NetHackはまれに，アイテムや怪物の名前を聞いてくることがある．これら
+の質問には英語で答えることができる．未知のアイテムは'`'コマンドでオリジ
+ナルモードにすることにより，英名をチェックすることができる．アイテム一
+覧コマンド 'i','I'または，遠くの怪物や物を調べるコマンド ';','/'で知る
+ことができるようになる．薬や巻物のような識別しないとどのような効果があ
+るかわからないものは，オリジナルモードにしても英名にならない．
+
+
+           ********** 怪物の英名，和名のテーブル **********
+
+以下のテーブルはNetHackに出てくるものの一部である．これ以外のものに遭
+遇したときは'`'でオリジナルモードにしたあと'/'または'j'で名前をチェッ
+クすること．
+
+giant ant                       巨大蟻                          
+killer bee                      殺人蜂                          
+soldier ant                     兵隊蟻                          
+fire ant                        火蟻                            
+giant beetle                    巨大カブト虫                    
+queen bee                       女王蜂                          
+acid blob                       酸のブロッブ                    
+quivering blob                  震えるブロッブ                  
+gelatinous cube                 ゼラチンキューブ                
+cockatrice                      コカトリス                      
+jackal                          ジャッカル                      
+werejackal                      ジャッカル人間                  
+little dog                      仔犬                            
+dog                             犬                              
+large dog                       大きな犬                        
+wolf                            狼                              
+werewolf                        狼人間                          
+warg                            ワーグ                          
+winter wolf                     冬狼                            
+hell hound pup                  ヘルハウンドの仔                
+hell hound                      ヘルハウンド                    
+Cerberus                        ケルベロス                      
+floating eye                    さまよう目                      
+freezing sphere                 凍った球体                      
+beholder                        ビホルダー
+kitten                          小猫                            
+housecat                        家猫                            
+jaguar                          ジャガー                        
+large cat                       大きな猫                        
+tiger                           虎                              
+gremlin                         グレムリン                      
+gargoyle                        ガーゴイル                      
+winged gargoyle                 羽のあるガーゴイル              
+hobbit                          ホビット                        
+dwarf                           ドワーフ                        
+bugbear                         バグベアー                      
+dwarf lord                      ドワーフの貴族                  
+dwarf king                      ドワーフの王                    
+mind flayer                     マインドフレア                  
+manes                           亡霊                            
+homunculus                      ホムンクルス                    
+imp                             インプ                          
+lemure                          レムレース                      
+quasit                          クアシト                        
+tengu                           天狗                            
+blue jelly                      青色ゼリー                      
+spotted jelly                   まだらゼリー                    
+ochre jelly                     黄土色ゼリー                    
+kobold                          コボルド                        
+large kobold                    大きなコボルド                  
+kobold lord                     コボルドの貴族                  
+kobold shaman                   コボルドの呪術師                
+leprechaun                      レプラコーン                    
+small mimic                     小さなミミック                  
+large mimic                     大きなミミック                  
+giant mimic                     巨大なミミック                  
+wood nymph                      木のニンフ                      
+water nymph                     水のニンフ                      
+mountain nymph                  山のニンフ                      
+goblin                          ゴブリン                        
+hobgoblin                       ホブゴブリン                    
+orc                             オーク                          
+hill orc                        丘のオーク                      
+Mordor orc                      モルドールのオーク              
+Uruk-hai                        ウルク・ハイ                    
+orc shaman                      オークの呪術師                  
+orc-captain                     オークの隊長                    
+rock piercer                    岩喰い                          
+iron piercer                    鉄喰い                          
+rothe                           ロゼ                            
+mumak                           ムーマク                        
+leocrotta                       レオクロッタ                    
+wumpus                          ワンパス                        
+titanothere                     チタノゼア                      
+baluchitherium                  バルキテリウム                  
+sewer rat                       ドブネズミ                      
+giant rat                       巨大ネズミ                      
+rabid rat                       兇暴ネズミ                      
+wererat                         ねずみ人間                      
+rock mole                       岩もぐら                        
+cave spider                     洞窟グモ                        
+giant spider                    巨大グモ                        
+scorpion                        サソリ                          
+lurker above                    ラーカー                        
+trapper                         トラッパー                      
+white unicorn                   白ユニコーン                    
+gray unicorn                    灰色ユニコーン                  
+black unicorn                   黒ユニコーン                    
+fog cloud                       霧の曇                          
+dust vortex                     ほこりの渦                      
+ice vortex                      氷の渦                          
+energy vortex                   エネルギーの渦                  
+steam vortex                    蒸気の渦                        
+fire vortex                     炎の渦                          
+baby long worm                  ロングワームの子供              
+baby purple worm                紫ワームの子供                  
+long worm                       ロングワーム                    
+purple worm                     紫ワーム                        
+long worm tail                  ロングワームの尻尾              
+grid bug                        グリッドバグ                    
+xan                             ザン                            
+yellow light                    黄色い光                        
+black light                     黒い光                          
+zruty                           ズルティ                        
+couatl                          コウアトル                      
+Aleax                           アレアックス                    
+Angel                           天使                            
+ki-rin                          麒麟                            
+Archon                          アルコン                        
+bat                             こうもり                        
+giant bat                       巨大こうもり                    
+vampire bat                     吸血こうもり                    
+plains centaur                  草原のケンタウロス              
+forest centaur                  森のケンタウロス                
+mountain centaur                山のケンタウロス                
+baby gray dragon                灰色ドラゴンの子供              
+baby red dragon                 赤色ドラゴンの子供              
+baby white dragon               白ドラゴンの子供                
+baby orange dragon              オレンジドラゴンの子供          
+baby black dragon               黒ドラゴンの子供                
+baby blue dragon                青ドラゴンの子供                
+baby green dragon               緑ドラゴンの子供                
+baby yellow dragon              黄色ドラゴンの子供              
+gray dragon                     灰色ドラゴン                    
+red dragon                      赤色ドラゴン                    
+white dragon                    白ドラゴン                      
+orange dragon                   オレンジドラゴン                
+black dragon                    黒ドラゴン                      
+blue dragon                     青ドラゴン                      
+green dragon                    緑ドラゴン                      
+yellow dragon                   黄色ドラゴン                    
+air elemental                   風の精                          
+fire elemental                  火の精                          
+earth elemental                 土の精                          
+water elemental                 水の精                          
+brown mold                      茶色モールド                    
+yellow mold                     黄色モールド                    
+green mold                      緑モールド                      
+red mold                        赤色モールド                    
+shrieker                        シュリーカー                    
+violet fungus                   紫キノコ                        
+gnome                           ノーム                          
+gnome lord                      ノームの貴族                    
+gnomish wizard                  ノームの魔法使い                
+gnome king                      ノームの王                      
+giant                           巨人                            
+stone giant                     岩石巨人                        
+hill giant                      丘の巨人                        
+fire giant                      炎の巨人                        
+frost giant                     吹雪の巨人                      
+ettin                           エティン                        
+titan                           タイタン                        
+minotaur                        ミノタウロス                    
+stalker                         ストーカー                      
+jabberwock                      ジャバウォック                  
+Keystone Kop                    警備員                          
+Kop Sergeant                    巡査                            
+Kop Lieutenant                  巡査部長                        
+Kop Kaptain                     警部補                          
+lich                            リッチ                          
+demilich                        デミリッチ                      
+master lich                     マスターリッチ                  
+kobold mummy                    コボルドのミイラ                
+gnome mummy                     ノームのミイラ                  
+orc mummy                       オークのミイラ                  
+elf mummy                       エルフのミイラ                  
+human mummy                     人間のミイラ                    
+ettin mummy                     エティンのミイラ                
+giant mummy                     巨人のミイラ                    
+red naga hatchling              赤色ナーガの雛                  
+black naga hatchling            黒ナーガの雛                    
+golden naga hatchling           金色ナーガの雛                  
+guardian naga hatchling         番兵ナーガの雛                  
+red naga                        赤色ナーガ                      
+black naga                      黒ナーガ                        
+golden naga                     金色ナーガ                      
+guardian naga                   番兵ナーガ                      
+ogre                            オーガ                          
+ogre lord                       オーガの君主                    
+ogre king                       オーガの王                      
+gray ooze                       灰色ウーズ                      
+brown pudding                   茶色プリン                      
+black pudding                   黒プリン                        
+quantum mechanic                量子場                          
+rust monster                    錆の怪物                        
+garter snake                    小さなヘビ                      
+snake                           ヘビ                            
+water moccasin                  水ヘビ                          
+pit viper                       穴ヘビ                          
+python                          ニシキヘビ                      
+cobra                           コブラ                          
+troll                           トロル                          
+ice troll                       氷のトロル                      
+rock troll                      岩のトロル                      
+water troll                     水のトロル                      
+Olog-hai                        オログハイ                      
+umber hulk                      アンバーハルク                  
+vampire                         吸血鬼                          
+vampire lord                    吸血鬼の貴族                    
+Vlad the Impaler                吸血鬼ヴラド                    
+barrow wight                    バロウ・ワイト                  
+wraith                          レイス                          
+Nazgul                          ナズグル                        
+xorn                            ゾーン                          
+ape                             猿                              
+owlbear                         アウルベア                      
+yeti                            イエティ                        
+carnivorous ape                 人喰い猿                        
+sasquatch                       サスカッチ                      
+kobold zombie                   コボルドのゾンビ                
+gnome zombie                    ノームのゾンビ                  
+orc zombie                      オークのゾンビ                  
+elf zombie                      エルフのゾンビ                  
+human zombie                    人間のゾンビ                    
+ettin zombie                    エティンのゾンビ                
+giant zombie                    巨人のゾンビ                    
+skeleton                        骸骨                            
+straw golem                     藁のゴーレム                    
+rope golem                      紐のゴーレム                    
+leather golem                   皮のゴーレム                    
+wood golem                      木のゴーレム                    
+flesh golem                     肉のゴーレム                    
+clay golem                      土のゴーレム                    
+stone golem                     岩のゴーレム                    
+iron golem                      鉄のゴーレム                    
+human                           人間                            
+Woodland-elf                    森のエルフ                      
+Green-elf                       緑エルフ                        
+Grey-elf                        灰色エルフ                      
+elf-lord                        エルフの貴族                    
+Elvenking                       エルフの王                      
+nurse                           看護婦                          
+shopkeeper                      店主                            
+guard                           番兵                            
+Oracle                          賢者                            
+aligned priest                  僧侶                            
+high priest                     高僧                            
+soldier                         兵士                            
+sergeant                        下士官                          
+lieutenant                      副官                            
+captain                         指揮官                          
+watchman                        見張り                          
+watch captain                   見張りの隊長                    
+Medusa                          メデューサ                      
+Wizard of Yendor                イェンダーの魔法使い            
+Croesus                         クロイソス                      
+Charon                          カロン                          
+ghost                           幽霊                            
+shade                           影                              
+water demon                     水の魔神                        
+horned devil                    角のある悪魔                    
+succubus                        サキュバス                      
+incubus                         インキュバス                    
+erinys                          イリニス                        
+barbed devil                    髭のある悪魔                    
+marilith                        マリリス                        
+vrock                           ヴァロック                      
+hezrou                          ヘズロウ                        
+bone devil                      骨の悪魔                        
+ice devil                       氷の悪魔                        
+nalfeshnee                      ナルフェシニ                    
+pit fiend                       穴の悪霊                        
+balrog                          バルログ                        
+Juiblex                         ジョウビレックス                
+Yeenoghu                        イーノグ                        
+Orcus                           オーケス                        
+Geryon                          ゲーリュオーン                  
+Dispater                        ディスペータ                    
+Baalzebub                       ベルゼブブ                      
+Asmodeus                        アスモデウス                    
+Demogorgon                      デモゴルゴン                    
+Death                           デス                            
+Pestilence                      ペスティレンス                  
+Famine                          フェミン                        
+mail daemon                     メイルデーモン                  
+djinni                          風のジン                        
+giant eel                       巨大ウナギ                      
+electric eel                    電気ウナギ                      
+kraken                          クラーケン                      
+newt                            イモリ                          
+gecko                           ヤモリ                          
+iguana                          イグアナ                        
+baby crocodile                  ワニの子供                      
+lizard                          トカゲ                          
+chameleon                       カメレオン                      
+crocodile                       ワニ                            
+salamander                      サラマンダー                    
+
+         ********** アイテムの英名，和名のテーブル **********
+
+以下のテーブルはNetHackに出てくるものの一部である．これ以外のものに遭
+遇したときは'`'でオリジナルモードにしたあと'i'または'I'で名前をチェッ
+クすること．
+
+英名                            和名
+
+arrow                           矢
+elven arrow                     エルフの矢
+orcish arrow                    オークの矢
+silver arrow                    銀の矢
+ya                              矢
+crossbow bolt                   クロスボゥボルト
+dart                            投げ矢
+shuriken                        手裏剣
+boomerang                       ブーメラン
+spear                           槍
+elven spear                     エルフの槍
+orcish spear                    オークの槍
+dwarvish spear                  ドワーフの槍
+javelin                         ジャベリン
+trident                         トライデント
+lance                           ランス
+dagger                          短剣
+elven dagger                    エルフの短剣
+orcish dagger                   オークの短剣
+athame                          アサメ  
+scalpel                         メス
+knife                           ナイフ
+stiletto                        錐刀
+worm tooth                      ワームの歯
+dwarvish mattock                ドワーフのつるはし
+axe                             斧
+battle-axe                      戦斧
+short sword                     小剣
+elven short sword               エルフの小剣
+orcish short sword              オークの小剣
+dwarvish short sword            ドワーフの小剣
+scimitar                        三日月刀
+silver saber                    銀のサーベル
+broadsword                      幅広の剣
+elven broadsword                エルフの幅広の剣
+long sword                      長剣
+two-handed sword                両手持ちの剣
+katana                          刀
+tsurugi                         剣
+runesword                       魔剣
+partisan                        パルチザン
+ranseur                         ランサー
+spetum                          スペタム
+glaive                          グレイブ
+halberd                         ハルバード
+bardiche                        バーディック
+voulge                          ボルゲ  
+fauchard                        槍剣
+guisarme                        ギザルム
+bill-guisarme                   ビル・ギザルム
+lucern hammer                   ルッツェルンハンマー
+bec de corbin                   ベック・ド・コルバン
+mace                            メイス
+morning star                    モーニングスター
+war hammer                      ウォーハンマー
+club                            こん棒
+rubber hose                     ゴムホース
+quarterstaff                    六尺棒
+aklys                           アキリス
+flail                           フレイル
+bullwhip                        鞭
+bow                             弓
+elven bow                       エルフの弓
+orcish bow                      オークの弓
+yumi                            和弓
+sling                           スリング
+crossbow                        クロスボゥ
+wakizashi                       脇差し
+ninja-to                        忍者刀
+nunchaku                        ヌンチャク
+naginata                        なぎなた
+shito                           刺刀
+
+elven leather helm              エルフの革帽子
+orcish helm                     オークの兜
+dwarvish iron helm              ドワーフの鉄兜
+fedora                          フィドーラ
+dented pot                      くぼんだ鍋
+helmet                          兜
+helm of brilliance              知性の兜
+helm of opposite alignment      逆属性の兜
+helm of telepathy               千里眼の兜
+kabuto                          兜
+cornuthaum                      とんがり帽子
+dunce cap                       ダンスの帽子
+
+plate mail                      鋼鉄の鎧
+crystal plate mail              水晶の鎧
+bronze plate mail               青銅の鎧
+splint mail                     鉄片の鎧
+banded mail                     帯金の鎧
+dwarvish mithril-coat           ドワーフのミスリル服
+elven mithril-coat              エルフのミスリル服
+chain mail                      鎖かたびら
+orcish chain mail               オークの鎖かたびら
+crude chain mail                粗末な鎖かたびら
+scale mail                      鱗の鎧
+studded leather armor           鋲付き皮鎧
+ring mail                       鉄環の鎧
+orcish ring mail                オークの鉄環の鎧
+leather armor                   皮鎧
+leather jacket                  皮の服
+tanko                           短甲
+sailor blouse			セーラー服
+
+mummy wrapping                  ミイラの包帯
+elven cloak                     エルフのクローク
+orcish cloak                    オークのクローク
+dwarvish cloak                  ドワーフのクローク
+oilskin cloak                   防水クローク
+cloak of protection             守りのクローク
+cloak of invisibility           透明のクローク
+cloak of magic resistance       魔法を防ぐクローク
+cloak of displacement           幻影のクローク
+piece of cloth                  布切れ
+Hawaiian shirt                  アロハシャツ
+
+small shield                    小さな盾
+elven shield                    エルフの盾
+Uruk-hai shield                 ウルク・ハイの盾
+orcish shield                   オークの盾
+large shield                    大きな盾
+dwarvish roundshield            ドワーフの丸盾
+shield of reflection            反射の盾
+
+leather gloves                  皮の手袋
+gauntlets of fumbling           お手玉の小手
+gauntlets of power              力の小手
+gauntlets of dexterity          器用さの小手
+yugake                          弓懸
+
+low boots                       かかとの低い靴
+iron shoes                      鉄の靴
+high boots                      かかとの高い靴
+speed boots                     韋駄天の靴
+water walking boots             水上歩行の靴
+jumping boots                   飛び跳ねる靴
+elven boots                     エルフの靴
+fumble boots                    つまづきの靴
+levitation boots                浮遊の靴
+
+adornment                       飾りの指輪
+gain strength                   強さの指輪
+increase damage                 攻撃の指輪
+protection                      守りの指輪
+regeneration                    回復の指輪
+searching                       探索の指輪
+stealth                         忍びの指輪
+levitation                      浮遊の指輪
+hunger                          飢餓の指輪
+aggravate monster               反感の指輪
+conflict                        争いの指輪
+warning                         警告の指輪
+poison resistance               耐毒の指輪
+fire resistance                 耐炎の指輪
+cold resistance                 耐冷の指輪
+shock resistance                耐衝撃の指輪
+teleportation                   瞬間移動の指輪
+teleport control                瞬間移動制御の指輪
+polymorph                       変化の指輪
+polymorph control               変化制御の指輪
+invisibility                    透明の指輪
+see invisible                   可視の指輪
+protection from shape changers  耐変化怪物の指輪
+
+amulet of ESP                   遠視の魔除け
+amulet of life saving           命の魔除け
+amulet of strangulation         絞殺の魔除け
+amulet of restful sleep         安眠の魔除け
+amulet versus poison            耐毒の魔除け
+amulet of change                性転換の魔除け
+amulet of reflection            反射の魔除け
+amulet of magical breathing     魔法の呼吸の魔除け
+
+gain ability                    能力獲得の薬
+restore ability                 能力回復の薬
+confusion                       混乱の薬
+blindness                       盲目の薬
+paralysis                       麻痺の薬
+speed                           早くなる薬
+levitation                      浮遊の薬
+hallucination                   幻覚の薬
+invisibility                    透明の薬
+see invisible                   可視の薬
+healing                         回復の薬
+extra healing                   超回復の薬
+gain level                      レベルアップの薬
+enlightenment                   啓蒙の薬
+monster detection               怪物を探す薬
+object detection                物体を探す薬
+gain energy                     魔力の薬
+booze                           酔っぱらいの薬
+sake                            酒
+sickness                        病気の薬
+fruit juice                     フルーツジュース
+water                           水
+oil                             油
+
+enchant armor                   鎧に魔法をかける巻物
+destroy armor                   鎧を破壊する巻物
+confuse monster                 怪物を混乱させる巻物
+scare monster                   怪物を怯えさせる巻物
+remove curse                    解呪の巻物
+enchant weapon                  武器に魔法をかける巻物
+create monster                  怪物を作る巻物
+taming                          怪物を飼いならす巻物
+genocide                        虐殺の巻物
+light                           光の巻物
+teleportation                   瞬間移動の巻物
+gold detection                  金貨を探す巻物
+food detection                  食料を探す巻物
+identify                        識別の巻物
+magic mapping                   魔法の地図の巻物
+amnesia                         記憶喪失の巻物
+fire                            炎の巻物
+punishment                      罰の巻物
+charging                        充填の巻物
+mail                            手紙の巻物
+blank paper                     白紙の巻物
+
+dig                             穴掘りの魔法書
+magic missile                   魔法の矢の魔法書
+fireball                        火の玉の魔法書
+cone of cold                    冷気の魔法書
+sleep                           眠りの魔法書
+finger of death                 死の指の魔法書
+light                           光の魔法書
+detect monsters                 怪物を探す魔法書
+healing                         回復の魔法書
+knock                           開錠の魔法書
+force bolt                      衝撃の魔法書
+confuse monster                 怪物を混乱させる魔法書
+cure blindness                  盲目を癒す魔法書
+slow monster                    怪物を遅くする魔法書
+wizard lock                     施錠の魔法書
+create monster                  怪物を造る魔法書        
+detect food                     食料を探す魔法書
+cause fear                      恐怖の魔法書
+clairvoyance                    千里眼の魔法書
+cure sickness                   病気を癒す魔法書
+charm monster                   怪物を魅了する魔法書
+haste self                      素早さの魔法書
+detect unseen                   見えないものを探す魔法書
+levitation                      浮遊の魔法書
+extra healing                   超回復の魔法書
+restore ability                 能力回復の魔法書
+invisibility                    透明の魔法書
+detect treasure                 宝を探す魔法書
+remove curse                    呪いを解く魔法書
+magic mapping                   魔法の地図の魔法書
+identify                        識別の魔法書
+turn undead                     死人がえしの魔法書
+polymorph                       変化の魔法書
+teleport away                   瞬間移動の魔法書
+create familiar                 使い魔を造る魔法書
+cancellation                    無力化の魔法書
+blank paper                     白紙の魔法書
+
+light                           光の杖
+secret door detection           秘密の扉探索の杖
+create monster                  怪物を造る杖
+wishing                         願いの杖
+nothing                         単なる杖
+striking                        衝撃の杖
+make invisible                  透明にする杖
+slow monster                    遅くする杖
+speed monster                   早くする杖
+undead turning                  死人がえしの杖
+polymorph                       変化の杖
+cancellation                    無力化の杖
+teleportation                   瞬間移動の杖
+opening                         開錠の杖
+locking                         施錠の杖
+probing                         探査する杖
+digging                         穴掘りの杖
+magic missile                   魔法の矢の杖 
+fire                            炎の杖
+cold                            吹雪の杖
+sleep                           眠りの杖
+death                           死の杖
+lightning                       雷の杖
+

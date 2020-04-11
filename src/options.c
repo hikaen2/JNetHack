@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #ifdef OPTION_LISTS_ONLY	/* (AMIGA) external program for opt lists */
 #include "config.h"
 #include "objclass.h"
@@ -177,6 +184,7 @@ static struct Comp_Opt
 			 * typing when game maintains information in
 			 * a different format */
 } compopt[] = {
+#if 0 /* JP */
 	{ "catname",  "the name of your (first) cat (e.g., catname:Tabby)",
 						PL_PSIZ },
 	{ "disclose", "the kinds of information to disclose at end of game",
@@ -230,6 +238,55 @@ static struct Comp_Opt
 #endif
 	{ "windowtype", "windowing system to use", WINTYPELEN },
 	{ (char *)0, (char *)0, 0 }
+#endif /* JP */
+
+	{ "catname",  "最初に冒険を供にする猫の名前 (例 catname:タマ),", PL_PSIZ },
+	{ "disclose", "ゲーム終了時に見る情報のタイプ,", sizeof(flags.end_disclose)},
+	{ "dogname",  "最初に冒険を供にする犬の名前 (例 dogname:ポチ),", PL_PSIZ },
+	{ "dungeon",  "ダンジョンを描くのに使う記号", MAXDCHARS+1},
+	{ "effects",  "特殊効果を描くのに使う記号", MAXDCHARS+1},
+	{ "fruit",    "好物の食べ物," },
+	{ "menustyle","オブジェクトを選択するときのユーザインターフェース", MENUTYPELEN},
+	{ "menu_deselect_all", "全てのアイテムを選択", 4},
+	{ "menu_deselect_page", "現在表示されているページのアイテムを非選択", 4},
+	{ "menu_first_page", "メニューの最初のページへ", 4},
+	{ "menu_invert_all", "全てのアイテムを反転", 4},
+	{ "menu_invert_page", "現在表示されているページのアイテムを反転", 4},
+	{ "menu_last_page", "メニューの最後のページへ", 4},
+	{ "menu_next_page", "次のメニューのページへ", 4},
+	{ "menu_previous_page", "前のメニューのページへ", 4},
+	{ "menu_search", "メニューの検索", 4},
+	{ "menu_select_all", "全てのアイテムを選択", 4},
+	{ "menu_select_page", "現在表示されている全てのアイテムを選択", 4},
+	{ "monsters", "怪物に使用する記号,", MAXMCLASSES },
+	{ "msghistory", "セーブする先頭行の数,", 5 },
+	{ "name",     "キャラクターの名前 (例 name:ホイミン),", PL_NSIZ },
+	{ "objects",  "物体に使用する記号,", MAXOCLASSES },
+	{ "packorder", "アイテム一覧の順番,", MAXOCLASSES },
+#ifdef CHANGE_COLOR
+	{ "palette",  "パレット(00c/880/-fff は，青/黄/白の反転),", 15 },
+# if defined(MAC)
+	{ "hicolor",  "パレットと同じだが反転のみ,", 15 },
+# endif
+#endif
+	{ "pettype",  "最初のペットの種類,", 4 },
+	{ "pickup_types", "自動で拾う物体の種類,", MAXOCLASSES },
+	{ "scores",   "ゲームの最後に見るスコアの種類,", 32 },
+#ifdef MSDOS
+	{ "soundcard", "使用するサウンドカードのタイプ", 20 },
+#endif
+	{ "traps",    "罠を描くのに使用する記号", MAXTCHARS+1 },
+#ifdef MSDOS
+	{ "video",    "画像の更新方法", 20 },
+#endif
+#ifdef VIDEOSHADES
+	{ "videocolors", "color mappings for internal screen routines,", 4},
+	{ "videoshades", "gray shades to map to black/gray/white,", 32 },
+#endif
+	{ "windowtype", "使用するウィンドウシステム,", WINTYPELEN },
+/*JP*/
+	{ "kcode","端末の漢字コード,", 4 },
+	{ NULL, NULL }
 };
 
 #ifdef OPTION_LISTS_ONLY
@@ -352,6 +409,8 @@ void
 initoptions()
 {
 	char *opts;
+/*JP*/
+	char jopts[BUFSIZ];
 	int i;
 
 	for (i = 0; boolopt[i].name; i++) {
@@ -385,7 +444,8 @@ initoptions()
 	 * config file/environment variable below.
 	 */
 	/* this detects the IBM-compatible console on most 386 boxes */
-	if (!strncmp(getenv("TERM"), "AT", 2)) {
+/*JP	if (!strncmp(getenv("TERM"), "AT", 2)) {*/
+	if (getenv("TERM") && !strncmp(getenv("TERM"), "AT", 2)) {
 		switch_graphics(IBM_GRAPHICS);
 # ifdef TEXTCOLOR
 		flags.use_color = TRUE;
@@ -395,7 +455,9 @@ initoptions()
 #if defined(UNIX) || defined(VMS)
 # ifdef TTY_GRAPHICS
 	/* detect whether a "vt" terminal can handle alternate charsets */
-	if (!strncmpi(getenv("TERM"), "vt", 2) && (AS && AE) &&
+/*JP	if (!strncmpi(getenv("TERM"), "vt", 2) && (AS && AE) &&
+	    index(AS, '\016') && index(AE, '\017')) {*/
+	if (getenv("TERM") && !strncmpi(getenv("TERM"), "vt", 2) && (AS && AE) &&
 	    index(AS, '\016') && index(AE, '\017')) {
 		switch_graphics(DEC_GRAPHICS);
 	}
@@ -412,14 +474,18 @@ initoptions()
 	nmcpy(pl_fruit, OBJ_NAME(objects[SLIME_MOLD]), PL_FSIZ);
 	opts = getenv("NETHACKOPTIONS");
 	if (!opts) opts = getenv("HACKOPTIONS");
+/*JP*/
 	if (opts) {
+/* becouse str2ic() has side effects. */
+		Strcpy(jopts, str2ic(opts));
 		if (*opts == '/' || *opts == '\\' || *opts == '@') {
 			if (*opts == '@') opts++;	/* @filename */
 			/* looks like a filename */
 			read_config_file(opts);
 		} else {
 			read_config_file((char *)0);
-			parseoptions(opts, TRUE, FALSE);
+/*JP			parseoptions(opts, TRUE, FALSE);*/
+			parseoptions(jopts, TRUE, FALSE);
 		}
 	} else {
 		read_config_file((char *)0);
@@ -548,7 +614,8 @@ const char *optname;
 # endif
 		pline("\"%s\" settable only from %s.", optname, configfile);
 #else
-	pline("%s can be set only from NETHACKOPTIONS or %s.", optname,
+/*JP	pline("%s can be set only from NETHACKOPTIONS or %s.", optname,*/
+	pline("%sは NETHACKOPTIONSか %sでないと設定できない．", optname,
 			configfile);
 #endif
 }
@@ -560,9 +627,10 @@ const char *opts;
 	if (!initial) {
 	    if (!strncmp(opts, "h", 1) || !strncmp(opts, "?", 1))
 		option_help();
-	    else
-		pline("Bad syntax: %s.  Enter \"?g\" for help.", opts);
-	    return;
+	    else	
+/*JP		pline("Bad syntax: %s.  Enter \"?g\" for help.", opts);*/
+		pline("%s:オプションエラー！ヘルプを見るには\"?g\"とタイプせよ．", opts);
+    return;
 	}
 # ifdef AMIGA
 	if(ami_wbench_badopt(opts)) {
@@ -582,6 +650,7 @@ string_for_opt(opts, val_optional)
 char *opts;
 boolean val_optional;
 {
+	char *jopt,*p;  
 	register char *colon;
 
 	colon = index(opts, ':');
@@ -589,7 +658,17 @@ boolean val_optional;
 		if (!val_optional) badoption(opts);
 		return (char *)0;
 	}
-	return colon;
+/*	return colon;*/
+/* JP */
+	p = jopt = (char *)malloc(strlen(colon)+1);
+	while(*colon){
+	  if(*colon > 0 && *colon < 0x20)
+	    ++colon;
+	  else
+	    *(p++) = *(colon++);
+	}
+	*p = '\0';
+	return jopt;
 }
 
 static char *
@@ -698,9 +777,11 @@ boolean tinitial, tfrom_file;
 	}
 
 	/* strip leading and trailing white space */
-	while (isspace(*opts)) opts++;
+/*JP	while (isspace(*opts)) opts++;*/
+	while (isspace_8(*opts)) opts++;
 	op = eos(opts);
-	while (--op >= opts && isspace(*op)) *op = '\0';
+/*JP	while (--op >= opts && isspace(*op)) *op = '\0';*/
+	while (--op >= opts && isspace_8(*op)) *op = '\0';
 
 	if (!*opts) return;
 	negated = FALSE;
@@ -1098,6 +1179,13 @@ goodfruit:
 			op++;
 		}
 		return;
+	}
+/*JP*/
+	if (!strncmpi(opts, "kcode", 3)){
+	  if ((op = string_for_env_opt("kcode", opts, FALSE)) != 0){
+	    setkcode(*op);
+	  }
+	  return;
 	}
 
 	/* scores:5t[op] 5a[round] o[wn] */
@@ -1649,38 +1737,49 @@ dotogglepickup()
 	flags.pickup = !flags.pickup;
 	if (flags.pickup) {
 	    oc_to_str(flags.pickup_types, ocl);
-	    Sprintf(buf, "ON, for %s objects", ocl[0] ? ocl : "all");
+/*JP	    Sprintf(buf, "ON, for %s objects", ocl[0] ? ocl : "all");*/
+	    Sprintf(buf, "%sのオブジェクトに対してオン", ocl[0] ? ocl : "全て");
 	} else {
-	    Strcpy(buf, "OFF");
+	    Strcpy(buf, "オフ");
 	}
-	pline("Autopickup: %s.", buf);
+/*JP	pline("Autopickup: %s.", buf);*/
+	pline("オートピックアップ：%s．", buf);
 	return 0;
 }
 
 /* data for option_help() */
 static const char *opt_intro[] = {
 	"",
-	"                 NetHack Options Help:",
+	"                 JNetHack Options Help:",
 	"",
 #define CONFIG_SLOT 3	/* fill in next value at run-time */
 	(char *)0,
 #if !defined(MICRO) && !defined(MAC)
-	"or use `NETHACKOPTIONS=\"<options>\"' in your environment;",
+/*JP	"or use `NETHACKOPTIONS=\"<options>\"' in your environment;",*/
+	"または，環境変数，`NETHACKOPTIONS=\"<options>\"'を設定する．",
 # ifdef VMS
 	"-- for example, $ DEFINE NETHACKOPTIONS \"noautopickup,fruit:kumquat\"",
 # endif
 #endif
-	"or press \"O\" while playing, and type your <options> at the prompt.",
+/*JP	"or press \"O\" while playing, and type your <options> at the prompt.",
 	"In all cases, <options> is a list of options separated by commas.",
+*/
+	"またはゲーム中\"O\"コマンドでオプションを設定する．",
+	"全ての場合オプションはカンマで区切って設定する．",
 	"",
- "Boolean options (which can be negated by prefixing them with '!' or \"no\"):",
+/*JP "Boolean options (which can be negated by prefixing them with '!' or \"no\"):",*/
+ "真偽オプション(頭に'!'または\"no\"をつけることにより偽になる):",
 	(char *)0
 };
 
 static const char *opt_epilog[] = {
 	"",
+/*JP
  "Some of the options can be set only before the game is started.  You will",
 	"be so informed, if you attempt to set them while in the game.",
+*/
+        "いくつかのオプションはゲームスタート時にしか設定できない．",
+	"ゲーム中にセットしようとするとその旨のメッセージがでる．",
 	(char *)0
 };
 
@@ -1697,7 +1796,8 @@ option_help()
 	Sprintf(buf,"Set options as OPTIONS= in %s or in icon;",configfile);
     } else
 #endif
-	Sprintf(buf, "Set options as OPTIONS=<options> in %s;", configfile);
+/*JP	Sprintf(buf, "Set options as OPTIONS=<options> in %s;", configfile);*/
+	Sprintf(buf, "%sファイル内で，OPTIONS=<options>のように設定する．", configfile);
     opt_intro[CONFIG_SLOT] = (const char *) buf;
     for (i = 0; opt_intro[i]; i++)
 	putstr(datawin, 0, opt_intro[i]);
@@ -1710,7 +1810,8 @@ option_help()
     next_opt(datawin, "");
 
     /* Compound options */
-    putstr(datawin, 0, "Compound options:");
+/*JP    putstr(datawin, 0, "Compound options:");*/
+    putstr(datawin, 0, "パラメータつきオプション:");
     for (i = 0; compopt[i].name; i++) {
 	Sprintf(buf2, "`%s'", compopt[i].name);
 	Sprintf(buf, "%-20s - %s%c", buf2, compopt[i].descr,

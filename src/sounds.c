@@ -2,6 +2,13 @@
 /*	Copyright (c) 1989 Janet Walz, Mike Threepoint */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "edog.h"
 
@@ -43,29 +50,46 @@ dosounds()
 
     if (level.flags.nfountains && !rn2(400)) {
 	static const char *fountain_msg[4] = {
+/*JP
 		"bubbling water.",
 		"water falling on coins.",
 		"the splashing of a naiad.",
 		"a soda fountain!",
+*/
+	        "ゴボゴボという音を聞いた．",
+		"ピチャピチャという音を聞いた．",
+		"バシャバシャという音を聞いた．",
+		"炭酸入り噴水のシューという音を聞いた．"
 	};
 	You_hear(fountain_msg[rn2(3)+hallu]);
     }
 #ifdef SINK
     if (level.flags.nsinks && !rn2(300)) {
 	static const char *sink_msg[3] = {
+/*JP
 		"a slow drip.",
 		"a gurgling noise.",
 		"dishes being washed!",
+*/
+	        "水がぽたぽたと落ちる音を聞いた．",
+		"がらがらという音を聞いた．",
+		"皿を洗う音を聞いた．",
 	};
 	You_hear(sink_msg[rn2(2)+hallu]);
     }
 #endif
     if (level.flags.has_court && !rn2(200)) {
 	static const char *throne_msg[4] = {
+/*JP
 		"the tones of courtly conversation.",
 		"a sceptre pounded in judgment.",
 		"Someone shouts \"Off with %s head!\"",
 		"Queen Beruthiel's cats!",
+*/
+	        "上品な話し声を聞いた．",
+		"裁判で笏を突く音を聞いた．",
+		"だれかが「そのものの首を跳ねよ」と叫ぶ声を聞いた．",
+		"ベルサイユ女王の猫の声を聞いた．",
 	};
 	for (mtmp = fmon; mtmp; mtmp = mtmp->nmon)
 	    if ((mtmp->msleep ||
@@ -82,11 +106,14 @@ dosounds()
     }
     if (level.flags.has_swamp && !rn2(200)) {
 	static const char *swamp_msg[3] = {
-		"hear mosquitoes!",
-		"smell marsh gas!",	/* so it's a smell...*/
-		"hear Donald Duck!",
+/*JP		"hear mosquitoes!",
+		"smell marsh gas!",	* so it's a smell...*
+		"hear Donald Duck!",*/
+		"蚊の羽音を聞いた．",
+		"腐った匂いがした！",	/* so it's a smell...*/
+		"ドナルドダックの声を聞いた！",
 	};
-	You(swamp_msg[rn2(2)+hallu]);
+	You_hear(swamp_msg[rn2(2)+hallu]);
 	return;
     }
     if (level.flags.has_vault && !rn2(200)) {
@@ -115,19 +142,24 @@ dosounds()
 #endif /* AZTEC_C_WORKAROUND */
 		    {
 			if (gold_in_vault)
-			    You_hear(!hallu ? "someone counting money." :
-				"the quarterback calling the play.");
+/*JP			    You_hear(!hallu ? "someone counting money." :
+				"the quarterback calling the play.");*/
+			    You_hear(!hallu ? "誰かがお金を数えている音を聞いた．" :
+				"クォータバックが指示をする声を聞いた．");
 			else
-			    You_hear("someone searching.");
+/*JP			    You_hear("someone searching.");*/
+			    You_hear("誰かが捜索している音を聞いた．");
 			break;
 		    }
 		    /* fall into... (yes, even for hallucination) */
 		}
 		case 0:
-		    You_hear("the footsteps of a guard on patrol.");
+/*JP		    You_hear("the footsteps of a guard on patrol.");*/
+		    You_hear("警備員のパトロールする音を聞いた．");
 		    break;
 		case 2:
-		    You_hear("Ebenezer Scrooge!");
+/*JP		    You_hear("Ebenezer Scrooge!");*/
+		    You_hear("こち亀の両さんの声を聞いた！");
 		    break;
 	    }
 	return;
@@ -138,14 +170,18 @@ dosounds()
 		mon_in_room(mtmp, BEEHIVE)) {
 		switch (rn2(2)+hallu) {
 		    case 0:
-			You_hear("a low buzzing.");
+/*JP			You_hear("a low buzzing.");*/
+			You_hear("ぶーんという音を聞いた．");
 			break;
 		    case 1:
-			You_hear("an angry drone.");
+/*JP			You_hear("an angry drone.");*/
+			You_hear("興奮した雄バチの音を聞いた．");
 			break;
 		    case 2:
-			You_hear("bees in your %sbonnet!",
-			    uarmh ? "" : "(nonexistent) ");
+/*JP			You_hear("bees in your %sbonnet!",
+			    uarmh ? "" : "(nonexistent) ");*/
+			You_hear("ハチがあなたの帽子%sの中にいる音を聞いた！",
+			    uarmh ? "" : "(被ってないけど)");
 			break;
 		}
 		return;
@@ -157,15 +193,20 @@ dosounds()
 		mon_in_room(mtmp, MORGUE)) {
 		switch (rn2(2)+hallu) {
 		    case 0:
-			You("suddenly realize it is unnaturally quiet.");
+/*JP			You("suddenly realize it is unnaturally quiet.");*/
+			You("不自然なくらい静かなのに気づいた．");
 			break;
 		    case 1:
-			pline_The("%s on the back of your %s stands up.",
-				body_part(HAIR), body_part(NECK));
+/*JP			pline_The("%s on the back of your %s stands up.",
+				body_part(HAIR), body_part(NECK));*/
+			pline("あなたの%sのうしろの%sが逆だった．",
+				body_part(NECK), body_part(HAIR));
 			break;
 		    case 2:
-			pline_The("%s on your %s seems to stand up.",
-				body_part(HAIR), body_part(HEAD));
+/*JP			pline_The("%s on your %s seems to stand up.",
+				body_part(HAIR), body_part(HEAD));*/
+			pline("あなたの%sの%sは逆だった．",
+				body_part(NECK), body_part(HAIR));
 			break;
 		}
 		return;
@@ -173,10 +214,14 @@ dosounds()
     }
     if (level.flags.has_barracks && !rn2(200)) {
 	static const char *barracks_msg[4] = {
-		"blades being honed.",
+/*JP		"blades being honed.",
 		"loud snoring.",
 		"dice being thrown.",
-		"General MacArthur!",
+		"General MacArthur!",*/
+	        "刃物を研ぐ音を聞いた．",
+		"大きないびきを聞いた．",
+		"ダイスが振られる音を聞いた．",
+		"マッカーサー提督の声を聞いた．",
 	};
 	int count = 0;
 
@@ -195,9 +240,12 @@ dosounds()
     }
     if (level.flags.has_zoo && !rn2(200)) {
 	static const char *zoo_msg[3] = {
-		"a sound reminiscent of an elephant stepping on a peanut.",
+/*JP		"a sound reminiscent of an elephant stepping on a peanut.",
 		"a sound reminiscent of a seal barking.",
-		"Doctor Doolittle!",
+		"Doctor Doolittle!",*/
+	        "象がピーナッツの上で踊るような音を聞いた．",
+		"アシカが吠えるような音を聞いた．",
+		"ドリトル先生の声を聞いた．",
 	};
 	for (mtmp = fmon; mtmp; mtmp = mtmp->nmon)
 	    if ((mtmp->msleep || is_animal(mtmp->data)) &&
@@ -215,9 +263,12 @@ dosounds()
 	if (tended_shop(sroom) &&
 		!index(u.ushops, ROOM_INDEX(sroom) + ROOMOFFSET)) {
 	    static const char *shop_msg[3] = {
-		    "someone cursing shoplifters.",
+/*JP		    "someone cursing shoplifters.",
 		    "the chime of a cash register.",
-		    "Neiman and Marcus arguing!",
+		    "Neiman and Marcus arguing!",*/
+	      "誰かが泥棒をののしる声を聞いた．",
+	      "レジのチーンという音を聞いた．",
+	      "イトーとヨーカドーの議論を聞いた！",
 	    };
 	    You_hear(shop_msg[rn2(2)+hallu]);
 	}
@@ -231,11 +282,18 @@ dosounds()
 	/* and don't produce silly effects when she's clearly visible */
 	if (mtmp && (hallu || !canseemon(mtmp))) {
 	    static const char *ora_msg[5] = {
+#if 0 /*JP*/
 		    "a strange wind.",		/* Jupiter at Dodona */
 		    "convulsive ravings.",	/* Apollo at Delphi */
 		    "snoring snakes.",		/* AEsculapius at Epidaurus */
 		    "someone say \"No more woodchucks!\"",
 		    "a loud ZOT!"		/* both rec.humor.oracle */
+#endif /*JP*/
+		"奇妙な風の音を聞いた．",
+		"半狂乱の声を聞いた．",
+		"蛇の咆哮を聞いた．",
+		"誰かが「もうウッドチャックはいらない」と言っている声を聞いた．",
+		"大きなＺＯＴを聞いた！"
 	    };
 	    You_hear(ora_msg[rn2(3)+hallu*2]);
 	}
@@ -247,8 +305,12 @@ dosounds()
 #ifdef OVLB
 
 static const char *h_sounds[] = {
-    "beep", "boing", "sing", "belche", "creak", "cough", "rattle",
-    "ululate", "pop", "jingle", "sniffle", "tinkle", "eep"
+/*JP    "beep", "boing", "sing", "belche", "creak", "cough", "rattle",
+    "ululate", "pop", "jingle", "sniffle", "tinkle", "eep"*/
+    "ピーッと鳴いた","騒ぎたてた","歌った","キーキーと鳴いた",
+    "せき込んだ","ゴロゴロ鳴った","ホーホー鳴いた","ポンと鳴いた",
+    "ガランガランと鳴いた","クンクン鳴いた","チリンチリンと鳴いた",
+    "イーッと鳴いた"
 };
 
 const char *
@@ -260,35 +322,45 @@ register struct monst *mtmp;
 	switch (mtmp->data->msound) {
 	case MS_MEW:
 	case MS_HISS:
-	    ret = "hiss";
+/*JP	    ret = "hiss";*/
+	    ret = "シーッと鳴いた";
 	    break;
 	case MS_BARK:
 	case MS_GROWL:
-	    ret = "growl";
+/*JP	    ret = "growl";*/
+	    ret = "はげしく吠えた";
 	    break;
 	case MS_ROAR:
-	    ret = "roar";
+/*JP	    ret = "roar";*/
+	    ret = "吠えた";
 	    break;
 	case MS_BUZZ:
-	    ret = "buzz";
+/*JP	    ret = "buzz";*/
+	    ret = "ブーッと鳴いた";
 	    break;
 	case MS_SQEEK:
-	    ret = "squeal";
+/*JP	    ret = "squeal";*/
+	    ret = "キーキー鳴いた";
 	    break;
 	case MS_SQAWK:
-	    ret = "screech";
+/*JP	    ret = "screech";*/
+	    ret = "金切り声を立てた";
 	    break;
 	case MS_NEIGH:
-	    ret = "neigh";
+/*JP	    ret = "neigh";*/
+	    ret = "いなないた";
 	    break;
 	case MS_WAIL:
-	    ret = "wail";
+/*JP	    ret = "wail";*/
+	    ret = "悲しく鳴いた";
 	    break;
 	case MS_SILENT:
-		ret = "commotion";
+/*JP		ret = "commotion";*/
+		ret = "興奮した";
 		break;
 	default:
-		ret = "scream";
+/*JP		ret = "scream";*/
+		ret = "金切り声をあげた";
 	}
 	return ret;
 }
@@ -308,7 +380,8 @@ register struct monst *mtmp;
     else
 	growl_verb = growl_sound(mtmp);
     if (growl_verb) {
-	pline("%s %s!", Monnam(mtmp), makeplural(growl_verb));
+/*JP	pline("%s %s!", Monnam(mtmp), makeplural(growl_verb));*/
+	pline("%sは%s！", Monnam(mtmp), makeplural(growl_verb));
 	if(flags.run) nomul(0);
 	wake_nearto(mtmp->mx, mtmp->my, mtmp->data->mlevel * 18);
     }
@@ -328,27 +401,34 @@ register struct monst *mtmp;
 	yelp_verb = h_sounds[rn2(SIZE(h_sounds))];
     else switch (mtmp->data->msound) {
 	case MS_MEW:
-	    yelp_verb = "yowl";
+/*JP	    yelp_verb = "yowl";*/
+	    yelp_verb = "悲しく鳴いた";
 	    break;
 	case MS_BARK:
 	case MS_GROWL:
-	    yelp_verb = "yelp";
+/*JP	    yelp_verb = "yelp";*/
+	    yelp_verb = "キャンキャン鳴いた";
 	    break;
 	case MS_ROAR:
-	    yelp_verb = "snarl";
+/*JP	    yelp_verb = "snarl";*/
+	    yelp_verb = "うなった";
 	    break;
 	case MS_SQEEK:
-	    yelp_verb = "squeal";
+/*JP	    yelp_verb = "squeal";*/
+	    yelp_verb = "キーキー鳴いた";
 	    break;
 	case MS_SQAWK:
-	    yelp_verb = "screak";
+/*JP	    yelp_verb = "screak";*/
+	    yelp_verb = "金切り声を立てた";
 	    break;
 	case MS_WAIL:
-	    yelp_verb = "wail";
+/*JP	    yelp_verb = "wail";*/
+	    yelp_verb = "悲しく鳴いた";
 	    break;
     }
     if (yelp_verb) {
-	pline("%s %ss!", Monnam(mtmp), yelp_verb);
+/*JP	pline("%s %ss!", Monnam(mtmp), yelp_verb);*/
+	pline("%sは%s！", Monnam(mtmp), yelp_verb);
 	if(flags.run) nomul(0);
 	wake_nearto(mtmp->mx, mtmp->my, mtmp->data->mlevel * 12);
     }
@@ -369,17 +449,21 @@ register struct monst *mtmp;
     else switch (mtmp->data->msound) {
 	case MS_MEW:
 	case MS_GROWL:
-	    whimper_verb = "whimper";
+/*JP	    whimper_verb = "whimper";*/
+	    whimper_verb = "クンクン鳴いた";
 	    break;
 	case MS_BARK:
-	    whimper_verb = "whine";
+/*JP	    whimper_verb = "whine";*/
+	    whimper_verb = "クーンと鳴いた";
 	    break;
 	case MS_SQEEK:
-	    whimper_verb = "squeal";
+/*JP	    whimper_verb = "squeal";*/
+	    whimper_verb = "キーキー鳴いた";
 	    break;
     }
     if (whimper_verb) {
-	pline("%s %ss.", Monnam(mtmp), whimper_verb);
+/*JP	pline("%s %ss.", Monnam(mtmp), whimper_verb);*/
+	pline("%sは%s．", Monnam(mtmp), whimper_verb);
 	if(flags.run) nomul(0);
 	wake_nearto(mtmp->mx, mtmp->my, mtmp->data->mlevel * 6);
     }
@@ -396,7 +480,7 @@ register struct monst *mtmp;
     if (mtmp->data->msound != MS_SILENT && mtmp->data->msound <= MS_ANIMAL)
 	(void) domonnoise(mtmp);
     else if (mtmp->data->msound >= MS_HUMANOID)
-	verbalize("I'm hungry.");
+	verbalize("はらぺこだ．");
 }
 
 static int
@@ -429,122 +513,162 @@ register struct monst *mtmp;
 	    break;
 	case MS_WERE:
 	    if (flags.moonphase == FULL_MOON && (night() ^ !rn2(13))) {
-		pline("%s throws back %s head and lets out a blood curdling %s!",
+/*JP		pline("%s throws back %s head and lets out a blood curdling %s!",
 		      Monnam(mtmp), his[pronoun_gender(mtmp)],
-		      ptr == &mons[PM_HUMAN_WERERAT] ? "shriek" : "howl");
+		      ptr == &mons[PM_HUMAN_WERERAT] ? "shriek" : "howl");*/
+		pline("%sは頭をのけぞらし背筋が氷るような%sをあげた！",
+		      Monnam(mtmp),
+		      ptr == &mons[PM_HUMAN_WERERAT] ? "金切り声" : "咆哮");
 		wake_nearto(mtmp->mx, mtmp->my, 11*11);
-	    } else
-		pline_msg =
-		     "whispers inaudibly.  All you can make out is \"moon\".";
+	    }else
+/*JP		pline_msg =
+		     "whispers inaudibly.  All you can make out is \"moon\".";*/
+	      pline_msg = "聞きとれないような声でささやいた．かろうじて『月』という言葉だけが聞きとれた．";
 	    break;
 	case MS_SILENT:
 	    break;
 	case MS_BARK:
 	    if (flags.moonphase == FULL_MOON && night()) {
-		pline_msg = "howls.";
+/*JP		pline_msg = "howls.";*/
+		pline_msg = "吠えた．";
 	    } else if (mtmp->mpeaceful) {
 		if (mtmp->mtame &&
 			(mtmp->mconf || mtmp->mflee || mtmp->mtrapped ||
 			 moves > EDOG(mtmp)->hungrytime || mtmp->mtame < 5))
-		    pline_msg = "whines.";
+/*JP		    pline_msg = "whines.";*/
+		    pline_msg = "クンクン鳴いた．";
 		else if (mtmp->mtame && EDOG(mtmp)->hungrytime > moves + 1000)
-		    pline_msg = "yips.";
+/*JP		    pline_msg = "yips.";*/
+		    pline_msg = "キャンキャン鳴いた．";
 		else
-		    pline_msg = "barks.";
+/*JP		    pline_msg = "barks.";*/
+		    pline_msg = "ワンワン吠えた．";
 	    } else {
-		pline_msg = "growls.";
+/*JP		pline_msg = "growls.";*/
+		pline_msg = "激しく吠えた．";
 	    }
 	    break;
 	case MS_MEW:
 	    if (mtmp->mtame) {
 		if (mtmp->mconf || mtmp->mflee || mtmp->mtrapped ||
 			mtmp->mtame < 5)
-		    pline_msg = "yowls.";
+/*JP		    pline_msg = "yowls.";*/
+		    pline_msg = "悲しく鳴いた．";
 		else if (moves > EDOG(mtmp)->hungrytime)
-		    pline_msg = "miaos.";
+/*JP		    pline_msg = "miaos.";*/
+		    pline_msg = "ニャーンと鳴いた．";
 		else if (EDOG(mtmp)->hungrytime > moves + 1000)
-		    pline_msg = "purrs.";
+/*JP		    pline_msg = "purrs.";*/
+		    pline_msg = "ゴロゴロと鳴いた．";
 		else
-		    pline_msg = "mews.";
+/*JP		    pline_msg = "mews.";*/
+		    pline_msg = "ニャーニャー鳴いた．";
 		break;
 	    } /* else FALLTHRU */
 	case MS_GROWL:
-	    pline_msg = mtmp->mpeaceful ? "snarls." : "growls!";
+/*JP	    pline_msg = mtmp->mpeaceful ? "snarls." : "growls!";*/
+	    pline_msg = mtmp->mpeaceful ? "うなった．" : "激しく吠えた．";
 	    break;
 	case MS_ROAR:
-	    pline_msg = mtmp->mpeaceful ? "snarls." : "roars!";
+/*JP	    pline_msg = mtmp->mpeaceful ? "snarls." : "roars!";*/
+	    pline_msg = mtmp->mpeaceful ? "うなった．" : "とても激しく吠えた．";
 	    break;
 	case MS_SQEEK:
-	    pline_msg = "squeaks.";
+/*JP	    pline_msg = "squeaks.";*/
+	    pline_msg = "キーキー鳴いた．";
 	    break;
 	case MS_SQAWK:
-	    pline_msg = "squawks.";
+/*JP	    pline_msg = "squawks.";*/
+	    pline_msg = "キーキー鳴いた．";
 	    break;
 	case MS_HISS:
 	    if (!mtmp->mpeaceful)
-		pline_msg = "hisses!";
+/*JP		pline_msg = "hisses!";*/
+		pline_msg = "シーッと鳴いた！";
 	    else return 0;	/* no sound */
 	    break;
 	case MS_BUZZ:
-	    pline_msg = mtmp->mpeaceful ? "drones." : "buzzes angrily.";
+/*JP	    pline_msg = mtmp->mpeaceful ? "drones." : "buzzes angrily.";*/
+	    pline_msg = mtmp->mpeaceful ? "ぶーんと鳴った．" : "ぶんぶん鳴った．";
 	    break;
 	case MS_GRUNT:
-	    pline_msg = "grunts.";
+/*JP	    pline_msg = "grunts.";*/
+	    pline_msg = "ぶーぶー鳴いた．";
 	    break;
 	case MS_NEIGH:
 	    if (mtmp->mtame < 5)
-		pline_msg = "neighs.";
+/*JP		pline_msg = "neighs.";*/
+	        pline_msg = "いなないた．";
 	    else if (moves > EDOG(mtmp)->hungrytime)
-		pline_msg = "whinnies.";
+/*JP		pline_msg = "whinnies.";*/
+		pline_msg = "ヒヒーンと鳴いた．";
 	    else
-		pline_msg = "whickers.";
+/*JP		pline_msg = "whickers.";*/
+		pline_msg = "ヒヒヒーンと鳴いた．";
 	    break;
 	case MS_WAIL:
-	    pline_msg = "wails mournfully.";
+/*JP	    pline_msg = "wails mournfully.";*/
+	    pline_msg = "悲しげに鳴いた．";
 	    break;
 	case MS_GURGLE:
-	    pline_msg = "gurgles.";
+/*JP	    pline_msg = "gurgles.";*/
+	    pline_msg = "ごろごろ喉を鳴らした．";
 	    break;
 	case MS_BURBLE:
-	    pline_msg = "burbles.";
+/*JP	    pline_msg = "burbles.";*/
+	    pline_msg = "ぺちゃくちゃしゃべった．";
 	    break;
 	case MS_SHRIEK:
-	    pline_msg = "shrieks.";
+/*JP	    pline_msg = "shrieks.";*/
+	    pline_msg = "金切り声をあげた．";
 	    aggravate();
 	    break;
 	case MS_IMITATE:
-	    pline_msg = "imitates you.";
+/*JP	    pline_msg = "imitates you.";*/
+	    pline_msg = "あなたの真似をした．";
 	    break;
 	case MS_BONES:
-	    pline("%s rattles noisily.", Monnam(mtmp));
-	    You("freeze for a moment.");
+/*JP	    pline("%s rattles noisily.", Monnam(mtmp));
+	    You("freeze for a moment.");*/
+	    pline("%sはガタガタと騒ぎだした．",Monnam(mtmp));
+	    You("しばらく動けない．");
 	    nomul(-2);
 	    break;
 	case MS_LAUGH:
 	    {
 		static const char *laugh_msg[4] = {
-		    "giggles.", "chuckles.", "snickers.", "laughs.",
+/*JP		    "giggles.", "chuckles.", "snickers.", "laughs.",*/
+		    "くすくす笑った．", "くすっすと笑った．",
+		    "ばかにしたように笑った．", "笑った．",
 		};
 		pline_msg = laugh_msg[rn2(4)];
 	    }
 	    break;
 	case MS_MUMBLE:
-	    pline_msg = "mumbles incomprehensibly.";
+/*JP	    pline_msg = "mumbles incomprehensibly.";*/
+	    pline_msg = "不可解な言葉をつぶやいた．";
 	    break;
 	case MS_DJINNI:
-	    if (mtmp->mtame) verbl_msg = "Thank you for freeing me!";
+/*JP	    if (mtmp->mtame) verbl_msg = "Thank you for freeing me!";
 	    else if (mtmp->mpeaceful) verbl_msg = "I'm free!";
-	    else verbl_msg = "This will teach you not to disturb me!";
+	    else verbl_msg = "This will teach you not to disturb me!";*/
+	    if (mtmp->mtame) verbl_msg = "私を助けてくれたことを感謝する！";
+	    else if (mtmp->mpeaceful) verbl_msg = "やっと自由になった！";
+	    else verbl_msg = "じゃまをしないでくれ！";
 	    break;
 	case MS_BOAST:	/* giants */
 	    if (!mtmp->mpeaceful) {
 		switch (rn2(4)) {
-		case 0: pline("%s boasts about %s gem collection.",
-			      Monnam(mtmp), his[pronoun_gender(mtmp)]);
+/*JP		case 0: pline("%s boasts about %s gem collection.",
+			      Monnam(mtmp), his[pronoun_gender(mtmp)]);*/
+		case 0: pline("%sは自分の宝石のコレクションを自慢した．",
+			      Monnam(mtmp));
 			break;
-		case 1: pline_msg = "complains about a diet of mutton.";
+/*JP		case 1: pline_msg = "complains about a diet of mutton.";*/
+		case 1: pline_msg = "羊のダイエットについての不満を述べた．";
 			break;
-	       default: pline_msg = "shouts \"Fee Fie Foe Foo!\" and guffaws.";
+/*JP	       default: pline_msg = "shouts \"Fee Fie Foe Foo!\" and guffaws.";*/
+	       default: pline_msg = "『わっはっはっは！』とばか笑いした．";
 			wake_nearto(mtmp->mx, mtmp->my, 7*7);
 			break;
 		}
@@ -562,44 +686,61 @@ register struct monst *mtmp;
 	    }
 	    /* Generic peaceful humanoid behaviour. */
 	    if (mtmp->mflee)
-		pline_msg = "wants nothing to do with you.";
+/*JP		pline_msg = "wants nothing to do with you.";*/
+		pline_msg = "あなたと関係を持ちたくないようだ．";
 	    else if (mtmp->mhp < mtmp->mhpmax/4)
-		pline_msg = "moans.";
+/*JP		pline_msg = "moans.";*/
+		pline_msg = "うめき声をあげた．";
 	    else if (mtmp->mconf || mtmp->mstun)
-		verbl_msg = !rn2(3) ? "Huh?" : rn2(2) ? "What?" : "Eh?";
+/*JP		verbl_msg = !rn2(3) ? "Huh?" : rn2(2) ? "What?" : "Eh?";*/
+		verbl_msg = !rn2(3) ? "へ？" : rn2(2) ? "何？" : "え？";
 	    else if (!mtmp->mcansee)
-		verbl_msg = "I can't see!";
+/*JP		verbl_msg = "I can't see!";*/
+		verbl_msg = "何も見えない！";
 	    else if (mtmp->mtrapped)
-		verbl_msg = "I'm trapped!";
+/*JP		verbl_msg = "I'm trapped!";*/
+	        verbl_msg = "罠にはまってしまった！";
 	    else if (mtmp->mhp < mtmp->mhpmax/2)
-		pline_msg = "asks for a potion of healing.";
+/*JP		pline_msg = "asks for a potion of healing.";*/
+		pline_msg = "回復の薬を持ってないか尋ねた．";
 	    else if (mtmp->mtame && moves > EDOG(mtmp)->hungrytime)
-		verbl_msg = "I'm hungry.";
+/*JP		verbl_msg = "I'm hungry.";*/
+		verbl_msg = "腹が減ったな．";
 	    /* Specific monsters' interests */
 	    else if (is_elf(ptr))
-		pline_msg = "curses orcs.";
+/*JP		pline_msg = "curses orcs.";*/
+		pline_msg = "オークを呪った．";
 	    else if (is_dwarf(ptr))
-		pline_msg = "talks about mining.";
+/*JP		pline_msg = "talks about mining.";*/
+		pline_msg = "採掘について話した．";
 	    else if (likes_magic(ptr))
-		pline_msg = "talks about spellcraft.";
+/*JP		pline_msg = "talks about spellcraft.";*/
+		pline_msg = "魔力について話した．";
 	    else if (ptr->mlet == S_CENTAUR)
-		pline_msg = "discusses hunting.";
+/*JP		pline_msg = "discusses hunting.";*/
+		pline_msg = "猟について議論した．";
+
 	    else switch (monsndx(ptr)) {
 		case PM_HOBBIT:
 		    pline_msg = (mtmp->mhpmax - mtmp->mhp >= 10) ?
-				"complains about unpleasant dungeon conditions."
-				: "asks you about the One Ring.";
+/*JP				"complains about unpleasant dungeon conditions."
+				: "asks you about the One Ring.";*/
+				"不愉快な迷宮の状態について不満を述べた．"
+				: "「一つの指輪」について尋ねた．";
 		    break;
 		case PM_ARCHEOLOGIST:
-    pline_msg = "describes a recent article in \"Spelunker Today\" magazine.";
+/*JP    pline_msg = "describes a recent article in \"Spelunker Today\" magazine.";*/
+		    pline_msg = "「日刊洞窟」の最新の記事を執筆している．";
 		    break;
 #ifdef TOURIST
 		case PM_TOURIST:
-		    verbl_msg = "Aloha.";
+/*JP		    verbl_msg = "Aloha.";*/
+		    verbl_msg = "アローハ．";
 		    break;
 #endif
 		default:
-		    pline_msg = "discusses dungeon exploration.";
+/*JP		    pline_msg = "discusses dungeon exploration.";*/
+		    pline_msg = "迷宮探検について議論した．";
 		    break;
 	    }
 	    break;
@@ -612,28 +753,46 @@ register struct monst *mtmp;
 	    }
 	    switch ((poly_gender() != (int) mtmp->female) ? rn2(3) : 0) {
 #else
-	    switch ((poly_gender() == 0) ? rn2(3) : 0) {
+/*	    switch ((poly_gender() == 0) ? rn2(3) : 0) {*/
 #endif
 		case 2:
-			verbl_msg = "Hello, sailor.";
+/*JP			verbl_msg = "Hello, sailor.";*/
+			switch(poly_gender()){
+			case 0:	      
+			  verbl_msg = "こんにちは．あらいい男ね．";
+			  break;
+			case 1:
+			  verbl_msg = "こんにちは，お嬢さん．";
+			  break;
+			default:
+			  verbl_msg = "こんにちは．";
+			  break;
+			}
 			break;
 		case 1:
-			pline_msg = "comes on to you.";
+/*JP			pline_msg = "comes on to you.";*/
+			pline_msg = "あなたのほうへやってきた．";
 			break;
 		default:
-			pline_msg = "cajoles you.";
+/*JP			pline_msg = "cajoles you.";*/
+			pline_msg = "あなたをおだてた．";
 	    }
 	    break;
 #ifdef KOPS
 	case MS_ARREST:
 	    if (mtmp->mpeaceful)
-		verbalize("Just the facts, %s.",
-		      flags.female ? "Ma'am" : "Sir");
+/*JP		verbalize("Just the facts, %s.",
+		      flags.female ? "Ma'am" : "Sir");*/
+		verbalize("これが現実だよ%s．",
+		      flags.female ? "お嬢さん" : "きみ");
 	    else {
 		static const char *arrest_msg[3] = {
-		    "Anything you say can be used against you.",
+/*JP		    "Anything you say can be used against you.",
 		    "You're under arrest!",
-		    "Stop in the name of the Law!",
+		    "Stop in the name of the Law!",*/
+		    "おまえの言うことはおまえにとって不利な証拠となることがある！",
+		    "おまえを逮捕する！",
+		    "法の名のもと直ちに中止せよ！",
 		};
 		verbl_msg = arrest_msg[rn2(3)];
 	    }
@@ -651,37 +810,51 @@ register struct monst *mtmp;
 	    break;
 	case MS_SPELL:
 	    /* deliberately vague, since it's not actually casting any spell */
-	    pline_msg = "seems to mutter a cantrip.";
+/*JP	    pline_msg = "seems to mutter a cantrip.";*/
+	    pline_msg = "ぶつぶつとつぶやいている．";
 	    break;
 	case MS_NURSE:
 	    if (uwep && (uwep->oclass == WEAPON_CLASS || is_weptool(uwep)))
-		verbl_msg = "Put that weapon away before you hurt someone!";
+/*JP		verbl_msg = "Put that weapon away before you hurt someone!";*/
+		verbl_msg = "武器をおさめなさい！それは人を傷つけるものよ！";
 	    else if (uarmc || uarm || uarmh || uarms || uarmg || uarmf)
 		verbl_msg = Role_is('H') ?
-			  "Doc, I can't help you unless you cooperate." :
-			  "Please undress so I can examine you.";
+/*JP			  "Doc, I can't help you unless you cooperate." :
+			  "Please undress so I can examine you.";*/
+			  "先生，あなたの協力なしではどうしようもありませんわ．" :
+			  "服を脱いでください．あなたを診察しますわ．";
 #ifdef TOURIST
 	    else if (uarmu)
-		verbl_msg = "Take off your shirt, please.";
+/*JP		verbl_msg = "Take off your shirt, please.";*/
+		verbl_msg = "シャツを脱いでください．";
 #endif
-	    else verbl_msg = "Relax, this won't hurt a bit.";
+/*JP	    else verbl_msg = "Relax, this won't hurt a bit.";*/
+	    else verbl_msg = "おちついて．ちっとも痛くないわよ．";
 	    break;
 	case MS_GUARD:
 	    if (u.ugold)
-		verbl_msg = "Please drop that gold and follow me.";
+/*JP		verbl_msg = "Please drop that gold and follow me.";*/
+ 		verbl_msg = "金を置いてついてこい．";
 	    else
-		verbl_msg = "Please follow me.";
+/*JP		verbl_msg = "Please follow me.";*/
+		verbl_msg = "ついてこい．";
 	    break;
 	case MS_SOLDIER:
 	    {
 		static const char *soldier_foe_msg[3] = {
-		    "Resistance is useless!",
+/*JP		    "Resistance is useless!",
 		    "You're dog meat!",
-		    "Surrender!",
+		    "Surrender!",*/
+		    "抵抗はやめろ！",
+		    "犬に喰われちまえ！",
+		    "降伏しろ！",
 		},		  *soldier_pax_msg[3] = {
-		    "What lousy pay we're getting here!",
+/*JP		    "What lousy pay we're getting here!",
 		    "The food's not fit for Orcs!",
-		    "My feet hurt, I've been on them all day!",
+		    "My feet hurt, I've been on them all day!",*/
+		    "たっぷり金を置いてゆけ！",
+		    "なんだい？オークでも喰えねぇぜ！",
+ 		    "足を怪我した，どうしてくれる！",
 		};
 		verbl_msg = mtmp->mpeaceful ? soldier_pax_msg[rn2(3)]
 					    : soldier_foe_msg[rn2(3)];
@@ -689,12 +862,15 @@ register struct monst *mtmp;
 	    break;
 	case MS_RIDER:
 	    if (ptr == &mons[PM_DEATH] && mtmp->mpeaceful)
-		pline_msg = "is busy reading a copy of Sandman #9.";
-	    else verbl_msg = "Who do you think you are, War?";
+/*JP		pline_msg = "is busy reading a copy of Sandman #9.";*/
+		pline_msg = "Sandmanの9章を読むのに忙しい";
+/*JP	    else verbl_msg = "Who do you think you are, War?";*/
+	    else verbl_msg = "自分が何物か考えたことがあるか？";
 	    break;
     }
 
-    if (pline_msg) pline("%s %s", Monnam(mtmp), pline_msg);
+/*JP    if (pline_msg) pline("%s %s", Monnam(mtmp), pline_msg);*/
+    if (pline_msg) pline("%sは%s", Monnam(mtmp), pline_msg);
     else if (verbl_msg) verbalize(verbl_msg);
     return(1);
 }
@@ -719,19 +895,23 @@ dochat()
     struct obj *otmp;
 
     if (uasmon->msound == MS_SILENT) {
-	pline("As %s, you cannot speak.", an(uasmon->mname));
+/*JP	pline("As %s, you cannot speak.", an(uasmon->mname));*/
+	pline("あなたは%sなので，話すことができない．", jtrns_mon(uasmon->mname, flags.female));
 	return(0);
     }
     if (Strangled) {
-	You_cant("speak.  You're choking!");
+/*JP	You_cant("speak.  You're choking!");*/
+	You("話せない．あなたは首を絞められている！");
 	return(0);
     }
     if (u.uswallow) {
-	pline("They won't hear you out there.");
+/*JP	pline("They won't hear you out there.");*/
+        You("外へ向って話をしたが，誰も聞きいれなかった．");
 	return(0);
     }
     if (Underwater) {
-	Your("speech is unintelligible underwater.");
+/*JP	Your("speech is unintelligible underwater.");*/
+	pline("水面下では，あなたの話はろくに理解されない．");
 	return(0);
     }
 
@@ -747,10 +927,13 @@ dochat()
 	return(1);
     }
 
-    (void) getdir("Talk to whom? [in what direction]");
+/*JP    (void) getdir("Talk to whom? [in what direction]");*/
+    (void) getdir("誰と話しますか？[どの方向]");
 
     if (u.dz) {
-	pline("They won't hear you %s there.", u.dz < 0 ? "up" : "down");
+/*JP	pline("They won't hear you %s there.", u.dz < 0 ? "up" : "down");*/
+	pline("%s向って話をしても意味がない．",
+	      u.dz < 0 ? "上へ" : "下へ");
 	return(0);
     }
 
@@ -760,11 +943,13 @@ dochat()
  * 2 helmets, 2 amulets, 3 pairs of gloves or 6 rings as a marilith,
  * etc...  --KAA
 	if (u.umonnum == PM_ETTIN) {
-	    You("discover that your other head makes boring conversation.");
+JP	    You("discover that your other head makes boring conversation.");
+	    You("他の頭が会話をしているのに気がついた．");
 	    return(1);
 	}
 */
-	pline("Talking to yourself is a bad habit for a dungeoneer.");
+/*JP	pline("Talking to yourself is a bad habit for a dungeoneer.");*/
+	pline("迷宮探検者にとって一人言は悪い癖だ．");
 	return(0);
     }
 
@@ -773,17 +958,20 @@ dochat()
     if ((Blind && !Telepat) || !mtmp || mtmp->mundetected ||
 		mtmp->m_ap_type == M_AP_FURNITURE ||
 		mtmp->m_ap_type == M_AP_OBJECT) {
-	pline("I see nobody there.");
+/*JP	pline("I see nobody there.");*/
+	pline("そこには何もない．");
 	return(0);
     }
     /* sleeping monsters won't talk, except priests (who wake up) */
     if ((!mtmp->mcanmove || mtmp->msleep) && !mtmp->ispriest) {
-	pline("%s seems not to notice you.", Monnam(mtmp));
+/*JP	pline("%s seems not to notice you.", Monnam(mtmp));*/
+	pline("%sはあなたに気がついていないようだ．", Monnam(mtmp));
 	return(0);
     }
 
     if (mtmp->mtame && mtmp->meating) {
-	pline("%s is eating noisily.", Monnam(mtmp));
+/*JP	pline("%s is eating noisily.", Monnam(mtmp));*/
+	pline("%sはバリバリと物を食べている．", Monnam(mtmp));
 	return (0);
     }
 

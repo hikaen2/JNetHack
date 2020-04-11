@@ -529,7 +529,7 @@ int c;
 char c;
 #endif
 {
-	(void) putchar(c);
+	(void) cputchar(c);
 }
 
 void
@@ -537,6 +537,7 @@ xputs(s)
 const char *s;
 {
 # ifndef TERMLIB
+	(void) jputchar('\0');
 	(void) fputs(s, stdout);
 # else
 #  if defined(NHSTDC) || defined(ULTRIX_PROTO)
@@ -654,7 +655,7 @@ void
 tty_nhbell()
 {
 	if (flags.silent) return;
-	(void) putchar('\007');		/* curx does not change */
+	(void) cputchar('\007');		/* curx does not change */
 	(void) fflush(stdout);
 }
 

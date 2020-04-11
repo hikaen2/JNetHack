@@ -637,7 +637,8 @@ int gr_set_flag;
 	    if (ascgraphics_mode_callback) (*ascgraphics_mode_callback)();
 #endif
 	    break;
-#ifdef ASCIIGRAPH
+/* #ifdef ASCIIGRAPH */
+# if 0
 	case IBM_GRAPHICS:
 /*
  * Use the nice IBM Extended ASCII line-drawing characters (codepage 437).
@@ -705,6 +706,7 @@ static const uchar r_oc_syms[MAXOCLASSES] = {
 	VENOM_SYM
 };
 
+#if 0 /*JP*/
 # ifdef ASCIIGRAPH
 static const uchar IBM_r_oc_syms[MAXOCLASSES] = {	/* a la EPYX Rogue */
 /* 0*/	'\0',
@@ -727,6 +729,7 @@ static const uchar IBM_r_oc_syms[MAXOCLASSES] = {	/* a la EPYX Rogue */
 	VENOM_SYM
 };
 # endif /* ASCIIGRAPH */
+#endif /*JP*/
 
 void
 assign_rogue_graphics(is_rlevel)
@@ -756,6 +759,7 @@ boolean is_rlevel;
  * all of this info and to simply initialize it via a for() loop like r_oc_syms.
  */
 
+#if 0 /*JP*/
 # ifdef ASCIIGRAPH
 	if (!flags.IBMgraphics
 #  if defined(USE_TILES) && defined(MSDOS)
@@ -763,8 +767,10 @@ boolean is_rlevel;
 #  endif
 				) {
 # endif
+#endif /*JP*/
 	    showsyms[S_vodoor]  = showsyms[S_hodoor]  = showsyms[S_ndoor] = '+';
 	    showsyms[S_upstair] = showsyms[S_dnstair] = '%';
+#if 0 /*JP*/
 # ifdef ASCIIGRAPH
 	} else {
 	    /* a la EPYX Rogue */
@@ -810,8 +816,10 @@ boolean is_rlevel;
 	    showsyms[S_polymorph_trap] = 0x04;
 	}
 #endif /* ASCIIGRAPH */
+#endif /* JP */
 
 	for (i = 0; i < MAXOCLASSES; i++) {
+#if 0 /* JP */
 #ifdef ASCIIGRAPH
 	    if (flags.IBMgraphics
 # if defined(USE_TILES) && defined(MSDOS)
@@ -821,9 +829,9 @@ boolean is_rlevel;
 		oc_syms[i] = IBM_r_oc_syms[i];
 	    else
 #endif /* ASCIIGRAPH */
+#endif /* JP */
 		oc_syms[i] = r_oc_syms[i];
 	}
-
     } else {
 	(void) memcpy((genericptr_t)showsyms,
 		      (genericptr_t)save_showsyms, sizeof showsyms);

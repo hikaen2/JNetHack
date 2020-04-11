@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 STATIC_PTR int NDECL(picklock);
@@ -47,17 +54,29 @@ lock_action()
 {
 	/* "unlocking"+2 == "locking" */
 	static const char *actions[] = {
+/* 
+** 英語は un をつけるだけで逆の意味になるが，日本語はそうはいかない．
+** 誰だ？こんな数バイトけちるコード書いたやつは？
+*/
+#if 0 /*JP*/
 		/* [0] */	"unlocking the door",
 		/* [1] */	"unlocking the chest",
 		/* [2] */	"unlocking the box",
 		/* [3] */	"picking the lock"
+#endif /*JP*/
+		/* [0] */	"扉の鍵をはずす", 
+		/* [1] */	"宝箱の鍵をはずす",
+		/* [2] */	"箱の鍵をはずす",  
+		/* [3] */	"鍵をはずす"    
 	};
 
 	/* if the target is currently unlocked, we're trying to lock it now */
 	if (xlock.door && !(xlock.door->doormask & D_LOCKED))
-		return actions[0]+2;	/* "locking the door" */
+/*JP		return actions[0]+2;	/* "locking the door" */
+		return "扉に鍵をかける";
 	else if (xlock.box && !xlock.box->olocked)
-		return xlock.box->otyp == CHEST ? actions[1]+2 : actions[2]+2;
+/*JP		return xlock.box->otyp == CHEST ? actions[1]+2 : actions[2]+2;*/
+		return xlock.box->otyp == CHEST ? "宝箱に鍵をかける" : "箱に鍵をかける";
 	/* otherwise we're trying to unlock it */
 	else if (xlock.picktyp == LOCK_PICK)
 		return actions[3];	/* "picking the lock" */
@@ -86,29 +105,35 @@ picklock()	/* try to open/close a lock */
 	    }
 	    switch (xlock.door->doormask) {
 		case D_NODOOR:
-		    pline("This doorway has no door.");
+/*JP		    pline("This doorway has no door.");*/
+		    pline("出入口には扉がない．");
 		    return((xlock.usedtime = 0));
 		case D_ISOPEN:
-		    You("cannot lock an open door.");
+/*JP		    You("cannot lock an open door.");*/
+		    pline("開いてる扉に鍵をかけれない．");
 		    return((xlock.usedtime = 0));
 		case D_BROKEN:
-		    pline("This door is broken.");
+/*JP		    pline("This door is broken.");*/
+		    pline("扉は壊れている");
 		    return((xlock.usedtime = 0));
 	    }
 	}
 
 	if (xlock.usedtime++ >= 50 || nohands(uasmon)) {
-	    You("give up your attempt at %s.", lock_action());
+/*JP	    You("give up your attempt at %s.", lock_action());*/
+	    pline("%sのをあきらめた．", lock_action());
 	    exercise(A_DEX, TRUE);	/* even if you don't succeed */
 	    return((xlock.usedtime = 0));
 	}
 
 	if(rn2(100) > xlock.chance) return(1);		/* still busy */
 
-	You("succeed in %s.", lock_action());
+/*JP	You("succeed in %s.", lock_action());*/
+	You("%sのに成功した．", lock_action());
 	if (xlock.door) {
 	    if(xlock.door->doormask & D_TRAPPED) {
-		    b_trapped("door", FINGER);
+/*JP		    b_trapped("door", FINGER);*/
+		    b_trapped("扉", FINGER);
 		    xlock.door->doormask = D_NODOOR;
 		    unblock_point(u.ux+u.dx, u.uy+u.dy);
 		    if (*in_rooms(u.ux+u.dx, u.uy+u.dy, SHOPBASE))
@@ -137,7 +162,8 @@ forcelock()	/* try to force a locked chest */
 		return((xlock.usedtime = 0));		/* you or it moved */
 
 	if (xlock.usedtime++ >= 50 || !uwep || nohands(uasmon)) {
-	    You("give up your attempt to force the lock.");
+/*JP	    You("give up your attempt to force the lock.");*/
+	    pline("鍵をこじ開けるのをあきらめた．");
 	    if(xlock.usedtime >= 50)		/* you made the effort */
 	      exercise((xlock.picktyp) ? A_DEX : A_STR, TRUE);
 	    return((xlock.usedtime = 0));
@@ -150,10 +176,14 @@ forcelock()	/* try to force a locked chest */
 		/* for a +0 weapon, probability that it survives an unsuccessful
 		 * attempt to force the lock is (.992)^50 = .67
 		 */
+/*JP
 		pline("%sour %s broke!",
 		      (uwep->quan > 1L) ? "One of y" : "Y", xname(uwep));
+*/
+	        pline("あなたの%sは壊れてしまった！",xname(uwep));
 		useup(uwep);
-		You("give up your attempt to force the lock.");
+/*JP		You("give up your attempt to force the lock.");*/
+		pline("鍵をこじ開けるのをあきらめた．");
 		exercise(A_DEX, TRUE);
 		return((xlock.usedtime = 0));
 	    }
@@ -162,7 +192,8 @@ forcelock()	/* try to force a locked chest */
 
 	if(rn2(100) > xlock.chance) return(1);		/* still busy */
 
-	You("succeed in forcing the lock.");
+/*JP	You("succeed in forcing the lock.");*/
+	pline("鍵をこじ開けた．");
 	xlock.box->olocked = 0;
 	xlock.box->obroken = 1;
 	if(!xlock.picktyp && !rn2(3)) {
@@ -173,7 +204,9 @@ forcelock()	/* try to force a locked chest */
 	    costly = (*u.ushops && costly_spot(u.ux, u.uy));
 	    shkp = costly ? shop_keeper(*u.ushops) : 0;
 
-	    pline("In fact, you've totally destroyed %s.",
+/*JP	    pline("In fact, you've totally destroyed %s.",
+		  the(xname(xlock.box)));*/
+	    pline("%sを完全に壊してしまった．",
 		  the(xname(xlock.box)));
 
 	    /* Put the contents on ground at the hero's feet. */
@@ -201,7 +234,8 @@ forcelock()	/* try to force a locked chest */
 	    if (costly)
 		loss += stolen_value(xlock.box, u.ux, u.uy,
 					     (boolean)shkp->mpeaceful, TRUE);
-	    if(loss) You("owe %ld zorkmids for objects destroyed.", loss);
+/*JP	    if(loss) You("owe %ld zorkmids for objects destroyed.", loss);*/
+	    if(loss) You("器物破損で%ldゴールドの借りをつくった．", loss);
 	    delobj(xlock.box);
 	}
 	exercise((xlock.picktyp) ? A_DEX : A_STR, TRUE);
@@ -235,30 +269,37 @@ pick_lock(pick) /* pick a lock with a given object */
 
 	/* check whether we're resuming an interrupted previous attempt */
 	if (xlock.usedtime && picktyp == xlock.picktyp) {
-	    static char no_longer[] = "Unfortunately, you can no longer %s %s.";
+/*JP	    static char no_longer[] = "Unfortunately, you can no longer %s %s.";*/
+	    static char no_longer[] = "不幸にも，あなたは%s%s";
 
 	    if (nohands(uasmon)) {
-		const char *what = (picktyp == LOCK_PICK) ? "pick" : "key";
+/*JP		const char *what = (picktyp == LOCK_PICK) ? "pick" : "key";*/
+		const char *what = (picktyp == LOCK_PICK) ? "鍵開け器具" : "鍵";
 #ifdef TOURIST
-		if (picktyp == CREDIT_CARD) what = "card";
+/*JP		if (picktyp == CREDIT_CARD) what = "card";*/
+		if (picktyp == CREDIT_CARD) what = "カード";
 #endif
-		pline(no_longer, "hold the", what);
+/*JP		pline(no_longer, "hold the", what);*/
+		pline(no_longer, what, "をつかめない");
 		reset_pick();
 		return 0;
 	    } else if (xlock.box && !can_reach_floor()) {
-		pline(no_longer, "reach the", "lock");
+/*JP		pline(no_longer, "reach the", "lock");*/
+		pline(no_longer, "鍵に", "届かない");
 		reset_pick();
 		return 0;
 	    } else {
 		const char *action = lock_action();
-		You("resume your attempt at %s.", action);
+/*JP		You("resume your attempt at %s.", action);*/
+		pline("%sを再開した．", action);
 		set_occupation(picklock, action, 0);
 		return(1);
 	    }
 	}
 
 	if(nohands(uasmon)) {
-		You_cant("hold %s -- you have no hands!", doname(pick));
+/*JP		You_cant("hold %s -- you have no hands!", doname(pick));*/
+		You("%sをつかむことができない！--あなたには手がない！", xname(pick));
 		return(0);
 	}
 
@@ -281,15 +322,19 @@ pick_lock(pick) /* pick a lock with a given object */
 	    int count;
 
 	    if (u.dz < 0) {
-		pline("There isn't any sort of lock up %s.",
-		      Levitation ? "here" : "there");
+/*JP		pline("There isn't any sort of lock up %s.",
+		      Levitation ? "here" : "there");*/
+		pline("%sには鍵をかけるような物はない．",
+		      Levitation ? "ここ" : "下方");
 		return 0;
 	    } else if (is_lava(u.ux, u.uy)) {
-		pline("Doing that would probably melt your %s.",
+/*JP		pline("Doing that would probably melt your %s.",*/
+		pline("そんなことをしたら%sが溶けてしまう．",
 		      xname(pick));
 		return 0;
 	    } else if (is_pool(u.ux, u.uy) && !Underwater) {
-		pline_The("water has no lock.");
+/*JP		pline_The("water has no lock.");*/
+		pline("水に錠前はない");
 		return 0;
 	    }
 
@@ -299,29 +344,40 @@ pick_lock(pick) /* pick a lock with a given object */
 		if (Is_box(otmp)) {
 		    ++count;
 		    if (!can_reach_floor()) {
-			You_cant("reach %s from up here.", the(xname(otmp)));
+/*JP			You_cant("reach %s from up here.", the(xname(otmp)));*/
+			You("ここにある%sに届かない．", the(xname(otmp)));
 			return 0;
 		    }
 		    it = 0;
+#if 0 /*JP*/
 		    if (otmp->obroken) verb = "fix";
 		    else if (!otmp->olocked) verb = "lock", it = 1;
 		    else if (picktyp != LOCK_PICK) verb = "unlock", it = 1;
 		    else verb = "pick";
-		    Sprintf(qbuf, "There is %s here, %s %s?",
-			    doname(otmp), verb, it ? "it" : "its lock");
+#endif /*JP*/
+		    if (otmp->obroken) verb = "修復する";
+		    else if (!otmp->olocked) verb = "鍵をかける", it = 1;
+		    else if (picktyp != LOCK_PICK) verb = "鍵をはずす", it = 1;
+		    else verb = "こじあける";
+/*JP		    Sprintf(qbuf, "There is %s here, %s %s?",
+			    doname(otmp), verb, it ? "it" : "its lock");*/
+		    Sprintf(qbuf, "ここには%sがある．%s？",
+			    doname(otmp), jconj(verb,"ますか"));
 
 		    c = ynq(qbuf);
 		    if(c == 'q') return(0);
 		    if(c == 'n') continue;
 
 		    if (otmp->obroken) {
-			You_cant("fix its broken lock with %s.", doname(pick));
+/*JP			You_cant("fix its broken lock with %s.", doname(pick));*/
+			You("壊れた鍵を%sで修復できない．", doname(pick));
 			return 0;
 		    }
 #ifdef TOURIST
 		    else if (picktyp == CREDIT_CARD && !otmp->olocked) {
 			/* credit cards are only good for unlocking */
-			You_cant("do that with %s.", doname(pick));
+/*JP			You_cant("do that with %s.", doname(pick));*/
+			pline("%sじゃそんなことはできない．", doname(pick));
 			return 0;
 		    }
 #endif
@@ -348,7 +404,8 @@ pick_lock(pick) /* pick a lock with a given object */
 		}
 	    if (c != 'y') {
 		if (!count)
-		    pline("There doesn't seem to be any sort of lock here.");
+/*JP		    pline("There doesn't seem to be any sort of lock here.");*/
+		    pline("ここには鍵をかけるような物はないようだ．");
 		return(0);		/* decided against all boxes */
 	    }
 	} else {			/* pick the lock in a door */
@@ -361,42 +418,58 @@ pick_lock(pick) /* pick a lock with a given object */
 #ifdef TOURIST
 		if (picktyp == CREDIT_CARD &&
 		    (mtmp->isshk || mtmp->data == &mons[PM_ORACLE]))
-		    verbalize("No checks, no credit, no problem.");
+/*JP		    verbalize("No checks, no credit, no problem.");*/
+		    verbalize("いつもニコニコ現金払い．");
 		else
 #endif
-		    pline("I don't think %s would appreciate that.", mon_nam(mtmp));
+/*JP		    pline("I don't think %s would appreciate that.", mon_nam(mtmp));*/
+		    pline("%sがその価値を認めるとは思えない．", mon_nam(mtmp));
 		return(0);
 	    }
 	    if(!IS_DOOR(door->typ)) {
 		if (is_drawbridge_wall(x,y) >= 0)
-		    You("%s no lock on the drawbridge.",
-				Blind ? "feel" : "see");
+/*JP		    You("%s no lock on the drawbridge.",
+				Blind ? "feel" : "see");*/
+		    pline("跳ね橋には鍵がない%s．",
+				Blind ? "ようだ" : "ように見える");
 		else
-		    You("%s no door there.",
-				Blind ? "feel" : "see");
+/*JP		    You("%s no door there.",
+				Blind ? "feel" : "see");*/
+		    pline("ここには扉がない%s．",
+				Blind ? "ようだ" : "ように見える");
 		return(0);
 	    }
 	    switch (door->doormask) {
 		case D_NODOOR:
-		    pline("This doorway has no door.");
+/*JP		    pline("This doorway has no door.");*/
+	            pline("出入口には扉がない．");
 		    return(0);
 		case D_ISOPEN:
-		    You("cannot lock an open door.");
+/*JP		    You("cannot lock an open door.");*/
+		    pline("開いてる扉に鍵をかけれない．");
 		    return(0);
 		case D_BROKEN:
-		    pline("This door is broken.");
+/*JP		    pline("This door is broken.");*/
+		    pline("扉は壊れている");
 		    return(0);
 		default:
 #ifdef TOURIST
 		    /* credit cards are only good for unlocking */
 		    if(picktyp == CREDIT_CARD && !(door->doormask & D_LOCKED)) {
-			You_cant("lock a door with a credit card.");
+/*JP			You_cant("lock a door with a credit card.");*/
+		        You("クレジットカードで鍵をかけることはできない．");
 			return(0);
 		    }
 #endif
 
+/*JP
+	これこそ真に利用価値のないテクニカルなコーディングだ！
+							--issei
 		    Sprintf(qbuf,"%sock it?",
-			(door->doormask & D_LOCKED) ? "Unl" : "L" );
+			(door->doormask & D_LOCKED) ? "Unl" : "L" );*/
+		    Sprintf(qbuf,"%s？",
+			(door->doormask & D_LOCKED) ? "はずしますか" : "かけますか" );
+
 
 		    c = yn(qbuf);
 		    if(c == 'n') return(0);
@@ -446,15 +519,19 @@ doforce()		/* try to force a chest with your weapon */
 	   || uwep->otyp == RUBBER_HOSE
 #endif
 	  ) {
-	    You_cant("force anything without a %sweapon.",
-		  (uwep) ? "proper " : "");
+/*JP	    You_cant("force anything without a %sweapon.",
+		  (uwep) ? "proper " : "");*/
+	    pline("%s武器なしで鍵をこじあけることはできない．",
+		  (uwep) ? "適切な" : "");
 	    return(0);
 	}
 
 	picktyp = is_blade(uwep);
 	if(xlock.usedtime && xlock.box && picktyp == xlock.picktyp) {
-	    You("resume your attempt to force the lock.");
-	    set_occupation(forcelock, "forcing the lock", 0);
+/*JP	    You("resume your attempt to force the lock.");*/
+	    pline("鍵をこじあけるのを再開した．");
+/*JP	    set_occupation(forcelock, "forcing the lock", 0);*/
+	    set_occupation(forcelock, "鍵をこじあける", 0);
 	    return(1);
 	}
 
@@ -463,20 +540,24 @@ doforce()		/* try to force a chest with your weapon */
 	for(otmp = level.objects[u.ux][u.uy]; otmp; otmp = otmp->nexthere)
 	    if(Is_box(otmp)) {
 		if (otmp->obroken || !otmp->olocked) {
-		    pline("There is %s here, but its lock is already %s.",
-			  doname(otmp), otmp->obroken ? "broken" : "unlocked");
+/*JP		    pline("There is %s here, but its lock is already %s.",*/
+		    pline("ここには%sがある，しかしその鍵はもう%s．",
+			  doname(otmp), otmp->obroken ? "壊れている" : "はずされている");
 		    continue;
 		}
-		Sprintf(qbuf,"There is %s here, force its lock?", doname(otmp));
+/*JP		Sprintf(qbuf,"There is %s here, force its lock?", doname(otmp));*/
+		Sprintf(qbuf,"ここには%sがある，鍵をこじあけますか？", doname(otmp));
 
 		c = ynq(qbuf);
 		if(c == 'q') return(0);
 		if(c == 'n') continue;
 
 		if(picktyp)
-		    You("force your %s into a crack and pry.", xname(uwep));
+/*JP		    You("force your %s into a crack and pry.", xname(uwep));*/
+		    You("%sを鍵穴に入れてカチャカチャした．",xname(uwep));
 		else
-		    You("start bashing it with your %s.", xname(uwep));
+/*JP		    You("start bashing it with your %s.", xname(uwep));*/
+		    pline("%sで殴りつけた．", xname(uwep));
 		xlock.box = otmp;
 		xlock.chance = objects[otmp->otyp].oc_wldam * 2;
 		xlock.picktyp = picktyp;
@@ -484,8 +565,10 @@ doforce()		/* try to force a chest with your weapon */
 		break;
 	    }
 
-	if(xlock.box)	set_occupation(forcelock, "forcing the lock", 0);
-	else		You("decide not to force the issue.");
+/*JP	if(xlock.box)	set_occupation(forcelock, "forcing the lock", 0);
+	else		You("decide not to force the issue.");*/
+	if(xlock.box)	set_occupation(forcelock, "鍵をこじあける", 0);
+	else		pline("それは無意味な行為だ．");
 	return(1);
 }
 
@@ -497,7 +580,8 @@ doopen()		/* try to open a door */
 	struct monst *mtmp;
 
 	if (u.utrap && u.utraptype == TT_PIT) {
-	    You_cant("reach over the edge of the pit.");
+/*JP	    You_cant("reach over the edge of the pit.");*/
+	    pline("落し穴の中から届かない．");
 	    return 0;
 	}
 
@@ -521,35 +605,45 @@ doopen()		/* try to open a door */
 
 	if(!IS_DOOR(door->typ)) {
 		if (is_db_wall(x,y)) {
-		    pline("There is no obvious way to open the drawbridge.");
+/*JP		    pline("There is no obvious way to open the drawbridge.");*/
+		    pline("自明な方法じゃ跳ね橋は降りない．");
 		    return(0);
 		}
-		You("%s no door there.",
-				Blind ? "feel" : "see");
+/*JP		You("%s no door there.",
+				Blind ? "feel" : "see");*/
+		pline("そこには扉はない%s．",
+				Blind ? "ようだ" : "ように見える");
 		return(0);
 	}
 
 	if(!(door->doormask & D_CLOSED)) {
 	  switch(door->doormask) {
-	     case D_BROKEN: pline("This door is broken."); break;
-	     case D_NODOOR: pline("This doorway has no door."); break;
-	     case D_ISOPEN: pline("This door is already open."); break;
-	     default:	    pline("This door is locked."); break;
+/*JP	     case D_BROKEN: pline("This door is broken."); break;*/
+/*JP	     case D_NODOOR: pline("This doorway has no door."); break;*/
+/*JP	     case D_ISOPEN: pline("This door is already open."); break;*/
+/*JP	     default:	    pline("This door is locked."); break;*/
+	     case D_BROKEN: pline("扉は壊れている．"); break;
+	     case D_NODOOR: pline("出入口には扉がない．"); break;
+	     case D_ISOPEN: pline("扉はもう開いている．"); break;
+	     default:	    pline("扉には鍵が掛かっている"); break;
 	  }
 	    if(Blind) feel_location(x,y);
 	  return(0);
 	}
 
 	if(verysmall(uasmon)) {
-	    pline("You're too small to pull the door open.");
+/*JP	    pline("You're too small to pull the door open.");*/
+	    You("小さすぎて扉を開けられない．");
 	    return(0);
 	}
 
 	/* door is known to be CLOSED */
 	if (rnl(20) < (ACURRSTR+ACURR(A_DEX)+ACURR(A_CON))/3) {
-	    pline_The("door opens.");
+/*JP	    pline_The("door opens.");*/
+	    pline("扉は開いた．");
 	    if(door->doormask & D_TRAPPED) {
-		b_trapped("door", FINGER);
+/*JP		b_trapped("door", FINGER);*/
+		b_trapped("扉", FINGER);
 		door->doormask = D_NODOOR;
 		if (*in_rooms(x, y, SHOPBASE)) add_damage(x, y, 0L);
 	    } else
@@ -561,7 +655,8 @@ doopen()		/* try to open a door */
 	    unblock_point(x,y);		/* vision: new see through there */
 	} else {
 	    exercise(A_STR, TRUE);
-	    pline_The("door resists!");
+/*JP	    pline_The("door resists!");*/
+	    pline("なかなか開かない！");
 	}
 
 	return(1);
@@ -576,12 +671,15 @@ register int x, y;
 
 	if(mtmp && mtmp->m_ap_type != M_AP_FURNITURE) {
 		if (mtmp->m_ap_type == M_AP_OBJECT) goto objhere;
-		pline("%s stands in the way!", Blind ?
-			"Some creature" : Monnam(mtmp));
+/*JP		pline("%s stands in the way!", Blind ?
+			"Some creature" : Monnam(mtmp));*/
+		pline("%sが立ちふさがっている．", Blind ?
+			"何者か" : Monnam(mtmp));
 		return(TRUE);
 	}
 	if (OBJ_AT(x, y)) {
-objhere:	pline("%s's in the way.", Something);
+/*JPobjhere:	pline("%s's in the way.", Something);*/
+objhere:	pline("何か出入口にある．");
 		return(TRUE);
 	}
 	return(FALSE);
@@ -595,7 +693,8 @@ doclose()		/* try to close a door */
 	struct monst *mtmp;
 
 	if (u.utrap && u.utraptype == TT_PIT) {
-	    You_cant("reach over the edge of the pit.");
+/*JP	    You_cant("reach over the edge of the pit.");*/
+	    pline("落し穴の中から届かない．");
 	    return 0;
 	}
 
@@ -604,7 +703,8 @@ doclose()		/* try to close a door */
 	x = u.ux + u.dx;
 	y = u.uy + u.dy;
 	if((x == u.ux) && (y == u.uy)) {
-		You("are in the way!");
+/*JP		You("are in the way!");*/
+		pline("あなたが出入口にいるので閉まらない．");
 		return(1);
 	}
 
@@ -622,37 +722,45 @@ doclose()		/* try to close a door */
 
 	if(!IS_DOOR(door->typ)) {
 		if (door->typ == DRAWBRIDGE_DOWN)
-		    pline("There is no obvious way to close the drawbridge.");
+/*JP		    pline("There is no obvious way to close the drawbridge.");*/
+		    pline("自明な方法じゃ跳ね橋は上がらい．");
 		else
-		    You("%s no door there.",
-				Blind ? "feel" : "see");
+/*JP		    You("%s no door there.",
+				Blind ? "feel" : "see");*/
+		    pline("そこに扉はない%s．",
+				Blind ? "ようだ" : "ように見える");
 		return(0);
 	}
 
 	if(door->doormask == D_NODOOR) {
-	    pline("This doorway has no door.");
+/*JP	    pline("This doorway has no door.");*/
+	    pline("出入口には扉がない．");
 	    return(0);
 	}
 
 	if(obstructed(x, y)) return(0);
 
 	if(door->doormask == D_BROKEN) {
-	    pline("This door is broken.");
+/*JP	    pline("This door is broken.");*/
+	    pline("扉は壊れている．");
 	    return(0);
 	}
 
 	if(door->doormask & (D_CLOSED | D_LOCKED)) {
-	    pline("This door is already closed.");
+/*JP	    pline("This door is already closed.");*/
+	    pline("扉はもう閉じている．");
 	    return(0);
 	}
 
 	if(door->doormask == D_ISOPEN) {
 	    if(verysmall(uasmon)) {
-		 pline("You're too small to push the door closed.");
+/*JP		 pline("You're too small to push the door closed.");*/
+		 You("小さすぎて扉を閉められない．");
 		 return(0);
 	    }
 	    if (rn2(25) < (ACURRSTR+ACURR(A_DEX)+ACURR(A_CON))/3) {
-		pline_The("door closes.");
+/*JP		pline_The("door closes.");*/
+		pline("扉は閉じた．");
 		door->doormask = D_CLOSED;
 		if (Blind)
 		    feel_location(x,y);	/* the hero knows she closed it */
@@ -662,7 +770,8 @@ doclose()		/* try to close a door */
 	    }
 	    else {
 	        exercise(A_STR, TRUE);
-	        pline_The("door resists!");
+/*JP	        pline_The("door resists!");*/
+	        pline("なかなか閉まらない！");
 	    }
 	}
 
@@ -679,7 +788,8 @@ register struct obj *obj, *otmp;	/* obj *is* a box */
 	case WAN_LOCKING:
 	case SPE_WIZARD_LOCK:
 	    if (!obj->olocked) {	/* lock it; fix if broken */
-		pline("Klunk!");
+/*JP		pline("Klunk!");*/
+		pline("カチ！");
 		obj->olocked = 1;
 		obj->obroken = 0;
 		res = 1;
@@ -688,7 +798,8 @@ register struct obj *obj, *otmp;	/* obj *is* a box */
 	case WAN_OPENING:
 	case SPE_KNOCK:
 	    if (obj->olocked) {		/* unlock; couldn't be broken */
-		pline("Klick!");
+/*JP		pline("Klick!");*/
+		pline("コンコン！");
 		obj->olocked = 0;
 		res = 1;
 	    } else			/* silently fix if broken */
@@ -714,8 +825,10 @@ int x, y;
 	boolean res = TRUE;
 	int loudness = 0;
 	const char *msg = (const char *)0;
-	const char *dustcloud = "A cloud of dust";
-	const char *quickly_dissipates = "quickly dissipates";
+/*JP	const char *dustcloud = "A cloud of dust";
+	const char *quickly_dissipates = "quickly dissipates";*/
+	const char *dustcloud = "ほこり";
+	const char *quickly_dissipates = "あっと言うまに飛び散った";
 	
 	if (door->typ == SDOOR) {
 	    switch (otmp->otyp) {
@@ -726,7 +839,8 @@ int x, y;
 		door->typ = DOOR;
 		door->doormask = D_CLOSED | (door->doormask & D_TRAPPED);
 		newsym(x,y);
-		if (cansee(x,y)) pline("A door appears in the wall!");
+/*JP		if (cansee(x,y)) pline("A door appears in the wall!");*/
+		if (cansee(x,y)) pline("壁の一部が開いた！");
 		if (otmp->otyp == WAN_OPENING || otmp->otyp == SPE_KNOCK)
 		    return TRUE;
 		break;		/* striking: continue door handling below */
@@ -743,15 +857,18 @@ int x, y;
 #ifdef REINCARNATION
 	    if (Is_rogue_level(&u.uz)) {
 		/* Can't have real locking in Rogue, so just hide doorway */
-		pline("%s springs up in the older, more primitive doorway.",
+/*JP		pline("%s springs up in the older, more primitive doorway.",*/
+		pline("古くさい，原始的な出入口に%sが立ちこめた．",
 			dustcloud);
 		if (obstructed(x,y)) {
-			pline_The("cloud %s.",quickly_dissipates);
+/*JP			pline_The("cloud %s.",quickly_dissipates);*/
+			pline("ほこりは%s．",quickly_dissipates);
 			return FALSE;
 		}
 		block_point(x, y);
 		door->typ = SDOOR;
-		if (cansee(x,y)) pline_The("doorway vanishes!");
+/*JP		if (cansee(x,y)) pline_The("doorway vanishes!");*/
+		if (cansee(x,y)) pline("出入口は消えた！");
 		newsym(x,y);
 		return TRUE;
 	    }
@@ -762,24 +879,29 @@ int x, y;
 	    if (t_at(x,y)) {
 		/* maketrap() clears doormask, so it should be NODOOR */
 		pline(
-		"%s springs up in the doorway, but %s.",
+/*JP		"%s springs up in the doorway, but %s.",*/
+		"%sが出入口に立ちこめた，しかし%s",
 		dustcloud, quickly_dissipates);
 		return FALSE;
 	    }
 
 	    switch (door->doormask & ~D_TRAPPED) {
 	    case D_CLOSED:
-		msg = "The door locks!";
+/*JP		msg = "The door locks!";*/
+	        msg = "扉に鍵がかかった！";
 		break;
 	    case D_ISOPEN:
-		msg = "The door swings shut, and locks!";
+/*JP		msg = "The door swings shut, and locks!";*/
+		msg = "扉は勢いよく閉まり，鍵がかかった！";
 		break;
 	    case D_BROKEN:
-		msg = "The broken door reassembles and locks!";
+/*JP		msg = "The broken door reassembles and locks!";*/
+		msg = "壊れた扉が集まって，鍵がかかった！";
 		break;
 	    case D_NODOOR:
 		msg =
-		"A cloud of dust springs up and assembles itself into a door!";
+/*JP		"A cloud of dust springs up and assembles itself into a door!";*/
+		"ほこりがたちこめ，集まって扉になった！";
 		break;
 	    default:
 		res = FALSE;
@@ -792,7 +914,8 @@ int x, y;
 	case WAN_OPENING:
 	case SPE_KNOCK:
 	    if (door->doormask & D_LOCKED) {
-		msg = "The door unlocks!";
+/*JP		msg = "The door unlocks!";*/
+		msg = "扉の鍵ははずれた！";
 		door->doormask = D_CLOSED | (door->doormask & D_TRAPPED);
 	    } else res = FALSE;
 	    break;
@@ -804,9 +927,11 @@ int x, y;
 			(void) mb_trapped(m_at(x,y));
 		    else if (flags.verbose) {
 			if (cansee(x,y))
-			    pline("KABOOM!!  You see a door explode.");
+/*JP			    pline("KABOOM!!  You see a door explode.");*/
+			    pline("ちゅどーん！あなたは扉が爆発したのを見た．");
 			else if (flags.soundok)
-			    You_hear("a distant explosion.");
+/*JP			    You_hear("a distant explosion.");*/
+			    You_hear("遠くの爆発音を聞いた．");
 		    }
 		    door->doormask = D_NODOOR;
 		    unblock_point(x,y);
@@ -817,9 +942,11 @@ int x, y;
 		door->doormask = D_BROKEN;
 		if (flags.verbose) {
 		    if (cansee(x,y))
-			pline_The("door crashes open!");
+/*JP			pline_The("door crashes open!");*/
+			pline("扉は壊れ開いた！");
 		    else if (flags.soundok)
-			You_hear("a crashing sound.");
+/*JP			You_hear("a crashing sound.");*/
+			You_hear("何かが壊れる音を聞いた．");
 		}
 		unblock_point(x,y);
 		newsym(x,y);
@@ -848,12 +975,14 @@ static void
 chest_shatter_msg(otmp)
 struct obj *otmp;
 {
-	const char *disposition, *article = (otmp->quan > 1L) ? "A" : "The";
+/*JP	const char *disposition, *article = (otmp->quan > 1L) ? "A" : "The";*/
+	const char *disposition;
 	const char *thing;
 	long save_Blinded;
 
 	if (otmp->oclass == POTION_CLASS) {
-		You("%s a flask shatter!", Blind ? "hear" : "see");
+/*JP		You("%s a flask shatter!", Blind ? "hear" : "see");*/
+		You("薬瓶が割れる%s！", Blind ? "音を聞いた" : "のを見た");
 		potionbreathe(otmp);
 		return;
 	}
@@ -864,22 +993,30 @@ struct obj *otmp;
 	thing = singular(otmp, xname);
 	Blinded = save_Blinded;
 	switch (objects[otmp->otyp].oc_material) {
-	case PAPER:	disposition = "is torn to shreds";
+/*JP	case PAPER:	disposition = "is torn to shreds";*/
+	case PAPER:	disposition = "は寸断された";
 		break;
-	case WAX:	disposition = "is crushed";
+/*JP	case WAX:	disposition = "is crushed";*/
+	case WAX:	disposition = "を床にぶちまけた";
 		break;
-	case VEGGY:	disposition = "is pulped";
+/*JP	case VEGGY:	disposition = "is pulped";*/
+	case VEGGY:	disposition = "はどろどろになった";
 		break;
-	case FLESH:	disposition = "is mashed";
+/*JP	case FLESH:	disposition = "is mashed";*/
+	case FLESH:	disposition = "はどろどろになった";
 		break;
-	case GLASS:	disposition = "shatters";
+/*JP	case GLASS:	disposition = "shatters";*/
+	case GLASS:	disposition = "は割れた";
 		break;
-	case WOOD:	disposition = "splinters to fragments";
+/*JP	case WOOD:	disposition = "splinters to fragments";*/
+	case WOOD:	disposition = "はかけらになった";
 		break;
-	default:	disposition = "is destroyed";
+/*JP	default:	disposition = "is destroyed";*/
+	default:	disposition = "は壊れた";
 		break;
 	}
-	pline("%s %s %s!", article, thing, disposition);
+/*JP	pline("%s %s %s!", article, thing, disposition);*/
+	pline("%s%s！", thing, disposition);
 }
 
 #endif /* OVLB */

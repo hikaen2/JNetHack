@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "emin.h"
 #include "epri.h"
@@ -94,10 +101,13 @@ boolean talk;
 	mon = makemon(&mons[mnum], u.ux, u.uy, NO_MM_FLAGS);
     if (mon) {
 	if (talk) {
-	    pline_The("voice of %s booms:", align_gname(alignment));
-	    verbalize("Thou shalt pay for thy indiscretion!");
+/*JP	    pline_The("voice of %s booms:", align_gname(alignment));*/
+	    pline("%sの声が響いた:", align_gname(alignment));
+/*JP	    verbalize("Thou shalt pay for thy indiscretion!");*/
+	    verbalize("汝，無分別な行動の罰を受けよ！");
 	    if (!Blind)
-		pline("%s appears before you.", Amonnam(mon));
+/*JP		pline("%s appears before you.", Amonnam(mon));*/
+		pline("%sがあなたの前に現われた．", Amonnam(mon));
 	}
 	mon->mpeaceful = FALSE;
 	/* don't call set_malign(); player was naughty */
@@ -113,7 +123,8 @@ register struct monst *mtmp;
 	long	demand, offer;
 
 	if (uwep && uwep->oartifact == ART_EXCALIBUR) {
-	    pline("%s looks very angry.", Amonnam(mtmp));
+/*JP	    pline("%s looks very angry.", Amonnam(mtmp));*/
+	    pline("%sはとても怒っているように見える．", Amonnam(mtmp));
 	    mtmp->mpeaceful = mtmp->mtame = 0;
 	    newsym(mtmp->mx, mtmp->my);
 	    return 0;
@@ -122,12 +133,15 @@ register struct monst *mtmp;
 	/* Slight advantage given. */
 	if (is_dprince(mtmp->data) && mtmp->minvis) {
 	    mtmp->minvis = mtmp->perminvis = 0;
-	    if (!Blind) pline("%s appears before you.", Amonnam(mtmp));
+/*JP	    if (!Blind) pline("%s appears before you.", Amonnam(mtmp));*/
+	    if (!Blind) pline("%sが目の前に現われた．", Amonnam(mtmp));
 	    newsym(mtmp->mx,mtmp->my);
 	}
 	if (u.usym == S_DEMON) {	/* Won't blackmail their own. */
-	    pline("%s says, \"Good hunting, %s.\" and vanishes.",
-		  Amonnam(mtmp), flags.female ? "Sister" : "Brother");
+/*JP	    pline("%s says, \"Good hunting, %s.\" and vanishes.",
+		  Amonnam(mtmp), flags.female ? "Sister" : "Brother");*/
+	    pline("%sは言った「よう兄%s！」．そして消えた．",
+		  Amonnam(mtmp), flags.female ? "妹" : "弟");
 	    rloc(mtmp);
 	    return(1);
 	}
@@ -136,18 +150,23 @@ register struct monst *mtmp;
 	if (!demand)		/* you have no gold */
 	    return mtmp->mpeaceful = 0;
 	else {
-	    pline("%s demands %ld zorkmid%s for safe passage.",
-		  Amonnam(mtmp), demand, plur(demand));
+/*JP	    pline("%s demands %ld zorkmid%s for safe passage.",
+		  Amonnam(mtmp), demand, plur(demand));*/
+	    pline("%sは通行料として%ldゴールド要求した．",
+		  Amonnam(mtmp), demand);
 
 	    if ((offer = bribe(mtmp)) >= demand) {
-		pline("%s vanishes, laughing about cowardly mortals.",
+/*JP		pline("%s vanishes, laughing about cowardly mortals.",*/
+		pline("死すべき卑しきものを笑いながら，%sは消えた．",
 		      Amonnam(mtmp));
 	    } else {
 		if ((long)rnd(40) > (demand - offer)) {
-		    pline("%s scowls at you menacingly, then vanishes.",
+/*JP		    pline("%s scowls at you menacingly, then vanishes.",*/
+		    pline("%sはあなたを威嚇し，消えた．",
 			  Amonnam(mtmp));
 		} else {
-		    pline("%s gets angry...", Amonnam(mtmp));
+/*JP		    pline("%s gets angry...", Amonnam(mtmp));*/
+		    pline("%sは怒った．．．", Amonnam(mtmp));
 		    return mtmp->mpeaceful = 0;
 		}
 	    }
@@ -163,22 +182,27 @@ struct monst *mtmp;
 	char buf[BUFSZ];
 	long offer;
 
-	getlin("How much will you offer?", buf);
+/*JP	getlin("How much will you offer?", buf);*/
+	getlin("何ゴールド与える？", buf);
 	(void) sscanf(buf, "%ld", &offer);
 
 	/*Michael Paddon -- fix for negative offer to monster*/
 	/*JAR880815 - */
 	if (offer < 0L) {
-		You("try to shortchange %s, but fumble.",
+/*JP		You("try to shortchange %s, but fumble.",*/
+		You("%sをだまそうとしたが，失敗した．",
 			mon_nam(mtmp));
 		offer = 0L;
 	} else if (offer == 0L) {
-		You("refuse.");
+/*JP		You("refuse.");*/
+		You("拒んだ．");
 	} else if (offer >= u.ugold) {
-		You("give %s all your gold.", mon_nam(mtmp));
+/*JP		You("give %s all your gold.", mon_nam(mtmp));*/
+		You("%sにお金を全て与えた．", mon_nam(mtmp));
 		offer = u.ugold;
-	} else You("give %s %ld zorkmid%s.", mon_nam(mtmp), offer,
-		   plur(offer));
+/*JP	} else You("give %s %ld zorkmid%s.", mon_nam(mtmp), offer,
+		   plur(offer));*/
+	} else You("%sに%ldゴールド与えた．", mon_nam(mtmp), offer);
 
 	u.ugold -= offer;
 	mtmp->mgold += offer;

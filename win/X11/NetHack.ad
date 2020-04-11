@@ -151,3 +151,10 @@ NetHack*extended_commands*dismiss.accelerators: #override\n\
 !NetHack*map*bright_magenta:	violet
 !NetHack*map*bright_cyan:	cyan
 !NetHack*map*white:		white
+#
+#
+#
+NetHack*fontSet: -*-fixed-medium-r-normal--14-*-iso8859-1,\
+                  -*-fixed-medium-r-normal--14-*-iso8859-1,\
+                  -*-fixed-medium-r-*--14-*-jisx0208.1983-*
+NetHack*international:	True

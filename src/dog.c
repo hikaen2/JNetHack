@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "edog.h"
 
@@ -39,6 +46,9 @@ pet_type()
 			pettype = PM_LITTLE_DOG;
 			break;
 		case 'W':
+#ifdef FIGHTER
+		case 'F':
+#endif
 			pettype = PM_KITTEN;
 			break;
 		/* otherwise, see if the player has a preference */
@@ -70,7 +80,7 @@ xchar x, y;
 	    } else {
 		pm = rndmonst();
 		if (!pm) {
-		    pline("There seems to be nothing available for a familiar.");
+		    pline("下僕は現れなかった．");
 		    break;
 		}
 	    }
@@ -79,7 +89,8 @@ xchar x, y;
 	    mtmp = makemon(pm, x, y, NO_MM_FLAGS);
 	    pm->pxlth -= sizeof (struct edog);
 	    if (otmp && !mtmp) { /* monster was genocided or square occupied */
-		pline_The("figurine writhes and then shatters into pieces!");
+/*JP		pline_The("figurine writhes and then shatters into pieces!");*/
+		pline("人形はもがき，くだけ散った！");
 		break;
 	    }
 	} while (!mtmp && --trycnt > 0);
@@ -95,7 +106,8 @@ xchar x, y;
 	    if (chance > 0) {
 		mtmp->mtame = 0;	/* not tame after all */
 		if (chance == 2) { /* hostile (cursed figurine) */
-		    You("get a bad feeling about this.");
+/*JP		    You("get a bad feeling about this.");*/
+		    You("嫌な予感がした．");
 		    mtmp->mpeaceful = 0;
 		}
 	    }
@@ -126,9 +138,17 @@ makedog()
 
 	/* default pet names */
 	if (!*petname) {
+#if 0 /*JP*/
 	    if(Role_is('C')) petname = "Slasher";   /* The Warrior */
 	    if(Role_is('S')) petname = "Hachi";     /* Shibuya Station */
 	    if(Role_is('B')) petname = "Idefix";    /* Obelix */
+#endif
+	    if(Role_is('C')) petname = "スラッシャー";   /* The Warrior */
+	    if(Role_is('S')) petname = "ハチ公";    /* Shibuya Station */
+	    if(Role_is('B')) petname = "イデフィクス";    /* Obelix */
+#ifdef FIGHTER
+	    if(Role_is('F')) petname = rn2(2) ? "ルナ" : "アルテミス";
+#endif
 	}
 
 	mons[pettype].pxlth = sizeof(struct edog);
@@ -378,20 +398,28 @@ boolean pets_only;	/* true for ascension or final escape */
 		stay_behind = FALSE;
 		if (mtmp->mtame && mtmp->meating) {
 			if (canseemon(mtmp))
-			    pline("%s is still eating.", Monnam(mtmp));
+/*JP			  pline("%s is still eating.", Monnam(mtmp));*/
+			  pline("%sはまだ食べている．", Monnam(mtmp));
+
 			stay_behind = TRUE;
 		} else if (mon_has_amulet(mtmp)) {
 			if (canseemon(mtmp))
-			    pline("%s seems very disoriented for a moment.",
+/*JP			  pline("%s seems very disoriented for a moment.",*/
+			  pline("%sは一瞬方向感覚を失ったようだ．",
+
 				Monnam(mtmp));
 			stay_behind = TRUE;
 		}
 		if (stay_behind) {
 			if (mtmp->mleashed) {
-				pline("%s leash suddenly comes loose.",
+/*JP				pline("%s leash suddenly comes loose.",
 					humanoid(mtmp->data)
 					    ? (mtmp->female ? "Her" : "His")
-					    : "Its");
+					    : "Its");*/
+				pline("%sに結ばれた紐は突然ゆるんだ．",
+				        humanoid(mtmp->data)
+					    ? (mtmp->female ? "彼女の" : "彼の")
+					    : "その生物の");
 				m_unleash(mtmp);
 			}
 			continue;
@@ -429,7 +457,8 @@ boolean pets_only;	/* true for ascension or final escape */
 	    } else if (mtmp->mleashed) {
 		/* this can happen if your quest leader ejects you from the
 		   "home" level while a leashed pet isn't next to you */
-		pline("%s leash goes slack.", s_suffix(Monnam(mtmp)));
+/*JP		pline("%s leash goes slack.", s_suffix(Monnam(mtmp)));*/
+		pline("%sに結ばれた紐はたるんだ．", s_suffix(Monnam(mtmp)));
 		m_unleash(mtmp);
 	    }
 	}
@@ -474,7 +503,8 @@ migrate_to_level(mtmp, tolev, xyloc, cc)
 	if (mtmp->mleashed)  {
 		m_unleash(mtmp);
 		mtmp->mtame--;
-		pline_The("leash comes off!");
+/*JP		pline_The("leash comes off!");*/
+		pline("紐ははずれた！");
 	}
 	newsym(mtmp->mx,mtmp->my);
 
@@ -623,11 +653,15 @@ register struct obj *obj;
 		    boolean big_corpse = (obj->otyp == CORPSE &&
 					  obj->corpsenm >= LOW_PM &&
 				mons[obj->corpsenm].msize > mtmp->data->msize);
-		    pline("%s catches %s%s",
+/*JP		    pline("%s catches %s%s",
 			  Monnam(mtmp), the(xname(obj)),
-			  !big_corpse ? "." : ", or vice versa!");
+			  !big_corpse ? "." : ", or vice versa!");*/
+		    pline("%sは%sをつかまえた%s",
+			  Monnam(mtmp), the(xname(obj)),
+			  !big_corpse ? "．" : "と言うよりその逆か！");
 		} else if (cansee(mtmp->mx,mtmp->my))
-		    pline("%s stops.", The(xname(obj)));
+/*JP		    pline("%s stops.", The(xname(obj)));*/
+		    pline("%sは止まった．", The(xname(obj)));
 		/* dog_eat expects a floor object */
 		place_object(obj, mtmp->mx, mtmp->my);
 		(void) dog_eat(mtmp, obj, mtmp->mx, mtmp->my, FALSE);

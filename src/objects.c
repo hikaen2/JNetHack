@@ -377,10 +377,19 @@ ARMOR("ring mail", (char *)0,
 	1, 0, 0, 0,	75, 5, 250, 100,  7, 0, ARM_SUIT, IRON, HI_METAL),
 ARMOR("orcish ring mail", "crude ring mail",
 	0, 0, 0, 0,	20, 5, 250,  80,  8, 1, ARM_SUIT, IRON, CLR_BLACK),
+#ifdef FIGHTER
+ARMOR("leather armor", (char *)0,
+	1, 0, 0, 0,	73, 3, 150,   5,  8, 0, ARM_SUIT, LEATHER, HI_LEATHER),
+#else
 ARMOR("leather armor", (char *)0,
 	1, 0, 0, 0,	85, 3, 150,   5,  8, 0, ARM_SUIT, LEATHER, HI_LEATHER),
+#endif
 ARMOR("leather jacket", (char *)0,
 	1, 0, 0, 0,	12, 0,	30,  10,  9, 0, ARM_SUIT, LEATHER, CLR_BLACK),
+#ifdef FIGHTER
+ARMOR("sailor blouse", (char *)0,
+	1, 0, 0, 0,	12, 0,	30, 200,  7, 0, ARM_SUIT, CLOTH, CLR_WHITE),
+#endif
 
 #ifdef TOURIST
 /* shirts */

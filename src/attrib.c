@@ -2,6 +2,14 @@
 /*	Copyright 1988, 1989, 1990, 1992, M. Stephenson		  */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
+
 /*  attribute modification routines. */
 
 #include "hack.h"
@@ -14,10 +22,12 @@
 	/* part of the output on gain or loss of attribute */
 static
 const char	*plusattr[] = {
-	"strong", "smart", "wise", "agile", "tough", "charismatic"
+/*JP	"strong", "smart", "wise", "agile", "tough", "charismatic"*/
+	"強い","賢明だ","賢い","機敏だ","頑丈だ","魅力的だ"
 },
 		*minusattr[] = {
-	"weak", "stupid", "foolish", "clumsy", "vulnerable", "ugly"
+/*JP	"weak", "stupid", "foolish", "clumsy", "vulnerable", "ugly"*/
+	"弱い","愚かだ","間抜けだ","不器用だ","ひ弱だ","醜い"
 };
 
 	/* maximum and minimum values for the attributes */
@@ -35,16 +45,21 @@ const struct innate {
 	const char *gainstr, *losestr;
 }	a_abil[] = { {	 1, &(Stealth), "", "" },
 		     {   1, &(Fast), "", "" },
-		     {  10, &(Searching), "perceptive", "" },
+/*JP		     {  10, &(Searching), "perceptive", "" },*/
+		     {  10, &(Searching), "知覚力を得た", "知覚力を失った" },
 		     {	 0, 0, 0, 0 } },
 
 	b_abil[] = { {	 1, &(HPoison_resistance), "", "" },
-		     {   7, &(Fast), "quick", "slow" },
-		     {  15, &(Stealth), "stealthy", "" },
+/*JP		     {   7, &(Fast), "quick", "slow" },
+		     {  15, &(Stealth), "stealthy", "" },*/
+		     {   7, &(Fast), "素早さを得た", "遅くなった" },
+		     {  15, &(Stealth), "人目を盗む力を得た", "人目を盗む力を失った" },
 		     {	 0, 0, 0, 0 } },
 
-	c_abil[] = { {	 7, &(Fast), "quick", "slow" },
-		     {	15, &(Warning), "sensitive", "" },
+/*JP	c_abil[] = { {	 7, &(Fast), "quick", "slow" },
+		     {	15, &(Warning), "sensitive", "" },*/
+	c_abil[] = { {	 7, &(Fast), "素早さを得た", "遅くなった" },
+		     {	15, &(Warning), "敏感になった", "鈍感になった" },
 		     {	 0, 0, 0, 0 } },
 
 	e_abil[] = { {   1, &(Fast), "", "" },
@@ -52,37 +67,52 @@ const struct innate {
 		     {	 1, &(Searching), "", "" },
 		     {	 1, &(HSleep_resistance), "", "" },
 		     {	 0, 0, 0, 0 } },
+#ifdef FIGHTER
+	f_abil[] = { {	 7, &(Fast), "素早さを得た", "遅くなった" },
+		     {	 0, 0, 0, 0 } },
+#endif
 
 	h_abil[] = { {	 1, &(HPoison_resistance), "", "" },
-		     {	15, &(Warning), "sensitive", "" },
+/*JP		     {	15, &(Warning), "sensitive", "" },*/
+		     {	15, &(Warning), "敏感になった", "鈍感になった" },
 		     {	 0, 0, 0, 0 } },
 
-	k_abil[] = { {	 7, &(Fast), "quick", "slow" },
+/*JP	k_abil[] = { {	 7, &(Fast), "quick", "slow" },*/
+	k_abil[] = { {	 7, &(Fast), "素早さを得た", "遅くなった" },
 		     {	 0, 0, 0, 0 } },
 
-	p_abil[] = { {	15, &(Warning), "sensitive", "" },
-		     {  20, &(HFire_resistance), "cool", "warmer" },
+/*JP	p_abil[] = { {	15, &(Warning), "sensitive", "" },*/
+	p_abil[] = { {	15, &(Warning), "敏感になった", "鈍感になった" },
+/*JP		     {  20, &(HFire_resistance), "cool", "warmer" },*/
+		     {  20, &(HFire_resistance), "冷たくなった", "暖かくなった" },
 		     {	 0, 0, 0, 0 } },
 
 	r_abil[] = { {	 1, &(Stealth), "", ""  },
-		     {  10, &(Searching), "perceptive", "" },
+/*JP		     {  10, &(Searching), "perceptive", "" },*/
+		     {  10, &(Searching), "知覚力を得た", "知覚力を失った" },
 		     {	 0, 0, 0, 0 } },
 
 	s_abil[] = { {	 1, &(Fast), "", "" },
-		     {  15, &(Stealth), "stealthy", "" },
+/*JP		     {  15, &(Stealth), "stealthy", "" },*/
+		     {  15, &(Stealth), "人目を盗む力を得た", "人目を盗む力を失った" },
 		     {	 0, 0, 0, 0 } },
 
-	t_abil[] = { {	10, &(Searching), "perceptive", "" },
-		     {	20, &(HPoison_resistance), "hardy", "" },
+/*JP	t_abil[] = { {	10, &(Searching), "perceptive", "" },*/
+	t_abil[] = { {	10, &(Searching), "知覚力を得た", "知覚力を失った" },
+/*JP		     {	20, &(HPoison_resistance), "hardy", "" },*/
+		     {	20, &(HPoison_resistance), "免疫力を得た", "免疫力を失った" },
 		     {	 0, 0, 0, 0 } },
 
 	v_abil[] = { {	 1, &(HCold_resistance), "", "" },
 		     {	 1, &(Stealth), "", "" },
-		     {   7, &(Fast), "quick", "slow" },
+/*JP		     {   7, &(Fast), "quick", "slow" },*/
+		     {   7, &(Fast), "素早さを得た", "遅くなった" },
 		     {	 0, 0, 0, 0 } },
 
-	w_abil[] = { {	15, &(Warning), "sensitive", "" },
-		     {  17, &(HTeleport_control), "controlled","uncontrolled" },
+/*JP	w_abil[] = { {	15, &(Warning), "sensitive", "" },*/
+	w_abil[] = { {	15, &(Warning), "敏感になった", "鈍感になった" },
+/*JP		     {  17, &(HTeleport_control), "controlled","uncontrolled" },*/
+		     {  17, &(HTeleport_control), "制御力を得た","制御力を失った" },
 		     {	 0, 0, 0, 0 } };
 
 static
@@ -113,7 +143,11 @@ const struct clattr {
 	e_attr = { {{ 13, 13, 13,  9, 13,  7 }},  /* Elf (ranger) */
 		   {{ 30, 10, 10, 20, 20, 10 }},
 		   { A_CHAOTIC, 10 },  15, 10, 11,  2, e_abil },
-
+#ifdef FIGHTER 
+	f_attr = { {{ 13, 13,  6, 12, 12, 18 }}, 
+		   {{ 30, 10, 10, 20, 20, 10 }},
+		   { A_LAWFUL, 10 },  15, 10, 11,  2, f_abil },
+#endif
 	h_attr = { {{  7,  7, 13,  7, 11, 16 }},  /* Healer (druid) */
 		   {{ 15, 20, 20, 15, 25, 10 }},
 		   { A_NEUTRAL, 10 },  13, 10, 20,  2, h_abil },
@@ -168,14 +202,16 @@ adjattrib(ndx, incr, msgflg)
 	if ((ndx == A_INT || ndx == A_WIS)
 				&& uarmh && uarmh->otyp == DUNCE_CAP) {
 		if (msgflg == 0)
-		    Your("cap constricts briefly, then relaxes again.");
+/*JP		    Your("cap constricts briefly, then relaxes again.");*/
+		    Your("帽子がキュっと締めつけた．ふー，またリラックスできる．");
 		return FALSE;
 	}
 
 	if (incr > 0) {
 	    if ((AMAX(ndx) >= ATTRMAX(ndx)) && (ACURR(ndx) >= AMAX(ndx))) {
 		if (msgflg == 0 && flags.verbose)
-		    pline("You're already as %s as you can get.",
+/*JP		    pline("You're already as %s as you can get.",*/
+		    You("もう十分に%s．",
 			  plusattr[ndx]);
 		ABASE(ndx) = AMAX(ndx) = ATTRMAX(ndx); /* just in case */
 		return FALSE;
@@ -192,7 +228,8 @@ adjattrib(ndx, incr, msgflg)
 	} else {
 	    if (ABASE(ndx) <= ATTRMIN(ndx)) {
 		if (msgflg == 0 && flags.verbose)
-		    pline("You're already as %s as you can get.",
+/*JP		    pline("You're already as %s as you can get.",*/
+		    You("もう十分%s．",
 			  minusattr[ndx]);
 		ABASE(ndx) = ATTRMIN(ndx); /* just in case */
 		return FALSE;
@@ -208,9 +245,12 @@ adjattrib(ndx, incr, msgflg)
 	    }
 	}
 	if (msgflg <= 0)
-	    You_feel("%s%s!",
+/*JP	    You_feel("%s%s!",
 		  (incr > 1 || incr < -1) ? "very ": "",
-		  (incr > 0) ? plusattr[ndx] : minusattr[ndx]);
+		  (incr > 0) ? plusattr[ndx] : minusattr[ndx]);*/
+	    You("%s%sなったような気がした！",
+		  (incr > 1 || incr < -1) ? "とても ": "",
+		  jconj_adj((incr > 0) ? plusattr[ndx] : minusattr[ndx]));
 	flags.botl = 1;
 	if (moves > 0 && (ndx == A_STR || ndx == A_CON))
 		(void)encumber_msg();
@@ -463,20 +503,28 @@ exerchk()
 		    /* then print an explanation */
 		    switch(i) {
 		    case A_STR: You((mod_val >0) ?
-				    "must have been exercising." :
-				    "must have been abusing your body.");
+/*JP				    "must have been exercising." :
+				    "must have been abusing your body.");*/
+				    "運動したに違いない．" :
+				    "体を酷使したに違いない．");
 				break;
 		    case A_WIS: You((mod_val >0) ?
-				    "must have been very observant." :
-				    "haven't been paying attention.");
+/*JP				    "must have been very observant." :
+				    "haven't been paying attention.");*/
+				    "慎重に行動してたに違いない．" :
+				    "注意不足だったに違いない．");
 				break;
 		    case A_DEX: You((mod_val >0) ?
-				    "must have been working on your reflexes." :
-				    "haven't been working on reflexes lately.");
+/*JP				    "must have been working on your reflexes." :
+				    "haven't been working on reflexes lately.");*/
+				    "反射神経を使ったに違いない．" :
+				    "最近反射神経を使ってなかったに違いない．");
 				break;
 		    case A_CON: You((mod_val >0) ?
-				    "must be leading a healthy life-style." :
-				    "haven't been watching your health.");
+/*JP				    "must be leading a healthy life-style." :
+				    "haven't been watching your health.");*/
+				    "健康的な生活をしていたに違いない．" :
+				    "健康管理を怠っていたに違いない．");
 				break;
 		    }
 		}
@@ -509,6 +557,10 @@ clx()
 			break;
 	    case 'E':	attr = &e_attr;
 			break;
+#ifdef FIGHTER
+	    case 'F':	attr = &f_attr;
+			break;
+#endif
 	    case 'H':	attr = &h_attr;
 			break;
 	    case 'K':	attr = &k_attr;
@@ -644,13 +696,18 @@ int oldlevel, newlevel;
 				*(abil->ability) |= FROMEXPER;
 			if(!(*(abil->ability) & FROMOUTSIDE)) {
 			    if(*(abil->gainstr))
-				You_feel("%s!", abil->gainstr);
+/*JP				You_feel("%s!", abil->gainstr);*/
+				You("%sような気がした！", abil->gainstr);
 			}
 		} else if (oldlevel >= abil->ulevel && newlevel < abil->ulevel) {
 			*(abil->ability) &= ~FROMEXPER;
 			if((*(abil->ability) & INTRINSIC)) {
 			    if(*(abil->losestr))
-				You_feel("%s!", abil->losestr);
+/*JP				You_feel("%s!", abil->losestr);*/
+				You("%sような気がした！", abil->losestr);
+/*
+**	この条件は満さないはず．
+*/
 			    else if(*(abil->gainstr))
 				You_feel("less %s!", abil->gainstr);
 			}

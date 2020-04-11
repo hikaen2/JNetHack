@@ -4,6 +4,12 @@
 
 /* main.c - MSDOS, OS/2, ST, Amiga, and NT NetHack */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "dlb.h"
 
@@ -64,7 +70,11 @@ int FDECL(main, (int,char **));
 extern void FDECL(pcmain, (int,char **));
 
 #ifdef OVLB
+#ifdef FIGHTER
+const char *classes = "ABCEFHKPRSTVW";
+#else
 const char *classes = "ABCEHKPRSTVW";
+#endif
 #else
 extern const char *classes;
 #endif
@@ -157,6 +167,11 @@ char *argv[];
 	ami_wininit_data();
 #endif
 
+	/* Line like "OPTIONS=name:foo-@" may exist in config file.
+	 * In this case, need to select random class,
+	 * so must call setrandom() before initoptions().
+	 */
+	setrandom();
 	initoptions();
 
 #ifdef AMIGA
@@ -201,7 +216,10 @@ char *argv[];
 #ifdef CHDIR
 			chdirx(hackdir,0);
 #endif
+/*JP*/
+			init_jtrns();
 			prscore(argc, argv);
+			jputchar('\0'); /* reset */
 			exit(EXIT_SUCCESS);
 		}
 		/* Don't inialize the window system just to print usage */
@@ -215,7 +233,6 @@ char *argv[];
 	/*
 	 * It seems you really want to play.
 	 */
-	setrandom();
 
 #ifdef TOS
 	if (comp_times((long)time(&clock_time)))
@@ -232,6 +249,8 @@ char *argv[];
 	chdirx(hackdir,1);
 #endif
 
+/*JP*/
+	init_jtrns();
 	init_nhwindows(&argc,argv);
 	process_options(argc, argv);
 
@@ -311,7 +330,8 @@ char *argv[];
 		    flags.news = FALSE;
 		}
 #endif
-		pline("Restoring save file...");
+/*JP		pline("Restoring save file...");*/
+		pline("セーブファイルを復元中．．．");
 		mark_synch();	/* flush output */
 
 		if(!dorecover(fd))
@@ -319,13 +339,16 @@ char *argv[];
 #ifdef WIZARD
 		if(!wizard && remember_wiz_mode) wizard = TRUE;
 #endif
-		pline("Hello %s, welcome back to NetHack!", plname);
+/*JP		pline("Hello %s, welcome back to NetHack!", plname);*/
+		pline("ようこそ %s, またNetHackの世界へ！", plname);
 		check_special_room(FALSE);
 		if (discover)
-			You("are in non-scoring discovery mode.");
+/*JP			You("are in non-scoring discovery mode.");*/
+		        pline("探索モードではスコアはのらないよ．");
 
 		if (discover || wizard) {
-			if(yn("Do you want to keep the save file?") == 'n'){
+/*JP			if(yn("Do you want to keep the save file?") == 'n'){*/
+			if(yn("セーブファイルを残しておきますか？") == 'n'){
 				(void) delete_savefile();
 			}
 # ifdef AMIGA
@@ -340,9 +363,11 @@ not_recovered:
 		player_selection();
 		newgame();
 		/* give welcome message before pickup messages */
-		pline("Hello %s, welcome to NetHack!", plname);
+/*JP		pline("Hello %s, welcome to NetHack!", plname);*/
+		pline("ようこそ %s, NetHackの世界へ！", plname);
 		if (discover)
-			You("are in non-scoring discovery mode.");
+/*JP			You("are in non-scoring discovery mode.");*/
+		        pline("探索モードではスコアはのらないよ．");
 
 		flags.move = 0;
 		set_wear();

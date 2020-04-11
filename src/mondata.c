@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "eshk.h"
 #include "epri.h"
@@ -408,6 +415,9 @@ player_mon()
 		case 'B': return &mons[PM_BARBARIAN];
 		case 'C': if (flags.female) return &mons[PM_CAVEWOMAN];
 			else return &mons[PM_CAVEMAN];
+#ifdef FIGHTER
+		case 'F': return &mons[PM_FIGHTER];
+#endif
 		case 'E': return &mons[PM_ELF];
 		case 'H': return &mons[PM_HEALER];
 		case 'K': return &mons[PM_KNIGHT];
@@ -509,12 +519,17 @@ int montype;
 		if(montype == grownups[i][1]) return grownups[i][0];
 	return montype;
 }
-
+/*JP
 static const char *levitate[2]	= { "float", "Float" };
 static const char *fly[2]	= { "fly", "Fly" };
 static const char *slither[2]	= { "slither", "Slither" };
 static const char *ooze[2]	= { "ooze", "Ooze" };
-static const char *crawl[2]	= { "crawl", "Crawl" };
+static const char *crawl[2]	= { "crawl", "Crawl" };*/
+static const char *levitate[2]	= { "浮く", "浮く" };
+static const char *fly[2]	= { "飛ぶ", "飛ぶ" };
+static const char *slither[2]	= { "滑る", "滑る" };
+static const char *ooze[2]	= { "にじみ出る", "にじみ出る" };
+static const char *crawl[2]	= { "はいずる", "はいずる" };
 
 const char *
 locomotion(ptr, def)
@@ -532,6 +547,27 @@ const char *def;
 		def
 	       );
 
+}
+/*JP*/
+static const char *levitate2	= "浮け";
+static const char *fly2		= "飛べ";
+static const char *slither2	= "滑ろ";
+static const char *ooze2	= "にじみ出ろ";
+static const char *crawl2	= "はいずれ";
+
+const char *
+locomotion2(ptr, def)
+const struct permonst *ptr;
+const char *def;
+{
+	return (
+		is_floater(ptr) ? levitate2 :
+		is_flyer(ptr)   ? fly2 :
+		slithy(ptr)     ? slither2 :
+		amorphous(ptr)  ? ooze2 :
+		nolimbs(ptr)    ? crawl2 :
+		def
+	       );
 }
 
 #endif /* OVLB */

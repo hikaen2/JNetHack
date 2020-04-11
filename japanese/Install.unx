@@ -1,0 +1,140 @@
+
+                               JNetHack
+                                   
+         Copyright 1993-1996  I.Numata, S.Miyashita, N.Hamada
+
+
+			INSTALL GUIDE FOR UNIX
+
+0)
+
+日本語 NetHackをインストールするには，8ビットスルーな lexが必要です．
+lexに -8 オプション(あるいはそれと同等のもの)があるかどうかをインストー
+ルの前に確認します．なければ，8ビットスルーな lexをインストールしなけ
+ればなりません．幸い GNUの flexが8ビットスルーですので，これをインストー
+ルするのがよいでしょう．また，gzipや patchも GNUの最新バージョンインス
+トールしておくことをおすすめします．
+
+1)
+
+NetHack-3.2.0を展開し，その後 NetHack-3.2.1へのパッチを当てます．
+
+	% gzip -dc nethack-3.2.0.tar.gz | tar xvf -
+
+        % mv sys/unix/ioctl.c to sys/share/ioctl.c
+        % mv sys/unix/unixtty.c to sys/share/unixtty.c
+        % mv sys/mac/old/mrecover.c to sys/mac/mrecover.c
+        % rm sys/mac/old/mrecover.hqx
+
+	% gzip -dc nh-3.2.0-3.2.1.patch.gz | patch -p
+
+次に jnethackへのパッチを当てます．こで，使用しているOSがどのよな日本
+語コード体系を持っているのかチェックします．大抵はEUCか，いわゆるSJIS
+となっています．日本語をサポートしていないOSならEUCにします．
+
+EUCの場合は
+
+        % gzip -dc  jnethack-?.?.?.gz | patch -p
+                             ~~~~~この部分はバージョンに依存
+
+SJISの場合は
+
+        % gzip -dc  jnethack-?.?.?.gz | nkf -s |patch -p
+
+等として漢字コードを変換してパッチを当てるとよいでしょう．
+
+2)
+
+次のコマンドを実行し Makefileを作ります．
+
+        % cd sys/unix
+        % sh setup.sh
+
+以前にインストールしたものをバージョンアップする際も必ず行なってくださ
+い．(何故ならMakefileが変更されている可能性があります)
+
+src/Makefile のコメントを参考にして CFLAGS等をマシンの設定に合せて自分
+で編集します．
+
+次に include/config.hや include/unixconf.h を編集します．
+
+オジナル版Nethackがインストールされている場合を考慮し，HACKDIRは別のディ
+レクトリになっています． HACKDIRを変更した場合はトップ階層にある
+Makefileも変更します．さもないと make installが正しく動作しません．
+
+次に，lexを使うか，flexを使うかによって，util/Makefileの対応する部分を
+書き替えます．
+
+(注1)
+本バージョンからは makedefs.cなどいくつかのファイルが ANSI Cを前堤とし
+てコーディングされています．古いOSなど ANSIに対応してないものは，gcc
+をインストールして用いることをお勧めします．
+
+X11版のJNetHackは，国際化された Xawを用いています．ただし，X11R5では 
+Xawが国際化されていませんので，X11R5の contribに含まれる Xsiに対応した 
+Xawが必要となります．
+(何かと面倒なので，X11R6で遊ぶことを強く推奨します．また動作も未確認です)
+
+近のUNIXでは OSで日本語の localeを持つものが多くなってきました．OSが
+日本語のlocaleを持っていない場合でも X11R5以上は localeが Xでサポート
+されているのでこれで遊ぶことができます．この場合Xの再コンパイルが必要
+となるかもしれません．くわしくはXのドキュメントを読んでください．
+
+localeの中からコード体系が EUCもしくは SJISのものを選びます．例えば
+FreeBSDでしたらOSでlocaleがサポートされているので，OSの localeで
+あるja_JP.EUCを選択します．SunOS4.1.3でJLEのないものは OSで日本語の
+localeをサポートしていないので，X11R6のlocaleを使います．
+
+そして，include/config.h の X11_GRAPHICSを define します．またコメント
+を参考に， X11R6か XAW_I18Nのどちらかを define します．次に
+src/Makefileの CFLAGS LFLAGSをコメントを参考に変更します．OSによっては，
+適当なライブラリを指定しないと localeを使ってくれないので注意します．
+例えば，FreeBSD-2.2-??????-SNAPでは，-lxpg4 をライブラリとしてリンクし
+ないと OSの localeを使用してくれません．
+
+XPMを用いたグラフィカルな jnethackも楽しむのなら，まずXPMのライブラリ
+をインストールする必要があります．ライブラリをインストールしたなら，
+include/config.hで USE_XPMをdefineします．
+
+次にトップディレクトリのMakefileの VARDATNDを
+
+VARDATND = x11tiles pet_mark.xbm rip.xpm
+
+のように定義します．最後に src/Makefileの X11WINLIBに -lXpmをつけくわ
+えます．
+
+3)
+
+        % make
+
+エラーなくコンパイルできたならば，次のコマンドを実行します．(多くの場
+合rootになる必要があるはずです)
+
+        % make install
+
+前のバージョンを上げたり，インストールしなおすときは
+
+	% make update
+
+とします．これを行わないとセーブファイル等が全て破壊されてしまいます．
+
+これで日本語版 NetHackの完成です．Xの環境で動作させたければ， 
+NetHack.ad を NetHackと言う名前にして適当なディレクトリィにコピーしま
+す．(例えば /usr/local/X11R6/lib/X11/app-defaultsとか，ホームディレク
+トリとか)
+
+
+				 注意
+
+JNetHackに追加されたオプションとして，kcodeがあります．
+
+OPTIONS=kcode:jis
+
+のように設定してください．このオプションは ttyにのみ影響を与えます．
+XはXの国際化部分に依存します．また，.nethackrcより先に .jnethackrc
+を読みに行くので，英語版との共存が可能です．
+
+kterm-5.2.0(以上)がインストールされているならば，X11版をインストールし
+なくても -decオプションをつけることにより，そこそこのグラフィックを堪
+能できます．この場合 kcode:jisとする必要があります．
+

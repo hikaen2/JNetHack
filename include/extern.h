@@ -1067,6 +1067,7 @@ E struct permonst *NDECL(player_mon);
 E int FDECL(little_to_big, (int));
 E int FDECL(big_to_little, (int));
 E const char *FDECL(locomotion, (const struct permonst *,const char *));
+E const char *FDECL(locomotion2, (const struct permonst *,const char *));
 
 /* ### monmove.c ### */
 
@@ -1210,6 +1211,8 @@ E void NDECL(objects_init);
 /* ### objnam.c ### */
 
 E char *FDECL(typename, (int));
+/*JP*/
+E char *FDECL(jtypename, (int));
 E boolean FDECL(obj_is_pname, (struct obj *));
 E char *FDECL(distant_name, (struct obj *,char *(*)(OBJ_P)));
 E char *FDECL(xname, (struct obj *));
@@ -2064,6 +2067,43 @@ E void NDECL(makewish);
 
 #endif /* !MAKEDEFS_C && !LEV_LEX_C */
 
+/* ### jconj.c , jtrns.c, jlib.c  ### */
+
+E  void FDECL(setkcode,(int));
+E  void FDECL(cputchar,(int));
+E  void FDECL(jputchar,(int));
+E  void FDECL(jputs,(const char *));
+E  int FDECL(jbuffer, (unsigned int, unsigned int *, void (*)(), void (*)(), void (*)()));
+E  int FDECL(cbuffer, (unsigned int, unsigned int *, void (*)(), void (*)(), void (*)()));
+E  const char *FDECL(str2ic, (const char *));
+E  const char *FDECL(jconj, (const char *,const char *));
+E  const char *FDECL(jconj_adj, (const char *));
+E  const char *FDECL(jcan, (const char *));
+E  const char *FDECL(jcannot, (const char *));
+E  const char *FDECL(jpast, (const char *));
+E  const char *FDECL(joffmsg, (struct obj *, const char **));
+E  const char *FDECL(jonmsg, (struct obj *, const char **));
+E  void NDECL(jtrns_init);
+E  int NDECL(dotogglelang);
+E  int NDECL(query_lang_mode);
+E  void FDECL(set_trns_mode, (int));
+E  const char *FDECL(jtrns_mon, (const char *, int));
+E  const char *FDECL(jtrns_obj, (const int, const char *));
+E  const char *FDECL(etrns_mon, (const char *));
+E  const char *FDECL(etrns_obj, (const int, const char *));
+E  int FDECL(is_kanji, (unsigned int));
+E  int FDECL(is_kanji1, (const char *,int));
+E  int FDECL(is_kanji2, (const char *,int));
+E  int FDECL(isspace_8, (const int));
+/*E  void FDECL(zen2han, (char *));*/
+E  void FDECL(split_japanese, (char *,char *,char *,int));
+E  void FDECL(jrndm_replace, (char *));
+
+E  unsigned char *FDECL(e2sj, (unsigned char *));
+E  unsigned char *FDECL(sj2e, (unsigned char *));
+
 #undef E
 
 #endif /* EXTERN_H */
+
+

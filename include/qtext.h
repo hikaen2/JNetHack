@@ -5,7 +5,7 @@
 #ifndef QTEXT_H
 #define QTEXT_H
 
-#define N_HDR	13		/* number of classes + 1 */
+#define N_HDR	14		/* number of classes + 1 */
 #define COMMON_ID	'-'	/* common message id value */
 
 struct qtmsg {

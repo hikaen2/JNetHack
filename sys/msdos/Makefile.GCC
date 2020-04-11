@@ -21,9 +21,9 @@
 # Game Installation Variables
 # NOTE: Make sure GAMEDIR exists before make is started.
 
-GAME = nethack
+GAME = jnethack
 # The GNU Make has a problem if you include a drive spec below (unfortunately).
-GAMEDIR = \games\nethackd
+GAMEDIR = \games\jnethack
 
 #
 # Directories, gcc likes unix style directory specs
@@ -44,6 +44,7 @@ SSHR = ..\sys\share
 UTIL = ..\util
 WIN  = ..\win\tty
 WSHR = ..\win\share
+JP   = ..\japanese
 
 #
 #  Executables.
@@ -191,6 +192,7 @@ VOBJ19 = uhitm.o    vault.o    vision.o	  vis_tab.o  weapon.o
 VOBJ20 = were.o	    wield.o    windows.o  wintty.o   wizard.o
 VOBJ21 = worm.o	    worn.o     write.o	  zap.o	     light.o
 VOBJ22 = dlb.o      dig.o      teleport.o
+VOBJ23 = jlib.o     jtrns.o    jconj.o
 
 SOBJ   = msdos.o    sound.o    sys.o	  tty.o	     unix.o    video.o \
 	vidtxt.o    pckeys.o
@@ -201,7 +203,7 @@ VOBJ   = $(VOBJ01) $(VOBJ02) $(VOBJ03) $(VOBJ04) $(VOBJ05) \
 	$(VOBJ06) $(VOBJ07) $(VOBJ08) $(VOBJ09) $(VOBJ10) \
 	$(VOBJ11) $(VOBJ12) $(VOBJ13) $(VOBJ14) $(VOBJ15) \
 	$(VOBJ16) $(VOBJ17) $(VOBJ18) $(VOBJ19) $(VOBJ20) \
-	$(VOBJ21) $(VOBJ22)
+	$(VOBJ21) $(VOBJ22) $(VOBJ23)
 
 ALLOBJ = $(VOBJ) $(SOBJ) $(TILOBJ) $(VVOBJ)
 
@@ -335,6 +337,7 @@ $(GAME).lnk: $(ALLOBJ)
 	@echo $(VOBJ20) >> $@
 	@echo $(VOBJ21) >> $@
 	@echo $(VOBJ22) >> $@
+	@echo $(VOBJ23) >> $@
 	@echo $(SOBJ)   >> $@
 	@echo $(TILOBJ) >> $@
 	@echo $(VVOBJ)  >> $@
@@ -422,6 +425,9 @@ spotless: clean
 	if exist sp_lev.tag	   del sp_lev.tag
 	if exist $(PLANAR_TIB)	   del $(PLANAR_TIB)
 	if exist $(OVERVIEW_TIB)   del $(OVERVIEW_TIB)
+	if exist $(SRC)\jlib.c	   del $(SRC)\jlib.c
+	if exist $(SRC)\jtrns.c	   del $(SRC)\jtrns.c
+	if exist $(SRC)\jconj.c	   del $(SRC)\jconj.c
 
 
 #
@@ -451,6 +457,8 @@ $(INCL)\vis_tab.h: makedefs.exe
 vis_tab.c: makedefs.exe
 	-makedefs -z
 
+$(INCL)\jdata.h: makedefs.exe
+	-makedefs -j
 #
 #  Makedefs Stuff
 #
@@ -785,7 +793,7 @@ sp_lev.tag: utility.tag $(DAT)\bigroom.des  $(DAT)\castle.des \
 	$(DAT)\caveman.des $(DAT)\elf.des	     $(DAT)\healer.des \
 	$(DAT)\knight.des	 $(DAT)\priest.des   $(DAT)\rogue.des  \
 	$(DAT)\samurai.des $(DAT)\tourist.des  $(DAT)\valkyrie.des \
-	$(DAT)\wizard.des
+	$(DAT)\wizard.des $(DAT)\fighter.des
 	copy $(SRC)\lev_comp.exe $(DAT)\lev_comp.exe
 	cd $(DAT)
 	lev_comp bigroom.des
@@ -810,6 +818,7 @@ sp_lev.tag: utility.tag $(DAT)\bigroom.des  $(DAT)\castle.des \
 	lev_comp tourist.des
 	lev_comp valkyrie.des
 	lev_comp wizard.des
+	lev_comp fighter.des
 	cd $(SRC)
 	echo sp_levs done > sp_lev.tag
 	
@@ -827,18 +836,19 @@ dlb:	dlb_main.exe
 	@copy $(MSYS)\msdoshlp.txt .
 	@echo data >dlb.lst
 	@echo dungeon >>dlb.lst
-	@echo oracles >>dlb.lst
+	@echo joracles >>dlb.lst
 	@echo options >>dlb.lst
 	@echo quest.dat >>dlb.lst
-	@echo rumors >>dlb.lst
-	@echo help >>dlb.lst
-	@echo hh >>dlb.lst
-	@echo cmdhelp >>dlb.lst
+	@echo jrumors >>dlb.lst
+	@echo jhelp >>dlb.lst
+	@echo jhh >>dlb.lst
+	@echo jcmdhelp >>dlb.lst
 	@echo history >>dlb.lst
-	@echo opthelp >>dlb.lst
-	@echo wizhelp >>dlb.lst
+	@echo jopthelp >>dlb.lst
+	@echo jwizhelp >>dlb.lst
 	@echo license >>dlb.lst
 	@echo msdoshlp.txt >>dlb.lst
+	@echo jjj >>dlb.lst
 	@for %%N in (*.lev) do echo %%N >>dlb.lst
 	dlb_main cvIf dlb.lst nhdat
 	@cd $(SRC)
@@ -923,6 +933,19 @@ topl.o : $(CONFIG_H) $(WIN)\topl.c
 wintty.o : $(CONFIG_H) $(WIN)\wintty.c
 	copy $(WIN)\wintty.c .
 	$(CC) $(CFLAGS) -o$@ wintty.c
+
+jlib.o: $(JP)\jlib.c
+	copy $(JP)\jlib.c .
+	$(CC) $(CFLAGS) -o$@ jlib.c
+
+jconj.o: $(JP)\jconj.c
+	copy $(JP)\jconj.c .
+	$(CC) $(CFLAGS) -o$@ jconj.c
+
+jtrns.o: $(JP)\jtrns.c $(INCL)\jdata.h
+	copy $(INCL)\jdata.h .
+	copy $(JP)\jtrns.c .
+	$(CC) $(CFLAGS) -o$@ jtrns.c
 
 # src dependencies
 allmain.o:  $(HACK_H)

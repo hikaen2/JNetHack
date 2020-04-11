@@ -45,10 +45,14 @@ goto err_long
 :long2a
 echo "Copying ..\..\include\patchlevel.h -> ..\..\include\patchlev.h"
 copy ..\..\include\patchlevel.h ..\..\include\patchlev.h
+echo "Copying ..\..\japanese\jpatchlevel.h -> ..\..\japanese\jpatchle.h"
+copy ..\..\japanese\jpatchlevel.h ..\..\japanese\jpatchle.h
 goto long2ok
 :long2b
 echo "Copying ..\..\include\patchl~1.h -> ..\..\include\patchlev.h"
 copy ..\..\include\patchl~1.h ..\..\include\patchlev.h
+echo "Copying ..\..\japanese\jpatch~1.h -> ..\..\japanese\jpatchle.h"
+copy ..\..\japanese\jpatch~1.h ..\..\japanese\jpatchle.h
 :long2ok
 
 REM Missing guidebook is not fatal to the build process

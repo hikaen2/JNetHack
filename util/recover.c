@@ -192,7 +192,8 @@ char *basename;
 	int gfd, lfd, sfd;
 	int lev, savelev, hpid;
 	xchar levc;
-	long version_info[3];
+/*	long version_info[3];*/
+	long version_info[4];
 
 	/* level 0 file contains:
 	 *	pid of creating process (ignored here)

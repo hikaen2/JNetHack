@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 #ifdef OVL0
@@ -22,12 +29,15 @@ register struct monst *mon;
 		    const char *howler;
 
 		    switch (monsndx(mon->data)) {
-		    case PM_HUMAN_WEREWOLF:	  howler = "wolf";    break;
-		    case PM_HUMAN_WEREJACKAL: howler = "jackal";  break;
+/*JP		    case PM_HUMAN_WEREWOLF:	  howler = "wolf";    break;
+		    case PM_HUMAN_WEREJACKAL: howler = "jackal";  break;*/
+		    case PM_HUMAN_WEREWOLF:	  howler = "狼";    break;
+		    case PM_HUMAN_WEREJACKAL: howler = "ジャッカル";  break;
 		    default:		  howler = (char *)0; break;
 		    }
 		    if (howler)
-			You_hear("a %s howling at the moon.", howler);
+/*JP			You_hear("a %s howling at the moon.", howler);*/
+			You_hear("月夜に%sが吠える声を聞いた．", howler);
 		}
 	    }
 	} else if (!rn2(30) || Protection_from_shape_changers) {
@@ -68,10 +78,14 @@ register struct monst *mon;
 	}
 
 	if(canseemon(mon))
-	    pline("%s changes into a %s.", Monnam(mon),
+/*JP	    pline("%s changes into a %s.", Monnam(mon),
 			Hallucination ? rndmonnam() :
 			is_human(&mons[pm]) ? "human" :
-			mons[pm].mname+4);
+			mons[pm].mname+4);*/
+	    pline("%sは%sの姿になった．", Monnam(mon),
+			Hallucination ? rndmonnam() :
+			is_human(&mons[pm]) ? "人間" :
+			jtrns_mon(mons[pm].mname+4, mon->female));
 
 	set_mon_data(mon, &mons[pm], 0);
 	if (mon->msleep || !mon->mcanmove) {
@@ -129,8 +143,9 @@ you_were() {
 	char qbuf[80];
 	if(u.umonnum == u.ulycn) return;
 	if(Polymorph_control) {
-	    Sprintf(qbuf,"Do you want to change into a %s? ",
-					mons[u.ulycn].mname+4);
+/*JP	    Sprintf(qbuf,"Do you want to change into a %s? ",*/
+	    Sprintf(qbuf,"%sに変化しますか？",
+					jtrns_mon(mons[u.ulycn].mname+4, -1));
 	    if(yn(qbuf) == 'n') return;
 	}
 	(void) polymon(u.ulycn);

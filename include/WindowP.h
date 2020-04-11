@@ -57,6 +57,7 @@ typedef struct {
     Pixel	   bright_cyan;
     Pixel	   white;
     XFontStruct	   *font;
+    XFontSet	   fontset;
     XtCallbackList expose_callback;
     XtCallbackList input_callback;
     XtCallbackList resize_callback;

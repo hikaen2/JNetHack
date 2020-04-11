@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "epri.h"
 #include "emin.h"
@@ -886,6 +893,42 @@ register int	mmflags;
 	    discard_minvent(mtmp);
 	    mtmp->minvent = (struct obj *)0;	/* caller expects this */
 	}
+#ifdef FIGHTER
+	if(ptr == &mons[PM_PLANETARY_FIGHTER]){
+	  static uniq_num = 0;
+	  const char *cn;
+/*戦士は全て女性で惑星の名前を持つ*/
+	  mtmp->female = 1;
+	  switch(uniq_num){
+	  case 0:
+	    cn = "マーキュリー";
+	    break;
+	  case 1:
+	    cn = "ヴィーナス";
+	    break;
+	  case 2:
+	    cn = "マーズ";
+	    break;
+	  case 3:
+	    cn = "ジュピター";
+	    break;
+	  case 4:
+	    cn = "ウラヌス";
+	    break;
+	  case 5:
+	    cn = "ネプチューン";
+	    break;
+	  case 6:
+	    cn = "プルート";
+	    break;
+	  default:
+	    cn = "サターン";
+	    break;
+	  }
+	  ++uniq_num;
+	  christen_monst(mtmp, cn);
+	}
+#endif
 	if (ptr->mflags3 & M3_WAITMASK) {
 		if (ptr->mflags3 & M3_WAITFORU)
 			mtmp->mstrategy |= STRAT_WAITFORU;
@@ -1236,9 +1279,14 @@ struct monst *mtmp, *victim;
 	if ((int)++mtmp->m_lev >= mons[newtype].mlevel && newtype != oldtype) {
 	    ptr = &mons[newtype];
 	    if (mvitals[newtype].mvflags & G_GENOD) {	/* allow G_EXTINCT */
-		pline("As %s grows up into %s, %s %s!", mon_nam(mtmp),
+/*JP		pline("As %s grows up into %s, %s %s!", mon_nam(mtmp),
 			an(ptr->mname), he[pronoun_gender(mtmp)],
-			nonliving(ptr) ? "expires" : "dies");
+			nonliving(ptr) ? "expires" : "dies");*/
+	        pline("%sが成長して%sになると%s！",
+		      mon_nam(mtmp),
+		      jtrns_mon(ptr->mname, mtmp->female),
+		      nonliving(ptr) ? "消えてしまった" : "死んでしまった");
+
 		set_mon_data(mtmp, ptr, -1);	/* keep mvitals[] accurate */
 		mondied(mtmp);
 		return (struct permonst *)0;

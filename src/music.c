@@ -26,6 +26,13 @@
  *			called here chasms.
  */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 
 static void FDECL(awaken_monsters,(int));
@@ -120,12 +127,16 @@ int distance;
 		newsym(mtmp->mx, mtmp->my);
 		if (canseemon(mtmp)) {
 		    if (!could_see_mon)
-			You("notice %s, swaying with the music.",
+/*JP			You("notice %s, swaying with the music.",*/
+			You("音楽に合わせて揺れている%sに気がついた．",
 			    an(mon_nam(mtmp)));
 		    else
-			pline("%s freezes, then sways with the music%s.",
+/*JP			pline("%s freezes, then sways with the music%s.",
 			      Monnam(mtmp),
-			      was_peaceful ? "" : ", and now seems quieter");
+			      was_peaceful ? "" : ", and now seems quieter");*/
+			pline("%sは立ちすくみ，音楽に合わせて揺れ%sた．",
+			      Monnam(mtmp),
+			      was_peaceful ? "" : "，おとなしくなっ");
 		}
 	    }
 	    mtmp = mtmp->nmon;
@@ -149,7 +160,8 @@ int distance;
 		mtmp->mpeaceful = 1;
 		if (canseemon(mtmp))
 		    pline(
-		     "%s listens cheerfully to the music, then seems quieter.",
+/*JP		     "%s listens cheerfully to the music, then seems quieter.",*/
+		     "%sは音楽に聞きいり，おとなしくなった．",
 			  Monnam(mtmp));
 	    }
 	    mtmp = mtmp->nmon;
@@ -168,9 +180,11 @@ awaken_soldiers()
 		mtmp->mpeaceful = mtmp->msleep = mtmp->mfrozen = 0;
 		mtmp->mcanmove = 1;
 		if (canseemon(mtmp))
-		    pline("%s is now ready for battle!", Monnam(mtmp));
+/*JP		    pline("%s is now ready for battle!", Monnam(mtmp));*/
+		    pline("%sは戦いの準備が整った！", Monnam(mtmp));
 		else
-		    Norep("You hear the rattle of battle gear being readied.");
+/*JP		    Norep("You hear the rattle of battle gear being readied.");*/
+		    Norep("あなたは戦いの準備が整ったことを示す音を聞いた．");
 	    }
 	    mtmp = mtmp->nmon;
 	}
@@ -222,12 +236,15 @@ int force;
 		if (mtmp->mundetected && is_hider(mtmp->data)) {
 		    mtmp->mundetected = 0;
 		    if (cansee(x,y))
-			pline("%s is shaken loose from the ceiling!",
+/*JP			pline("%s is shaken loose from the ceiling!",*/
+			pline("%sは揺すられ，天井から落ちてきた！",
 							    Amonnam(mtmp));
 		    else
-			You_hear("a thumping sound.");
+/*JP			You_hear("a thumping sound.");*/
+			You("ドンドンという音を聞いた．");
 		    if (x==u.ux && y==u.uy)
-			You("easily dodge the falling %s.",
+/*JP			You("easily dodge the falling %s.",*/
+			You("簡単に落ちてきた%sをかわした．",
 							    mon_nam(mtmp));
 		    newsym(x,y);
 		}
@@ -235,21 +252,25 @@ int force;
 	    if (!rn2(14 - force)) switch (levl[x][y].typ) {
 		  case FOUNTAIN : /* Make the fountain disappear */
 			if (cansee(x,y))
-				pline_The("fountain falls into a chasm.");
+/*JP				pline_The("fountain falls into a chasm.");*/
+				pline("泉は地割れに落ちた．");
 			goto do_pit;
 #ifdef SINKS
 		  case SINK :
 			if (cansee(x,y))
-				pline_The("kitchen sink falls into a chasm.");
+/*JP				pline_The("kitchen sink falls into a chasm.");*/
+				pline("流し台は地割れに落ちた．");
 			goto do_pit;
 #endif
 		  case ALTAR :
 			if (cansee(x,y))
-				pline_The("altar falls into a chasm.");
+/*JP				pline_The("altar falls into a chasm.");*/
+				pline("祭壇は地割れに落ちた．");
 			goto do_pit;
 		  case THRONE :
 			if (cansee(x,y))
-				pline_The("throne falls into a chasm.");
+/*JP				pline_The("throne falls into a chasm.");*/
+				pline("玉座は地割れに落ちた．");
 			/* Falls into next case */
 		  case ROOM :
 		  case CORR : /* Try to make a pit */
@@ -263,8 +284,10 @@ do_pit:		    chasm = maketrap(x,y,PIT);
 
 		    if ((otmp = sobj_at(BOULDER, x, y)) != 0) {
 			if (cansee(x, y))
-			   pline("KADOOM! The boulder falls into a chasm%s!",
-			      ((x == u.ux) && (y == u.uy)) ? " below you" : "");
+/*JP			   pline("KADOOM! The boulder falls into a chasm%s!",
+			      ((x == u.ux) && (y == u.uy)) ? " below you" : "");*/
+			   pline("ドドーン！岩は%s地割れに落ちた！",
+			      ((x == u.ux) && (y == u.uy)) ? "あなたの下の" : "");
 			if (mtmp)
 				mtmp->mtrapped = 0;
 			obj_extract_self(otmp);
@@ -279,18 +302,26 @@ do_pit:		    chasm = maketrap(x,y,PIT);
 			if(!is_flyer(mtmp->data) && !is_clinger(mtmp->data)) {
 			    mtmp->mtrapped = 1;
 			    if(cansee(x,y))
-				pline("%s falls into a chasm!", Monnam(mtmp));
+/*JP				pline("%s falls into a chasm!", Monnam(mtmp));*/
+				pline("%sは地割れに落ちた！", Monnam(mtmp));
 			    else if (flags.soundok && humanoid(mtmp->data))
-				You_hear("a scream!");
-			    mselftouch(mtmp, "Falling, ", TRUE);
+/*JP				You_hear("a scream!");*/
+				You("叫び声を聞いた！");
+/*JP			    mselftouch(mtmp, "Falling, ", TRUE);*/
+			    mselftouch(mtmp, "落下中，", TRUE);
 			    if (mtmp->mhp > 0)
 				if ((mtmp->mhp -= rnd(6)) <= 0) {
 				    if(!cansee(x,y))
-					pline("It is destroyed!");
+/*JP					pline("It is destroyed!");*/
+					pline("何者かは死んだ！");
 				    else {
-					You("destroy %s!", mtmp->mtame ?
+/*JP					You("destroy %s!", mtmp->mtame ?
 					    x_monnam(mtmp, 0, "poor", 0) :
-					    mon_nam(mtmp));
+					    mon_nam(mtmp));*/
+				        pline("%s%sは死んだ！", mtmp->mtame ?
+					      "可愛そうに" : "",
+					      mon_nam(mtmp));
+
 				    }
 				    xkilled(mtmp,0);
 				}
@@ -298,22 +329,29 @@ do_pit:		    chasm = maketrap(x,y,PIT);
 		    } else if (x == u.ux && y == u.uy) {
 			    if (Levitation || is_flyer(uasmon) ||
 						is_clinger(uasmon)) {
-				    pline("A chasm opens up under you!");
-				    You("don't fall in!");
+/*JP				    pline("A chasm opens up under you!");*/
+				    pline("地割れがあなたの下に開いた！");
+/*JP				    You("don't fall in!");*/
+				    You("落ちなかった！");
 			    } else {
-				    You("fall into a chasm!");
+/*JP				    You("fall into a chasm!");*/
+				    You("地割れに落ちた！");
 				    u.utrap = rn1(6,2);
 				    u.utraptype = TT_PIT;
-				    losehp(rnd(6),"fell into a chasm",
-					NO_KILLER_PREFIX);
-				    selftouch("Falling, you");
+/*JP				    losehp(rnd(6),"fell into a chasm",
+					NO_KILLER_PREFIX);*/
+				    losehp(rnd(6),"地割れに落ちて",
+					KILLED_BY);
+/*JP				    selftouch("Falling, you");*/
+				    selftouch("落ちながら，あなたは");
 			    }
 		    } else newsym(x,y);
 		    break;
 		  case DOOR : /* Make the door collapse */
 		    if (levl[x][y].doormask == D_NODOOR) goto do_pit;
 		    if (cansee(x,y))
-			pline_The("door collapses.");
+/*JP			pline_The("door collapses.");*/
+			pline("扉はこなごなになった．");
 		    if (*in_rooms(x, y, SHOPBASE))
 			add_damage(x, y, 0L);
 		    levl[x][y].doormask = D_NODOOR;
@@ -355,24 +393,28 @@ struct obj *instr;
 #endif /* MAC || AMIGA || VPIX_MUSIC || PCMUSIC */
 
 	if (!do_spec)
-	    pline("What you produce is quite far from music...");
+/*JP	    pline("What you produce is quite far from music...");*/
+	    pline("あなたが奏でたものは音楽とはとても呼べない．．．");
 	else
-	    You("start playing %s.", the(xname(instr)));
-
+/*JP	    You("start playing %s.", the(xname(instr)));*/
+	    You("%sを奏ではじめた．", the(xname(instr)));
 	switch (instr->otyp) {
 	case MAGIC_FLUTE:		/* Make monster fall asleep */
 	    if (do_spec && instr->spe > 0) {
 		check_unpaid(instr);
 		instr->spe--;
-		You("produce soft music.");
+/*JP		You("produce soft music.");*/
+		You("柔らかい音色を奏でた．");
 		put_monsters_to_sleep(u.ulevel * 5);
 		exercise(A_DEX, TRUE);
 		break;
 	    } /* else FALLTHRU */
 	case WOODEN_FLUTE:		/* May charm snakes */
 	    do_spec &= (rn2(ACURR(A_DEX)) + u.ulevel > 25);
-	    pline("%s %s.", The(xname(instr)),
-		  do_spec ? "trills" : "toots");
+/*JP	    pline("%s %s.", The(xname(instr)),
+		  do_spec ? "trills" : "toots");*/
+	    pline("%s%s．", The(xname(instr)),
+		  do_spec ? "奏でた" : "を吹いた");
 	    if (do_spec) charm_snakes(u.ulevel * 3);
 	    exercise(A_DEX, TRUE);
 	    break;
@@ -382,14 +424,17 @@ struct obj *instr;
 		check_unpaid(instr);
 		instr->spe--;
 		if (!getdir((char *)0)) {
-		    pline("%s vibrates.", The(xname(instr)));
+/*JP		    pline("%s vibrates.", The(xname(instr)));*/
+		    pline("%sは震えた．", The(xname(instr)));
 		    break;
 		} else if (!u.dx && !u.dy && !u.dz) {
 		    if ((damage = zapyourself(instr, TRUE)) != 0)
 			losehp(damage,
-			       self_pronoun("using a magical horn on %sself",
-					    "him"),
-			       NO_KILLER_PREFIX);
+/*JP			       self_pronoun("using a magical horn on %sself",
+					    "him"),*/
+			       "自分自身の魔法のホルンの力を浴びて",
+/*JP			       NO_KILLER_PREFIX);*/
+			       KILLED_BY);
 		} else {
 		    buzz((instr->otyp == FROST_HORN) ? AD_COLD-1 : AD_FIRE-1,
 			 rn1(6,6), u.ux, u.uy, u.dx, u.dy);
@@ -398,12 +443,14 @@ struct obj *instr;
 		break;
 	    } /* else FALLTHRU */
 	case TOOLED_HORN:		/* Awaken or scare monsters */
-	    You("produce a frightful, grave sound.");
+/*JP	    You("produce a frightful, grave sound.");*/
+	    You("身震いするような死者の音楽を奏でた．");
 	    awaken_monsters(u.ulevel * 30);
 	    exercise(A_WIS, FALSE);
 	    break;
 	case BUGLE:			/* Awaken & attract soldiers */
-	    You("extract a loud noise from %s.", the(xname(instr)));
+/*JP	    You("extract a loud noise from %s.", the(xname(instr)));*/
+	    You("%sから大きな耳障りな音を出した．", the(xname(instr)));
 	    awaken_soldiers();
 	    exercise(A_WIS, FALSE);
 	    break;
@@ -411,16 +458,19 @@ struct obj *instr;
 	    if (do_spec && instr->spe > 0) {
 		check_unpaid(instr);
 		instr->spe--;
-		pline("%s produces very attractive music.",
-		      The(xname(instr)));
+/*JP		pline("%s produces very attractive music.",
+		      The(xname(instr)));*/
+		You("とても魅力的な音楽を奏でた．");
 		charm_monsters((u.ulevel - 1) / 3 + 1);
 		exercise(A_DEX, TRUE);
 		break;
 	    } /* else FALLTHRU */
 	case WOODEN_HARP:		/* May calm Nymph */
 	    do_spec &= (rn2(ACURR(A_DEX)) + u.ulevel > 25);
-	    pline("%s %s.", The(xname(instr)),
-		  do_spec ? "produces a lilting melody" : "twangs");
+/*JP	    pline("%s %s.", The(xname(instr)),
+		  do_spec ? "produces a lilting melody" : "twangs");*/
+	    You("%s．", 
+		  do_spec ? "軽快な音楽を奏でた" : "ポローンという音を出した");
 	    if (do_spec) calm_nymphs(u.ulevel * 3);
 	    exercise(A_DEX, TRUE);
 	    break;
@@ -428,8 +478,10 @@ struct obj *instr;
 	    if (do_spec && instr->spe > 0) {
 		check_unpaid(instr);
 		instr->spe--;
-		You("produce a heavy, thunderous rolling!");
-		pline_The("entire dungeon is shaking around you!");
+/*JP		You("produce a heavy, thunderous rolling!");*/
+		You("重厚な雷のような音を奏でた！");
+/*JP		pline_The("entire dungeon is shaking around you!");*/
+		pline("あなたの回りの迷宮が揺れた！");
 		do_earthquake((u.ulevel - 1) / 3 + 1);
 		/* shake up monsters in a much larger radius... */
 		awaken_monsters(ROWNO * COLNO);
@@ -437,7 +489,8 @@ struct obj *instr;
 		break;
 	    } /* else FALLTHRU */
 	case LEATHER_DRUM:		/* Awaken monsters */
-	    You("beat a deafening row!");
+/*JP	    You("beat a deafening row!");*/
+	    You("耳が聞こえなくなるくらい叩いた！");
 	    awaken_monsters(u.ulevel * 40);
 	    exercise(A_WIS, FALSE);
 	    break;
@@ -464,22 +517,27 @@ struct obj *instr;
     boolean ok;
 
     if (Underwater) {
-	You_cant("play music underwater!");
+/*JP	You_cant("play music underwater!");*/
+	You("水の底では音楽を奏でられない！");
 	return(0);
     }
     if (instr->otyp != LEATHER_DRUM && instr->otyp != DRUM_OF_EARTHQUAKE) {
-	c = yn("Improvise?");
+/*JP	c = yn("Improvise?");*/
+	c = yn("即興で演奏する？");
     }
     if (c == 'n') {
-	if (u.uevent.uheard_tune == 2 && yn("Play the passtune?") == 'y')
+/*JP	if (u.uevent.uheard_tune == 2 && yn("Play the passtune?") == 'y')*/
+	if (u.uevent.uheard_tune == 2 && yn("コードを演奏する？") == 'y')
 		Strcpy(buf, tune);
 	else
-		getlin("What tune are you playing? [what 5 notes]", buf);
+/*JP		getlin("What tune are you playing? [what 5 notes]", buf);*/
+		getlin("どのような調べを演奏しますか？[最初の5音をいれてね]", buf);
 #ifndef	AMIGA
 	/* The AMIGA supports two octaves of notes */
 	for (s=buf; *s; s++) *s = highc(*s);
 #endif
-	You("extract a strange sound from %s!", the(xname(instr)));
+/*JP	You("extract a strange sound from %s!", the(xname(instr)));*/
+	You("%sから奇妙な音を出した！", the(xname(instr)));
 #ifdef UNIX386MUSIC
 	/* if user is at the console, play through the console speaker */
 	if (atconsole())
@@ -563,13 +621,18 @@ struct obj *instr;
 			}
 		    if(tumblers)
 			if(gears)
-			    You_hear("%d tumbler%s click and %d gear%s turn.",
-				tumblers, plur(tumblers), gears, plur(gears));
+/*JP			    You_hear("%d tumbler%s click and %d gear%s turn.",
+				tumblers, plur(tumblers), gears, plur(gears));*/
+			    You("%dの金具がカチっとなり，%dの歯車がまわる音を聞いた",
+				tumblers, gears);
 			else
-			    You_hear("%d tumbler%s click.",
-				tumblers, plur(tumblers));
+/*JP			    You_hear("%d tumbler%s click.",
+				tumblers, plur(tumblers));*/
+			    You("%dの金具がカチっとなる音を聞いた．",
+				tumblers);
 		    else if(gears) {
-			You_hear("%d gear%s turn.", gears, plur(gears));
+/*JP			You_hear("%d gear%s turn.", gears, plur(gears));*/
+			You("%dの歯車が回る音を聞いた．", gears);
 			/* could only get `gears == 5' by playing five
 			   correct notes followed by excess; otherwise,
 			   tune would have matched above */
@@ -603,7 +666,8 @@ atconsole()
      */
     char	*termtype = getenv("TERM");
 
-     return(!strcmp(termtype, "AT386") || !strcmp(termtype, "xterm"));
+/*JP     return(!strcmp(termtype, "AT386") || !strcmp(termtype, "xterm"));*/
+     return(!strcmp(termtype, "AT386") || !strcmp(termtype, "xterm") || !strcmp(termtype, "kterm"));
 }
 
 static void

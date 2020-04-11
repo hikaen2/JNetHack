@@ -8,6 +8,12 @@
  * interface.
  */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994-1996
+**	changing point is marked `JP' (94/6/7) or XI18N (96/7/19)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #ifndef SYSV
 #define PRESERVE_NO_SYSV	/* X11 include files may define SYSV */
 #endif
@@ -451,14 +457,20 @@ void
 X11_raw_print(str)
     const char *str;
 {
+/*JP
     (void) puts(str);
+*/
+    (void) jputs(str);
 }
 
 void
 X11_raw_print_bold(str)
     const char *str;
 {
+/*JP
     (void) puts(str);
+*/
+    (void) jputs(str);
 }
 
 void
@@ -827,7 +839,11 @@ void X11_outrip(window, how)
 	panic("ripout on non-text window (window type [%d])\n", wp->type);
     }
 
+#ifndef XI18N
     calculate_rip_text(how);
+#else
+    calculate_rip_text(how, wp->Win_info.Text_info->fontset);
+#endif
 }
 #endif
 
@@ -903,6 +919,9 @@ char** argv;
 	COPYRIGHT_BANNER_B,
 	COPYRIGHT_BANNER_C,
 	"",
+/*JP*/
+	"NetHack[日本語版], Copyright 1993, 1994",
+	"         By I. Numata , S. Miyashita and N. Hamada.",
 	"",
 	0
     };
@@ -911,9 +930,17 @@ char** argv;
     Cardinal num_args;
     Arg args[4];
 
+
     /* Init windows to nothing. */
     for (i = 0; i < MAX_WINDOWS; i++)
 	window_list[i].type = NHW_NONE;
+
+/*JP
+** i18n initialize by issei 1994/1/8
+*/
+#ifdef XI18N
+    XtSetLanguageProc(NULL,NULL,NULL);
+#endif
 
     XSetIOErrorHandler((XIOErrorHandler) hangup);
 
@@ -1200,7 +1227,6 @@ X11_getlin(question, input)
     static boolean need_to_init = True;
 
     getline_input = input;
-
     flush_screen(1);
     if (need_to_init) {
 	Arg args[1];
@@ -1284,6 +1310,10 @@ X11_display_file(str, complain)
     int num_lines;
     char *textlines;
     int charcount;
+#ifdef XI18N
+    XFontSet fontset;
+    XFontSetExtents *extent;
+#endif
 
     /* Use the port-independent file opener to see if the file exists. */
     fp = dlb_fopen(str, RDTMODE);
@@ -1346,6 +1376,10 @@ X11_display_file(str, complain)
     XtSetArg(args[num_args], XtNdisplayCaret, False);		num_args++;
     XtSetArg(args[num_args], XtNtranslations,
 	XtParseTranslationTable(display_translations));		num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 
     dispfile = XtCreateManagedWidget(
 			"text",			/* name */
@@ -1356,7 +1390,11 @@ X11_display_file(str, complain)
 
     /* Get font and border information. */
     num_args = 0;
-    XtSetArg(args[num_args], XtNfont,	      &fs);	       num_args++;
+#ifndef XI18N
+    XtSetArg(args[num_args], XtNfont,	      &fs);	 	num_args++;
+#else
+    XtSetArg(args[num_args], XtNfontSet,      &fontset); 	num_args++;
+#endif
     XtSetArg(args[num_args], XtNtopMargin,    &top_margin);    num_args++;
     XtSetArg(args[num_args], XtNbottomMargin, &bottom_margin); num_args++;
     XtSetArg(args[num_args], XtNleftMargin,   &left_margin);   num_args++;
@@ -1369,9 +1407,16 @@ X11_display_file(str, complain)
      * The data files are currently set up assuming an 80 char wide window
      * and a fixed width font.  Soo..
      */
+#ifndef XI18N
     new_height = num_lines * (fs->ascent + fs->descent) +
 						top_margin + bottom_margin;
     new_width  = 80 * fs->max_bounds.width + left_margin + right_margin;
+#else
+    extent = XExtentsOfFontSet(fontset);
+    new_height = num_lines * extent->max_logical_extent.height +
+						top_margin + bottom_margin;
+    new_width  = 40 * extent->max_logical_extent.width + left_margin + right_margin;
+#endif
 
     /* Set the new width and height. */
     num_args = 0;
@@ -1571,6 +1616,10 @@ X11_yn_function(ques, choices, def)
 	num_args = 0;
 	XtSetArg(args[num_args], XtNtranslations,
 		XtParseTranslationTable(yn_translations));	num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 	yn_label = XtCreateManagedWidget("yn_label",
 				labelWidgetClass,
 				yn_popup,
@@ -1684,7 +1733,8 @@ init_standard_windows()
 
     num_args = 0;
     XtSetArg(args[num_args], XtNallowShellResize, True);	num_args++;
-    form = XtCreateManagedWidget("nethack",
+/*JP    form = XtCreateManagedWidget("nethack",*/
+    form = XtCreateManagedWidget("jnethack",
 				panedWidgetClass,
 				toplevel, args, num_args);
 
@@ -1717,6 +1767,10 @@ init_standard_windows()
 	num_args = 0;
 	XtSetArg(args[num_args], XtNtranslations,
 		 XtParseTranslationTable(yn_translations)); num_args++;
+/*JP*/
+#if defined(X11R6) && defined(XI18N)
+    XtSetArg(args[num_args], XtNinternational, True);	num_args++;
+#endif
 	yn_label = XtCreateManagedWidget("yn_label",
 					 labelWidgetClass,
 					 form,

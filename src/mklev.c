@@ -2,6 +2,13 @@
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /* NetHack may be freely redistributed.  See license for details. */
 
+/*
+**	Japanese version Copyright
+**	(c) Issei Numata, Naoki Hamada, Shigehiro Miyashita, 1994-1996
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 /* #define DEBUG	/* uncomment to enable code debugging */
 
@@ -449,7 +456,8 @@ static NEARDATA const char *trap_engravings[TRAPNUM] = {
 			(char *)0, (char *)0, (char *)0, (char *)0, (char *)0,
 			(char *)0, (char *)0, (char *)0, (char *)0,
 			/* 14..16: trapdoor, teleport, level-teleport */
-			"Vlad was here", "ad aerarium", "ad aerarium",
+/*JP			"Vlad was here", "ad aerarium", "ad aerarium",*/
+			"ヴラドはここにいる", "ad aerarium", "ad aerarium",
 			(char *)0, (char *)0, (char *)0, (char *)0, (char *)0,
 			(char *)0,
 };
@@ -1361,8 +1369,13 @@ mkinvokearea()
     xchar ymin = inv_pos.y, ymax = inv_pos.y;
     register xchar i;
 
+/*JP
     pline_The("floor shakes violently under you!");
     pline_The("walls around you begin to bend and crumble!");
+*/
+    pline("あなたの下の床が突然揺れた！");
+    pline("そしてまわりの壁がねじれ，砕けた！");
+
     display_nhwindow(WIN_MESSAGE, TRUE);
 
     mkinvpos(xmin, ymin, 0);		/* middle, before placing stairs */
@@ -1389,7 +1402,8 @@ mkinvokearea()
 	delay_output();
     }
 
-    You("are standing at the top of a stairwell leading down!");
+/*JP    You("are standing at the top of a stairwell leading down!");*/
+    You("下に続く吹き抜け階段の上に立っている！");
     mkstairs(u.ux, u.uy, 0, (struct mkroom *)0); /* down */
     newsym(u.ux, u.uy);
     vision_full_recalc = 1;	/* everything changed */

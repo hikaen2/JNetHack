@@ -4,6 +4,12 @@
 
 /* main.c - Unix NetHack */
 
+/*
+**	Japanese version Copyright (C) Issei Numata, 1994
+**	changing point is marked `JP' (94/6/7)
+**	JNetHack may be freely redistributed.  See license for details. 
+*/
+
 #include "hack.h"
 #include "dlb.h"
 
@@ -96,7 +102,12 @@ char *argv[];
 #ifdef CHDIR
 		chdirx(dir,0);
 #endif
+/*JP*/
+		setkcode('I');
+		initoptions();
+		init_jtrns();
 		prscore(argc, argv);
+		jputchar('\0'); /* reset */
 		exit(EXIT_SUCCESS);
 	    }
 	}
@@ -106,6 +117,7 @@ char *argv[];
 	 * so as to avoid restoring outdated savefiles.
 	 */
 	gethdate(hname);
+
 
 	/*
 	 * We cannot do chdir earlier, otherwise gethdate will fail.
@@ -119,6 +131,11 @@ char *argv[];
 #ifdef _M_UNIX
 	check_sco_console();
 #endif
+	/* Line like "OPTIONS=name:foo-@" may exist in config file.
+	 * In this case, need to select random class,
+	 * so must call setrandom() before initoptions().
+	 */
+	setrandom();
 	initoptions();
 	init_nhwindows(&argc,argv);
 	exact_username = whoami();
@@ -129,12 +146,13 @@ char *argv[];
 	/*
 	 * It seems you really want to play.
 	 */
-	setrandom();
 	u.uhp = 1;	/* prevent RIP on early quits */
 	(void) signal(SIGHUP, (SIG_RET_TYPE) hangup);
 #ifdef SIGXCPU
 	(void) signal(SIGXCPU, (SIG_RET_TYPE) hangup);
 #endif
+/*JP*/
+	init_jtrns();
 
 	process_options(argc, argv);	/* command line options */
 
@@ -219,14 +237,16 @@ char *argv[];
 		    flags.news = FALSE; /* in case dorecover() fails */
 		}
 #endif
-		pline("Restoring save file...");
+/*JP		pline("Restoring save file...");*/
+		pline("セーブファイルを復元中．．．");
 		mark_synch();	/* flush output */
 		if(!dorecover(fd))
 			goto not_recovered;
 #ifdef WIZARD
 		if(!wizard && remember_wiz_mode) wizard = TRUE;
 #endif
-		pline("Hello %s, welcome back to NetHack!", plname);
+/*JP		pline("Hello %s, welcome back to NetHack!", plname);*/
+		pline("ようこそ %s, またNetHackの世界へ！", plname);
 		check_special_room(FALSE);
 		wd_message();
 
@@ -244,7 +264,8 @@ not_recovered:
 		player_selection();
 		newgame();
 		/* give welcome message before pickup messages */
-		pline("Hello %s, welcome to NetHack!", plname);
+/*JP		pline("Hello %s, welcome to NetHack!", plname);*/
+		pline("ようこそ %s, NetHackの世界へ！", plname);
 		wd_message();
 
 		flags.move = 0;
@@ -423,16 +444,19 @@ wd_message()
 {
 #ifdef WIZARD
 	if (wiz_error_flag) {
-		pline("Only user \"%s\" may access debug (wizard) mode.",
+/*JP		pline("Only user \"%s\" may access debug (wizard) mode.",*/
+		pline("「%s」のみがデバッグ(wizard)モードを使用できる．",
 # ifndef KR1ED
 			WIZARD);
 # else
 			WIZARD_NAME);
 # endif
-		pline("Entering discovery mode instead.");
+/*JP		pline("Entering discovery mode instead.");*/
+		pline("かわりに発見モードへ移行する．");
 	} else
 #endif
 	if (discover)
-		You("are in non-scoring discovery mode.");
+/*JP		You("are in non-scoring discovery mode.");*/
+		You("スコアの載らない発見モードで起動した．");
 }
 /*unixmain.c*/

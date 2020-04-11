@@ -81,7 +81,7 @@ E long NDECL(random);
 E void FDECL(srandom, (unsigned int));
 # else
 #  ifndef bsdi
-E int FDECL(srandom, (unsigned int));
+/*E int FDECL(srandom, (unsigned int));*/
 #  endif
 # endif
 #else
@@ -120,7 +120,7 @@ E void FDECL(qsort, (genericptr_t,size_t,size_t,
 		     int(*)(const genericptr,const genericptr)));
 #else
 # if defined(BSD) || defined(ULTRIX)
-E  int qsort();
+/*E  int qsort();*/
 # else
 #  if !defined(LATTICE) && !defined(AZTEC_50)
 E   void FDECL(qsort, (genericptr_t,size_t,size_t,
@@ -337,7 +337,7 @@ E uid_t NDECL(getuid);
 E gid_t NDECL(getgid);
 # else
 #  ifndef getpid		/* Borland C defines getpid() as a macro */
-E int NDECL(getpid);
+/*E int NDECL(getpid);*/
 #  endif
 #  ifdef VMS
 E int NDECL(getppid);
